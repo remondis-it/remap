@@ -8,23 +8,17 @@ buildscript {
     }
 
     dependencies {
-    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
     }
 }
 
-apply plugin: 'io.codearte.nexus-staging'
 apply plugin: 'java'
+apply plugin: 'signing'
 apply plugin: 'maven'
 apply plugin: 'idea'
-apply plugin: 'maven-publish'
 
 group 'com.remondis'
 version PROJECT_VERSION
-
-//on ci pipline extend buildnumber to version but only on not master branch
-if (System.env['CI_JOB_ID'] != null && System.env['CI_COMMIT_REF_NAME'] != null && System.env['CI_COMMIT_REF_NAME'] != 'master') {
-    project.version = version + "-" + System.env['CI_JOB_ID']
-}
+description 'A declarative mapping library for converting objects field by field. '
 
 repositories {
     mavenLocal()
@@ -43,11 +37,6 @@ dependencies {
     testCompile "org.springframework:spring-context:4.3.10.RELEASE"
 }
 
-
-if (project.hasProperty('release')) {
-
-    subprojects {
-
         task javadocJar(type: Jar) {
             classifier = 'javadoc'
             from javadoc
@@ -61,11 +50,8 @@ if (project.hasProperty('release')) {
         artifacts {
             archives javadocJar, sourcesJar
         }
-    }
 
-    allprojects {
-        apply plugin: 'signing'
-        apply plugin: 'maven'
+
 
         // Signature of artifacts
         signing {
@@ -76,19 +62,11 @@ if (project.hasProperty('release')) {
         uploadArchives {
             repositories {
                 mavenDeployer {
-                    // POM signature
-                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-                    // Target repository
-//                    repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-//                        authentication(userName: ossrhUser, password: ossrhPassword)
-//                    }
-                    repository(url: "http://maven.remondis-de.local/content/repositories/renew_release/") {
+                 repository(url: "http://maven.remondis-de.local/content/repositories/renew_release/") {
 		                authentication(userName: "deployment", password: "deployment123")
         		    }
-                    
-                    
-                    pom.project {
-                        name project.name
+                 pom.project {
+                		name project.name
                         description project.description
                         packaging 'jar'
                         url = 'https://github.com/remondis-it/remap'
@@ -114,15 +92,9 @@ if (project.hasProperty('release')) {
 				        		organization = 'REMONDIS IT Services GmbH & Co. KG'
 				        	}
 			        	}
-                    }
+				}
+                    
                 }
             }
         }
 
-    }
-}
-
-nexusStaging {  
-    username = ossrhUser
-    password = ossrhPassword
-}
