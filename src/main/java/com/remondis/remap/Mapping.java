@@ -190,12 +190,26 @@ public final class Mapping<S, D> {
   protected void addMapping(PropertyDescriptor sourceProperty, PropertyDescriptor destProperty,
       Transformation transformation) {
     // check if the property descriptor is already mapped
+    denyAlreadyOmittedProperty(sourceProperty);
     denyAlreadyMappedProperty(mappedDestinationProperties, destProperty);
     // mark the property as mapped in destination
     mappedSourceProperties.add(sourceProperty);
     mappedDestinationProperties.add(destProperty);
     // create omit transformation object
     mappings.add(transformation);
+  }
+
+  private void denyAlreadyOmittedProperty(PropertyDescriptor sourceProperty) {
+    if (mappedSourceProperties.contains(sourceProperty)) {
+      // Search for omit-Operations
+      mappings.stream()
+              .forEach(t -> {
+                if (t instanceof OmitTransformation && t.getSourceProperty()
+                                                        .equals(sourceProperty)) {
+                  throw alreadyMappedProperty(sourceProperty);
+                }
+              });
+    }
   }
 
   /**
@@ -394,9 +408,9 @@ public final class Mapping<S, D> {
     }
   }
 
-  private void denyAlreadyMappedProperty(Set<PropertyDescriptor> mappedSourceProperties,
+  private void denyAlreadyMappedProperty(Set<PropertyDescriptor> mappedProperties,
       PropertyDescriptor propertyDescriptor) {
-    if (mappedSourceProperties.contains(propertyDescriptor)) {
+    if (mappedProperties.contains(propertyDescriptor)) {
       throw alreadyMappedProperty(propertyDescriptor);
     }
   }
