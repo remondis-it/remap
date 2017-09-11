@@ -1,0 +1,175 @@
+package com.remondis.remap;
+
+import static com.remondis.remap.Properties.*;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+/**
+ * The reassing operation maps a field to another field while the field names
+ * may differ. A reassign operation is only allowed on fields of the same type.
+ *
+ * @author schuettec
+ *
+ */
+public class ReassignTransformation extends Transformation {
+
+  private static final String REASSIGNING_MSG = "Reassigning %s\n           to %s";
+
+  ReassignTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
+      PropertyDescriptor destinationProperty) {
+    super(mapping, sourceProperty, destinationProperty);
+    denyDifferentPrimitiveTypes(getSourceType(), getDestinationType());
+  }
+
+  @Override
+  protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
+      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+    Object sourceValue = readOrFail(sourceProperty, source);
+    Object destinationValue = null;
+
+    Class<?> sourceType = getSourceType();
+    Class<?> destinationType = getDestinationType();
+
+    // Primitive types can be set without any conversion, because we checked type
+    // compatibility before.
+    if (isCollection(sourceType)) {
+      Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
+      Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
+      destinationValue = convertCollection(sourceValue, sourceCollectionType, destinationCollectionType);
+    } else {
+      destinationValue = convertValue(sourceValue, sourceType, destinationType);
+    }
+
+    writeOrFail(destinationProperty, destination, destinationValue);
+  }
+
+  @SuppressWarnings({
+      "unchecked", "rawtypes"
+  })
+  private Object convertCollection(Object sourceValue, Class<?> sourceCollectionType,
+      Class<?> destinationCollectionType) {
+    Collection collection = Collection.class.cast(sourceValue);
+    Collector collector = getCollector(collection);
+    return collection.stream()
+      .map(o -> {
+        if (isCollection(o)) {
+          return convertCollection(o, sourceCollectionType, destinationCollectionType);
+        } else {
+          return convertValue(o, sourceCollectionType, destinationCollectionType);
+        }
+      })
+      .collect(collector);
+  }
+
+  @SuppressWarnings({
+      "unchecked", "rawtypes"
+  })
+  Object convertValue(Object sourceValue, Class<?> sourceType, Class<?> destinationType) {
+    if (isValidPrimitiveMapping(sourceType, destinationType) || isEqualTypes(sourceType, destinationType)) {
+      return sourceValue;
+    } else {
+      // Object types must be mapped by a registered mapper before setting the value.
+      Mapper delegateMapper = getMapperFor(sourceType, destinationType);
+      return delegateMapper.map(sourceValue);
+    }
+  }
+
+  /**
+   * This method selects a {@link Collector} according to the specified
+   * {@link Collection} instance. This method currently supports {@link Set} and
+   * {@link List}.
+   *
+   * @param collection
+   *          The actual collection instance.
+   * @return Returns the {@link Collector} that creates a new {@link Collection}
+   *         of the same type.
+   */
+  @SuppressWarnings("rawtypes")
+  Collector getCollector(Collection collection) {
+    if (collection instanceof Set) {
+      return Collectors.toSet();
+    } else if (collection instanceof List) {
+      return Collectors.toList();
+    } else {
+      throw MappingException.unsupportedCollection(collection);
+    }
+  }
+
+  /**
+   * Finds the generic return type of a method in nested generics. For example
+   * this method returns {@link String} when called on a method like
+   * <code>List<List<Set<String>>> get();</code>.
+   *
+   * @param method
+   *          The method to analyze.
+   * @return Returns the inner generic type.
+   */
+  static Class<?> findGenericTypeFromMethod(Method method) {
+    ParameterizedType parameterizedType = (ParameterizedType) method.getGenericReturnType();
+    Type type = null;
+    while (parameterizedType != null) {
+      type = parameterizedType.getActualTypeArguments()[0];
+      if (type instanceof ParameterizedType) {
+        parameterizedType = (ParameterizedType) type;
+      } else {
+        parameterizedType = null;
+      }
+    }
+    return (Class<?>) type;
+  }
+
+  boolean isCollection(Class<?> type) {
+    return Collection.class.isAssignableFrom(type);
+  }
+
+  boolean isCollection(Object collection) {
+    return collection instanceof Collection;
+  }
+
+  @Override
+  protected void validateTransformation() throws MappingException {
+    // we have to check that all needed mappers are known for nested mapping
+    // if this transformation performes an object mapping, check for known mappers
+    Class<?> sourceType = getSourceType();
+    if (isMap(sourceType)) {
+      throw MappingException.denyReassignOnMaps(getSourceProperty(), getDestinationProperty());
+    }
+    if (isCollection(sourceType)) {
+      Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
+      Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
+      validateTypeMapping(sourceCollectionType, destinationCollectionType);
+    } else {
+      Class<?> destinationType = getDestinationType();
+      validateTypeMapping(sourceType, destinationType);
+    }
+  }
+
+  private void validateTypeMapping(Class<?> sourceType, Class<?> destinationType) {
+    if (!(isValidPrimitiveMapping(sourceType, destinationType) || isEqualTypes(sourceType, destinationType))) {
+      getMapperFor(sourceType, destinationType);
+    }
+  }
+
+  private boolean isMap(Class<?> sourceType) {
+    return Map.class.isAssignableFrom(sourceType);
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return String.format(REASSIGNING_MSG, asString(sourceProperty), asString(destinationProperty));
+  }
+}

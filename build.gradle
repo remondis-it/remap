@@ -1,0 +1,128 @@
+buildscript {
+    repositories {
+    	mavenCentral()
+        mavenLocal()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.5.3"
+    }
+}
+
+apply plugin: 'io.codearte.nexus-staging'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'idea'
+apply plugin: 'maven-publish'
+
+group 'com.remondis'
+version PROJECT_VERSION
+
+//on ci pipline extend buildnumber to version but only on not master branch
+if (System.env['CI_JOB_ID'] != null && System.env['CI_COMMIT_REF_NAME'] != null && System.env['CI_COMMIT_REF_NAME'] != 'master') {
+    project.version = version + "-" + System.env['CI_JOB_ID']
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+}
+
+dependencies {
+    compile "cglib:cglib:3.2.5"
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:2.7.17"
+    testCompile "org.assertj:assertj-core:3.5.1"
+
+    testCompile "org.springframework:spring-test:4.3.10.RELEASE"
+    testCompile "org.springframework:spring-context:4.3.10.RELEASE"
+}
+
+
+if (project.hasProperty('release')) {
+
+    subprojects {
+
+        task javadocJar(type: Jar) {
+            classifier = 'javadoc'
+            from javadoc
+        }
+
+        task sourcesJar(type: Jar) {
+            classifier = 'sources'
+            from sourceSets.main.allSource
+        }
+
+        artifacts {
+            archives javadocJar, sourcesJar
+        }
+    }
+
+    allprojects {
+        apply plugin: 'signing'
+        apply plugin: 'maven'
+
+        // Signature of artifacts
+        signing {
+            sign configurations.archives
+        }
+
+        // OSSRH publication
+        uploadArchives {
+            repositories {
+                mavenDeployer {
+                    // POM signature
+                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                    // Target repository
+//                    repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+//                        authentication(userName: ossrhUser, password: ossrhPassword)
+//                    }
+                    repository(url: "http://maven.remondis-de.local/content/repositories/renew_release/") {
+		                authentication(userName: "deployment", password: "deployment123")
+        		    }
+                    
+                    
+                    pom.project {
+                        name project.name
+                        description project.description
+                        packaging 'jar'
+                        url = 'https://github.com/remondis-it/remap'
+
+                        scm {
+                            connection 'scm:git:https://github.com/remondis-it/remap.git'
+                            developerConnection 'scm:git:git@github.com:remondis-it/remap.git'
+                            url 'https://github.com/remondis-it/remap.git'
+                        }
+
+				        licenses {
+				            license {
+				                name = 'The Apache Software License, Version 2.0'
+				                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+				                distribution = 'repo'
+				            }
+				        }
+
+                        developers { 
+				        	developer { 
+				        		name = 'Christopher Schütte'
+				        		email = 'christopher.schuette@remondis.de'
+				        		organization = 'REMONDIS IT Services GmbH & Co. KG'
+				        	}
+			        	}
+                    }
+                }
+            }
+        }
+
+    }
+}
+
+nexusStaging {  
+    username = ossrhUser
+    password = ossrhPassword
+}
