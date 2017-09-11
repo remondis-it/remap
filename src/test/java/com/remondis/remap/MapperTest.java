@@ -3,6 +3,10 @@ package com.remondis.remap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 import org.junit.Test;
 
 import com.remondis.remap.inheritance.Child;
@@ -93,24 +97,35 @@ public class MapperTest {
     B b = new B(B_STRING, B_NUMBER, B_INTEGER);
     A a = new A(MORE_IN_A, STRING, NUMBER, INTEGER, ZAHL_IN_A, b);
     a.setZahlInA(ZAHL_IN_A);
-    AResource ar = mapper.map(a);
-    assertNull(ar.getMoreInAResource());
-    assertEquals(STRING, a.getString());
-    assertEquals(STRING, ar.getString());
-    assertEquals(NUMBER, a.getNumber());
-    assertEquals(NUMBER, ar.getNumber());
-    assertEquals(INTEGER, a.getInteger());
-    assertEquals(INTEGER, ar.getInteger());
-    assertEquals(ZAHL_IN_A, a.getZahlInA());
-    assertEquals(ZAHL_IN_A, ar.getZahlInAResource());
 
-    BResource br = ar.getB();
-    assertEquals(B_STRING, b.getString());
-    assertEquals(B_STRING, br.getString());
-    assertEquals(B_NUMBER, b.getNumber());
-    assertEquals(B_NUMBER, br.getNumber());
-    assertEquals(B_INTEGER, b.getInteger());
-    assertEquals(B_INTEGER, br.getInteger());
+    A[] aarr = new A[] {
+        a, a, a, a, a, a, a, a, a, a, a, a, a, a, a, a, a
+    };
+
+    List<A> aList = Arrays.asList(aarr);
+
+    Collection<AResource> arCollection = mapper.map(aList);
+
+    for (AResource ar : arCollection) {
+      assertNull(ar.getMoreInAResource());
+      assertEquals(STRING, a.getString());
+      assertEquals(STRING, ar.getString());
+      assertEquals(NUMBER, a.getNumber());
+      assertEquals(NUMBER, ar.getNumber());
+      assertEquals(INTEGER, a.getInteger());
+      assertEquals(INTEGER, ar.getInteger());
+      assertEquals(ZAHL_IN_A, a.getZahlInA());
+      assertEquals(ZAHL_IN_A, ar.getZahlInAResource());
+
+      BResource br = ar.getB();
+      assertEquals(B_STRING, b.getString());
+      assertEquals(B_STRING, br.getString());
+      assertEquals(B_NUMBER, b.getNumber());
+      assertEquals(B_NUMBER, br.getNumber());
+      assertEquals(B_INTEGER, b.getInteger());
+      assertEquals(B_INTEGER, br.getInteger());
+
+    }
   }
 
   /**
