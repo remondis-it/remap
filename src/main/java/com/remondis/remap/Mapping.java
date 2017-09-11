@@ -1,8 +1,11 @@
 package com.remondis.remap;
 
-import static com.remondis.remap.Lang.*;
-import static com.remondis.remap.MappingException.*;
-import static com.remondis.remap.Properties.*;
+import static com.remondis.remap.Lang.denyNull;
+import static com.remondis.remap.MappingException.alreadyMappedProperty;
+import static com.remondis.remap.MappingException.multipleInteractions;
+import static com.remondis.remap.MappingException.notAProperty;
+import static com.remondis.remap.MappingException.zeroInteractions;
+import static com.remondis.remap.Properties.createUnmappedMessage;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
@@ -105,7 +108,7 @@ public final class Mapping<S, D> {
    */
   public Mapping<S, D> omitInDestination(FieldSelector<D> destinationSelector) {
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(OMIT_FIELD_DEST, destination,
-        destinationSelector);
+                                                                         destinationSelector);
     OmitTransformation omitDestination = OmitTransformation.omitDestination(this, propertyDescriptor);
     omitMapping(mappedDestinationProperties, propertyDescriptor, omitDestination);
     return this;
@@ -132,7 +135,7 @@ public final class Mapping<S, D> {
   public Mapping<S, D> omitInSource(FieldSelector<S> sourceSelector) {
     // Omit in destination
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(OMIT_FIELD_SOURCE, this.source,
-        sourceSelector);
+                                                                         sourceSelector);
     OmitTransformation omitSource = OmitTransformation.omitSource(this, propertyDescriptor);
     omitMapping(mappedSourceProperties, propertyDescriptor, omitSource);
     return this;
@@ -148,7 +151,7 @@ public final class Mapping<S, D> {
    */
   public <RS> ReassignBuilder<S, D, RS> reassign(TypedSelector<RS, S> sourceSelector) {
     TypedPropertyDescriptor<RS> typedSourceProperty = getTypedPropertyFromFieldSelector(TRANSFORM, this.source,
-        sourceSelector);
+                                                                                        sourceSelector);
     ReassignBuilder<S, D, RS> reassignBuilder = new ReassignBuilder<>();
     reassignBuilder.tSourceProperty = typedSourceProperty;
     reassignBuilder.mapping = this;
@@ -173,9 +176,9 @@ public final class Mapping<S, D> {
   public <RD, RS> ReplaceBuilder<S, D, RD, RS> replace(TypedSelector<RS, S> sourceSelector,
       TypedSelector<RD, D> destinationSelector) {
     TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(TRANSFORM, this.source,
-        sourceSelector);
+                                                                                   sourceSelector);
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(TRANSFORM, this.destination,
-        destinationSelector);
+                                                                                 destinationSelector);
 
     ReplaceBuilder<S, D, RD, RS> builder = new ReplaceBuilder<>();
     builder.sourceProperty = sourceProperty;
@@ -187,7 +190,6 @@ public final class Mapping<S, D> {
   protected void addMapping(PropertyDescriptor sourceProperty, PropertyDescriptor destProperty,
       Transformation transformation) {
     // check if the property descriptor is already mapped
-    denyAlreadyMappedProperty(mappedSourceProperties, sourceProperty);
     denyAlreadyMappedProperty(mappedDestinationProperties, destProperty);
     // mark the property as mapped in destination
     mappedSourceProperties.add(sourceProperty);
@@ -213,38 +215,40 @@ public final class Mapping<S, D> {
     // Get all unmapped properties from destination because this will be the only properties that can be mapped from
     // source.
     Set<PropertyDescriptor> unmappedDestinationProperties = getUnmappedProperties(destination,
-        mappedDestinationProperties);
+                                                                                  mappedDestinationProperties);
     // Get the set of property names
     Set<String> unmappedDestinationPropertyNames = unmappedDestinationProperties.stream()
-      .map(PropertyDescriptor::getName)
-      .collect(Collectors.toSet());
+                                                                                .map(PropertyDescriptor::getName)
+                                                                                .collect(Collectors.toSet());
     // Add a reassign for all properties of source that are unmapped properties in the destination
     getUnmappedProperties(source, mappedSourceProperties).stream()
-      .filter(pd -> unmappedDestinationPropertyNames.contains(pd.getName()))
-      .forEach(pd -> {
-        // find the corresponding PropertyDescriptor in the unmapped destination properties and add reassign
-        // transformation
-        PropertyDescriptor destinationProperty = getPropertyDescriptorByPropertyName(unmappedDestinationProperties,
-            pd.getName());
-        MapTransformation transformation = new MapTransformation(this, pd, destinationProperty);
-        addMapping(pd, destinationProperty, transformation);
-      });
+                                                         .filter(pd -> unmappedDestinationPropertyNames.contains(pd.getName()))
+                                                         .forEach(pd -> {
+                                                           // find the corresponding PropertyDescriptor in the unmapped
+                                                           // destination properties and add reassign
+                                                           // transformation
+                                                           PropertyDescriptor destinationProperty = getPropertyDescriptorByPropertyName(unmappedDestinationProperties,
+                                                                                                                                        pd.getName());
+                                                           MapTransformation transformation = new MapTransformation(this,
+                                                                                                                    pd,
+                                                                                                                    destinationProperty);
+                                                           addMapping(pd, destinationProperty, transformation);
+                                                         });
 
   }
 
   private PropertyDescriptor getPropertyDescriptorByPropertyName(Set<PropertyDescriptor> descriptors,
       String propertyName) {
     Set<PropertyDescriptor> matchedPropertiesByName = descriptors.stream()
-      .filter(pd -> pd.getName()
-        .equals(propertyName))
-      .collect(Collectors.toSet());
+                                                                 .filter(pd -> pd.getName()
+                                                                                 .equals(propertyName))
+                                                                 .collect(Collectors.toSet());
     if (matchedPropertiesByName.isEmpty() || matchedPropertiesByName.size() > 1) {
-      throw new MappingException(String.format(
-          "Cannot assign source property '%s' to destination, but this was determined to be possible - this is an implementation fault.",
-          propertyName));
+      throw new MappingException(String.format("Cannot assign source property '%s' to destination, but this was determined to be possible - this is an implementation fault.",
+                                               propertyName));
     } else {
       return matchedPropertiesByName.iterator()
-        .next();
+                                    .next();
     }
   }
 
@@ -372,10 +376,10 @@ public final class Mapping<S, D> {
   private PropertyDescriptor getPropertyDescriptorOrFail(Class<?> type, String propertyName) {
     Optional<PropertyDescriptor> property;
     property = Properties.getProperties(type)
-      .stream()
-      .filter(pd -> pd.getName()
-        .equals(propertyName))
-      .findFirst();
+                         .stream()
+                         .filter(pd -> pd.getName()
+                                         .equals(propertyName))
+                         .findFirst();
     if (property.isPresent()) {
       return property.get();
     } else {
@@ -409,9 +413,9 @@ public final class Mapping<S, D> {
   public Mapping<S, D> useMapper(Mapper<?, ?> mapper) {
     denyNull("mapper", mapper);
     Class<?> source = mapper.getMapping()
-      .getSource();
+                            .getSource();
     Class<?> destination = mapper.getMapping()
-      .getDestination();
+                                 .getDestination();
 
     Projection<?, ?> projection = new Projection<>(source, destination);
     if (mappers.containsKey(projection)) {
@@ -483,14 +487,14 @@ public final class Mapping<S, D> {
   @Override
   public String toString() {
     StringBuilder b = new StringBuilder("Mapping from ").append(source.getName())
-      .append("\n\t  to ")
-      .append(destination.getName())
-      .append("\n with transformation:\n");
+                                                        .append("\n\t  to ")
+                                                        .append(destination.getName())
+                                                        .append("\n with transformation:\n");
 
     for (Transformation t : mappings) {
       b.append("- ")
-        .append(t.toString())
-        .append("\n");
+       .append(t.toString())
+       .append("\n");
     }
 
     Set<PropertyDescriptor> unmappedProperties = getUnmappedProperties();
