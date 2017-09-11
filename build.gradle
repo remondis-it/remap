@@ -79,12 +79,9 @@ if (project.hasProperty('release')) {
                     // POM signature
                     beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
                     // Target repository
-//                    repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-//                        authentication(userName: ossrhUser, password: ossrhPassword)
-//                    }
-                    repository(url: "http://maven.remondis-de.local/content/repositories/renew_release/") {
-		                authentication(userName: "deployment", password: "deployment123")
-        		    }
+                    repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                        authentication(userName: ossrhUser, password: ossrhPassword)
+                    }
                     
                     
                     pom.project {
