@@ -34,14 +34,13 @@ ReMap unterstützt
 
 # Einschränkungen
 * Objekte in Quelle und Ziel die den gleichen Typ aufweisen werden nicht kopiert.
-* Die Objekte die am Mapping beteiligt sind müssen der Java Bean Konvention entsprechen
+* Die Objekte, die am Mapping beteiligt sind müssen der Java Bean Konvention entsprechen
   * Felder können beliebige Sichtbarkeit aufweisen
   * Felder haben öffentliche Getter/Setter-Methoden mit korrekter Benamung
   * Boolean-Felder öffentliche haben Is/Setter-Methoden
   * Das Objekt hat einen parameterlosen Standard-Konstruktor 
   * Schlüsselwörter wie `transient` haben keine Auswirkungen auf das Mapping
 * Multi-Classloader-Umgebungen sind nicht unterstützt. Sämtliche Typen müssen durch den selben Klassloader geladen sein
-
 
 # Verwendung
 
