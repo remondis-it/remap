@@ -12,19 +12,15 @@ buildscript {
     }
 }
 
-apply plugin: 'io.codearte.nexus-staging'
 apply plugin: 'java'
+apply plugin: 'signing'
 apply plugin: 'maven'
 apply plugin: 'idea'
-apply plugin: 'maven-publish'
+apply plugin: 'io.codearte.nexus-staging'
 
 group 'com.remondis'
 version PROJECT_VERSION
-
-//on ci pipline extend buildnumber to version but only on not master branch
-if (System.env['CI_JOB_ID'] != null && System.env['CI_COMMIT_REF_NAME'] != null && System.env['CI_COMMIT_REF_NAME'] != 'master') {
-    project.version = version + "-" + System.env['CI_JOB_ID']
-}
+description 'A declarative mapping library for converting objects field by field. '
 
 repositories {
     mavenLocal()
@@ -43,79 +39,64 @@ dependencies {
     testCompile "org.springframework:spring-context:4.3.10.RELEASE"
 }
 
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
 
 if (project.hasProperty('release')) {
-
-    subprojects {
-
-        task javadocJar(type: Jar) {
-            classifier = 'javadoc'
-            from javadoc
-        }
-
-        task sourcesJar(type: Jar) {
-            classifier = 'sources'
-            from sourceSets.main.allSource
-        }
-
-        artifacts {
-            archives javadocJar, sourcesJar
-        }
+    // Signature of artifacts
+    signing {
+        sign configurations.archives
     }
 
-    allprojects {
-        apply plugin: 'signing'
-        apply plugin: 'maven'
+    // OSSRH publication
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+            	repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUser, password: ossrhPassword)
+    		    }
+             	pom.project {
+            		name project.name
+                    description project.description
+                    packaging 'jar'
+                    url = 'https://github.com/remondis-it/remap'
 
-        // Signature of artifacts
-        signing {
-            sign configurations.archives
-        }
-
-        // OSSRH publication
-        uploadArchives {
-            repositories {
-                mavenDeployer {
-                    // POM signature
-                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-                    // Target repository
-                    repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                        authentication(userName: ossrhUser, password: ossrhPassword)
+                    scm {
+                        connection 'scm:git:https://github.com/remondis-it/remap.git'
+                        developerConnection 'scm:git:git@github.com:remondis-it/remap.git'
+                        url 'https://github.com/remondis-it/remap.git'
                     }
-                    
-                    
-                    pom.project {
-                        name project.name
-                        description project.description
-                        packaging 'jar'
-                        url = 'https://github.com/remondis-it/remap'
 
-                        scm {
-                            connection 'scm:git:https://github.com/remondis-it/remap.git'
-                            developerConnection 'scm:git:git@github.com:remondis-it/remap.git'
-                            url 'https://github.com/remondis-it/remap.git'
-                        }
+			        licenses {
+			            license {
+			                name = 'The Apache Software License, Version 2.0'
+			                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+			                distribution = 'repo'
+			            }
+			        }
 
-				        licenses {
-				            license {
-				                name = 'The Apache Software License, Version 2.0'
-				                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-				                distribution = 'repo'
-				            }
-				        }
-
-                        developers { 
-				        	developer { 
-				        		name = 'Christopher Schütte'
-				        		email = 'christopher.schuette@remondis.de'
-				        		organization = 'REMONDIS IT Services GmbH & Co. KG'
-				        	}
+                    developers { 
+			        	developer { 
+			        		name = 'Christopher Schütte'
+			        		email = 'christopher.schuette@remondis.de'
+			        		organization = 'REMONDIS IT Services GmbH & Co. KG'
 			        	}
-                    }
-                }
+		        	}
+				}
             }
         }
-
     }
 }
 
