@@ -3,9 +3,14 @@ package com.remondis.remap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * This is a util class that provides useful reflective methods. <b>Intended for internal use only!</b>.
@@ -64,6 +69,27 @@ class ReflectionUtil {
   }
 
   /**
+   * This method selects a {@link Collector} according to the specified
+   * {@link Collection} instance. This method currently supports {@link Set} and
+   * {@link List}.
+   *
+   * @param collection
+   *          The actual collection instance.
+   * @return Returns the {@link Collector} that creates a new {@link Collection}
+   *         of the same type.
+   */
+  @SuppressWarnings("rawtypes")
+  static Collector getCollector(Collection collection) {
+    if (collection instanceof Set) {
+      return Collectors.toSet();
+    } else if (collection instanceof List) {
+      return Collectors.toList();
+    } else {
+      throw MappingException.unsupportedCollection(collection);
+    }
+  }
+
+  /**
    * Checks if the method has a return type.
    *
    * @param method
@@ -72,7 +98,8 @@ class ReflectionUtil {
    *         otherwise.
    */
   static boolean hasReturnType(Method method) {
-    return !method.getReturnType().equals(Void.TYPE);
+    return !method.getReturnType()
+                  .equals(Void.TYPE);
   }
 
   static boolean isGetterOrSetter(Method method) {
@@ -80,7 +107,8 @@ class ReflectionUtil {
   }
 
   static boolean isSetter(Method method) {
-    boolean validName = method.getName().startsWith(SET);
+    boolean validName = method.getName()
+                              .startsWith(SET);
     boolean hasArguments = hasArguments(method, 1);
     boolean hasReturnType = hasReturnType(method);
     return validName && !hasReturnType && hasArguments;
@@ -88,7 +116,10 @@ class ReflectionUtil {
 
   static boolean isGetter(Method method) {
     boolean isBool = isBoolGetter(method);
-    boolean validName = (isBool ? method.getName().startsWith(IS) : method.getName().startsWith(GET));
+    boolean validName = (isBool ? method.getName()
+                                        .startsWith(IS)
+        : method.getName()
+                .startsWith(GET));
     boolean hasArguments = hasArguments(method);
     boolean hasReturnType = hasReturnType(method);
     return validName && hasReturnType && !hasArguments;
@@ -163,7 +194,8 @@ class ReflectionUtil {
     Class<?> clazz = targetObject.getClass();
     if (Proxy.isProxyClass(clazz)) {
       // schuettec - 08.02.2017 : Find the method on the specified proxy.
-      effectiveMethod = targetObject.getClass().getMethod(method.getName(), method.getParameterTypes());
+      effectiveMethod = targetObject.getClass()
+                                    .getMethod(method.getName(), method.getParameterTypes());
     }
     if (args == null) {
       return effectiveMethod.invoke(targetObject);
