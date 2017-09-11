@@ -52,49 +52,48 @@ dependencies {
         }
 
 
+if (project.hasProperty('release')) {
+    // Signature of artifacts
+    signing {
+        sign configurations.archives
+    }
 
-        // Signature of artifacts
-        signing {
-            sign configurations.archives
-        }
+    // OSSRH publication
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+            	repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                    authentication(userName: ossrhUser, password: ossrhPassword)
+    		    }
+             	pom.project {
+            		name project.name
+                    description project.description
+                    packaging 'jar'
+                    url = 'https://github.com/remondis-it/remap'
 
-        // OSSRH publication
-        uploadArchives {
-            repositories {
-                mavenDeployer {
-                 repository(url: "http://maven.remondis-de.local/content/repositories/renew_release/") {
-		                authentication(userName: "deployment", password: "deployment123")
-        		    }
-                 pom.project {
-                		name project.name
-                        description project.description
-                        packaging 'jar'
-                        url = 'https://github.com/remondis-it/remap'
+                    scm {
+                        connection 'scm:git:https://github.com/remondis-it/remap.git'
+                        developerConnection 'scm:git:git@github.com:remondis-it/remap.git'
+                        url 'https://github.com/remondis-it/remap.git'
+                    }
 
-                        scm {
-                            connection 'scm:git:https://github.com/remondis-it/remap.git'
-                            developerConnection 'scm:git:git@github.com:remondis-it/remap.git'
-                            url 'https://github.com/remondis-it/remap.git'
-                        }
+			        licenses {
+			            license {
+			                name = 'The Apache Software License, Version 2.0'
+			                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+			                distribution = 'repo'
+			            }
+			        }
 
-				        licenses {
-				            license {
-				                name = 'The Apache Software License, Version 2.0'
-				                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-				                distribution = 'repo'
-				            }
-				        }
-
-                        developers { 
-				        	developer { 
-				        		name = 'Christopher Schütte'
-				        		email = 'christopher.schuette@remondis.de'
-				        		organization = 'REMONDIS IT Services GmbH & Co. KG'
-				        	}
+                    developers { 
+			        	developer { 
+			        		name = 'Christopher Schütte'
+			        		email = 'christopher.schuette@remondis.de'
+			        		organization = 'REMONDIS IT Services GmbH & Co. KG'
 			        	}
+		        	}
 				}
-                    
-                }
             }
         }
-
+    }
+}
