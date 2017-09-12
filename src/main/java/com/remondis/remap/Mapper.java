@@ -51,8 +51,12 @@ public class Mapper<S, D> {
    *          The source collection to map to a new collection of destination objects.
    * @return Returns a newly created destination object.
    */
-  @SuppressWarnings("unchecked")
   public Collection<D> map(Collection<S> source) {
+    return _mapCollection(source);
+  }
+
+  @SuppressWarnings("unchecked")
+  private Collection<D> _mapCollection(Collection<S> source) {
     return (Collection<D>) source.stream()
                                  .map(this::map)
                                  .collect(getCollector(source));
@@ -65,11 +69,8 @@ public class Mapper<S, D> {
    *          The source collection to map to a new collection of destination objects.
    * @return Returns a newly created destination object.
    */
-  @SuppressWarnings("unchecked")
   public List<D> map(List<S> source) {
-    return (List<D>) source.stream()
-                           .map(this::map)
-                           .collect(getCollector(source));
+    return (List<D>) _mapCollection(source);
   }
 
   /**
@@ -79,11 +80,8 @@ public class Mapper<S, D> {
    *          The source collection to map to a new collection of destination objects.
    * @return Returns a newly created destination object.
    */
-  @SuppressWarnings("unchecked")
-  public Set<D> mapParallel(Set<S> source) {
-    return (Set<D>) source.parallelStream()
-                          .map(this::map)
-                          .collect(getCollector(source));
+  public Set<D> map(Set<S> source) {
+    return (Set<D>) _mapCollection(source);
   }
 
   @Override
