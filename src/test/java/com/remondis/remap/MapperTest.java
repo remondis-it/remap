@@ -107,7 +107,7 @@ public class MapperTest {
     List<AResource> arCollection = mapper.map(aList);
 
     // Make sure this is a new collection
-    assertFalse((List) aList != (List) arCollection);
+    assertFalse((List) aList == (List) arCollection);
 
     for (AResource ar : arCollection) {
       assertNull(ar.getMoreInAResource());
