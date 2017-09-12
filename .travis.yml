@@ -1,3 +1,7 @@
 language: java
 
-install: ./gradlew uploadArchives closeAndReleaseRepository
+deploy:
+  provider: script
+  script: ./gradlew uploadArchives closeAndReleaseRepository
+  on:
+    branch: master

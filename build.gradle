@@ -65,6 +65,11 @@ if (project.hasProperty('release')) {
     	ossrhUser =  System.env['ossrhUser']
     	ossrhPassword = System.env['ossrhPassword']
     } 
+    
+    nexusStaging {  
+    username = ossrhUser
+    password = ossrhPassword
+	}
 
     // OSSRH publication
     uploadArchives {
@@ -106,7 +111,3 @@ if (project.hasProperty('release')) {
     }
 }
 
-nexusStaging {  
-    username = ossrhUser
-    password = ossrhPassword
-}
