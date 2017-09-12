@@ -59,6 +59,17 @@ if (project.hasProperty('release')) {
     signing {
         sign configurations.archives
     }
+    
+    // When Travis CI builds this project, the credentials come from environment variables
+    if (!project.hasProperty('ossrhUser')) {
+    	ossrhUser =  System.env['ossrhUser']
+    	ossrhPassword = System.env['ossrhPassword']
+    } 
+    
+    nexusStaging {  
+    username = ossrhUser
+    password = ossrhPassword
+	}
 
     // OSSRH publication
     uploadArchives {
@@ -100,7 +111,3 @@ if (project.hasProperty('release')) {
     }
 }
 
-nexusStaging {  
-    username = ossrhUser
-    password = ossrhPassword
-}
