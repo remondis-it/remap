@@ -1,3 +1,4 @@
 language: java
 
-deploy: ./gradlew uploadArchives closeAndReleaseRepository
+deploy: 
+   - ./gradlew uploadArchives closeAndReleaseRepository
