@@ -18,7 +18,8 @@ Folgende Operationen können für das Mapping deklariert werden:
 Die Mapper validiert die Mapping-Konfiguration und lehnt in den folgenden Situationen ab:
 * Ein Feld im Quellobjekt hat kein passendes Feld im Zielobjekt
 * Ein Feld im Zielobjekt hat kein passendes Feld im Quellobjekt
-* Mehrere Operationen werden auf einem Quell/Zielfeld ausgeführt
+* Mehrere Operationen werden auf einem Zielfeld ausgeführt
+* `omit` wird auf Quellfeld angewendet obwohl bereits ein anderes Mapping definiert wurde.
 
 Mit diesen Validierungsregeln ist beim Erstellen der Mapper-Instanz sicher gestellt, dass jedes Quell/Zielfeld vom Mapping berücksichtigt bzw. übersprungen wird.
 
@@ -26,23 +27,32 @@ Mit diesen Validierungsregeln ist beim Erstellen der Mapper-Instanz sicher geste
 
 ReMap unterstützt
 * Vererbungshierarchien
+* Mapping von Objektassoziationen auf Felder 
 * Restriktive Sichtbarkeiten
 * Mapping von verschachtelten Collections (Achtung: Maps sind keine Collections!)
-* Maps werden durch die Operation `replace` unterstützt, allerdings muss die Konvertierung manuell implementiert werden
+* manuelle Konvertierung von Maps durch die Operation `replace` und einer Transformation
 
 # Einschränkungen
 * Objekte in Quelle und Ziel die den gleichen Typ aufweisen werden nicht kopiert.
-* Die Objekte die am Mapping beteiligt sind müssen der Java Bean Konvention entsprechen
+* Die Objekte, die am Mapping beteiligt sind müssen der Java Bean Konvention entsprechen
   * Felder können beliebige Sichtbarkeit aufweisen
   * Felder haben öffentliche Getter/Setter-Methoden mit korrekter Benamung
   * Boolean-Felder öffentliche haben Is/Setter-Methoden
   * Das Objekt hat einen parameterlosen Standard-Konstruktor 
   * Schlüsselwörter wie `transient` haben keine Auswirkungen auf das Mapping
-* ReMap ist ungeeignet um Objekt-Assoziationen aufzulösen, da das Mapping feldweise durchgeführt wird.
 * Multi-Classloader-Umgebungen sind nicht unterstützt. Sämtliche Typen müssen durch den selben Klassloader geladen sein
 
-
 # Verwendung
+
+Die ReMap Bibliothek kann über Maven Central bezogen werden:
+
+```
+<dependency>
+    <groupId>com.remondis</groupId>
+    <artifactId>remap</artifactId>
+    <version>0.0.4</version>
+</dependency>
+```
 
 Der ReMap erzeugt zunächst Mapper-Instanzen, die dann mehrfach verwendet werden können. Folgender Codeausschnitt zeigt die Verwendung der API:
 
@@ -67,6 +77,25 @@ Mapper<A, AResource> mapper = Mapping
                                      // Der folgende Aufruf validiert die Konfiguration und erzeugt im positiven Fall einen Mapper. Alle implizit möglichen Mappings werden zusätzlich zu den Konfigurationen durchgeführt. Werden die oben genannten Voraussetzungen nicht erfüllt, wird eine MappingException geworfen. 
                                      .mapper();
 ```
+
+## Assoziationen
+
+ReMap kann verwendet werden, um Objektassoziationen in "flache" Objekte zu konvertieren. Im folgenden Beispiel liegt eine Assoziaton von `A` nach `B` vor, allerdings sollen die Felder von `B` nach `AResource` übertragen werden. 
+
+```
+Mapper<A, AResource> mapper = Mapping
+                                         .from(A.class)
+                                         .to(AResource.class)
+                                         .replace(A::getB, AResource::getInteger)
+                                         .with(B::getInteger)
+                                         .replace(A::getB, AResource::getNumber)
+                                         .with(B::getNumber)
+                                         .replace(A::getB, AResource::getString)
+                                         .with(B::getString)
+                                         .mapper();
+```
+
+Der Vorteil dieser Methode ist, dass die einzelnen Zuweisungen nicht getestet werden müssen.
 
 # Tests
 

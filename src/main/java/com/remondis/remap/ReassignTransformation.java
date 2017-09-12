@@ -1,17 +1,15 @@
 package com.remondis.remap;
 
-import static com.remondis.remap.Properties.*;
+import static com.remondis.remap.Properties.asString;
+import static com.remondis.remap.ReflectionUtil.getCollector;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 /**
  * The reassing operation maps a field to another field while the field names
@@ -60,14 +58,14 @@ public class ReassignTransformation extends Transformation {
     Collection collection = Collection.class.cast(sourceValue);
     Collector collector = getCollector(collection);
     return collection.stream()
-      .map(o -> {
-        if (isCollection(o)) {
-          return convertCollection(o, sourceCollectionType, destinationCollectionType);
-        } else {
-          return convertValue(o, sourceCollectionType, destinationCollectionType);
-        }
-      })
-      .collect(collector);
+                     .map(o -> {
+                       if (isCollection(o)) {
+                         return convertCollection(o, sourceCollectionType, destinationCollectionType);
+                       } else {
+                         return convertValue(o, sourceCollectionType, destinationCollectionType);
+                       }
+                     })
+                     .collect(collector);
   }
 
   @SuppressWarnings({
@@ -80,27 +78,6 @@ public class ReassignTransformation extends Transformation {
       // Object types must be mapped by a registered mapper before setting the value.
       Mapper delegateMapper = getMapperFor(sourceType, destinationType);
       return delegateMapper.map(sourceValue);
-    }
-  }
-
-  /**
-   * This method selects a {@link Collector} according to the specified
-   * {@link Collection} instance. This method currently supports {@link Set} and
-   * {@link List}.
-   *
-   * @param collection
-   *          The actual collection instance.
-   * @return Returns the {@link Collector} that creates a new {@link Collection}
-   *         of the same type.
-   */
-  @SuppressWarnings("rawtypes")
-  Collector getCollector(Collection collection) {
-    if (collection instanceof Set) {
-      return Collectors.toSet();
-    } else if (collection instanceof List) {
-      return Collectors.toList();
-    } else {
-      throw MappingException.unsupportedCollection(collection);
     }
   }
 
