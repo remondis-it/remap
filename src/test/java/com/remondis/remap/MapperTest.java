@@ -1,10 +1,10 @@
 package com.remondis.remap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
@@ -81,6 +81,7 @@ public class MapperTest {
    * This is the happy-path test for mapping {@link A} to {@link AResource} with a nested mapping. This test does not
    * check the inherited fields.
    */
+  @SuppressWarnings("rawtypes")
   @Test
   public void shouldMapCorrectly() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
@@ -103,8 +104,10 @@ public class MapperTest {
     };
 
     List<A> aList = Arrays.asList(aarr);
+    List<AResource> arCollection = mapper.map(aList);
 
-    Collection<AResource> arCollection = mapper.map(aList);
+    // Make sure this is a new collection
+    assertFalse((List) aList != (List) arCollection);
 
     for (AResource ar : arCollection) {
       assertNull(ar.getMoreInAResource());

@@ -6,9 +6,9 @@ import static com.remondis.remap.MappingException.multipleInteractions;
 import static com.remondis.remap.MappingException.notAProperty;
 import static com.remondis.remap.MappingException.zeroInteractions;
 import static com.remondis.remap.Properties.createUnmappedMessage;
+import static com.remondis.remap.ReflectionUtil.newInstance;
 
 import java.beans.PropertyDescriptor;
-import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -479,15 +479,7 @@ public final class Mapping<S, D> {
   }
 
   private D createDestination() {
-    try {
-      Constructor<D> constructor = destination.getConstructor();
-      constructor.setAccessible(true);
-      return constructor.newInstance();
-    } catch (InstantiationException e) {
-      throw MappingException.noDefaultConstructor(destination, e);
-    } catch (Exception e) {
-      throw MappingException.newInstanceFailed(destination, e);
-    }
+    return newInstance(destination);
   }
 
   Class<S> getSource() {

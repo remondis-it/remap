@@ -1,5 +1,6 @@
 package com.remondis.remap;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -202,7 +203,25 @@ class ReflectionUtil {
     } else {
       return effectiveMethod.invoke(targetObject, args);
     }
+  }
 
+  /**
+   * Creates a new instance of the specified type.
+   * 
+   * @param type
+   *          The type to instantiate
+   * @return Returns a new instance.
+   */
+  static <D> D newInstance(Class<D> type) {
+    try {
+      Constructor<D> constructor = type.getConstructor();
+      constructor.setAccessible(true);
+      return constructor.newInstance();
+    } catch (InstantiationException e) {
+      throw MappingException.noDefaultConstructor(type, e);
+    } catch (Exception e) {
+      throw MappingException.newInstanceFailed(type, e);
+    }
   }
 
 }
