@@ -44,6 +44,16 @@ ReMap unterstützt
 
 # Verwendung
 
+Die ReMap Bibliothek kann über Maven Central bezogen werden:
+
+```
+<dependency>
+    <groupId>com.remondis</groupId>
+    <artifactId>remap</artifactId>
+    <version>0.0.4</version>
+</dependency>
+```
+
 Der ReMap erzeugt zunächst Mapper-Instanzen, die dann mehrfach verwendet werden können. Folgender Codeausschnitt zeigt die Verwendung der API:
 
 ```java
