@@ -2,6 +2,6 @@ language: java
 
 deploy:
   provider: script
-  script: ./gradlew uploadArchives closeAndReleaseRepository
+  script: ./gradlew uploadArchives
   on:
     branch: master
