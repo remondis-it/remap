@@ -2,6 +2,6 @@ language: java
 
 deploy:
   provider: script
-  script: ./gradlew uploadArchives
+  script: ./gradlew uploadArchives --debug
   on:
     branch: master
