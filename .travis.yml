@@ -1,6 +1,7 @@
 language: java
 
 deploy:
+  skip_cleanup: true
   provider: script
   script: ./gradlew uploadArchives --debug
   on:
