@@ -1,50 +1,50 @@
-# ReMap - Ein deklarativer Object-Mapper
+# ReMap - A declarative object mapper
   
-ReMap ist ein Mapping-Framework zum automatischen Konvertieren von Objekten mit ähnlichen Feldern. Diese Bibliothek wurde entwickelt, um die Konvertierung von Datenbank-Entitäten in Data Transfer Objekte zu automatisieren und somit den Aufwand für die Erstellung von Konvertierungsklassen und deren Unit-Tests zu minimieren. Dieses Ziel wird erreicht, indem die Mapping-Operationen deklarativ konfiguriert werden, die eigentliche Zuweisung und Transformation der Werte aber über die Bibliothek ausgeführt werden. So ist es nicht mehr nötig, Zuweisungen manuell zu programmieren und zu testen. 
+ReMap is a library that simplifies conversion of objects field by field. It was developed to make conversion of database entities to DTOs (data transfer objects) easier. The use of ReMap makes converter classes and unit tests for converters obsolete: ReMap only needs a specification of what fields are to be mapped, but the amount of code that actually performs the assignments and transformations is minimized. Therefore the code that must be unit-tested is also minimized. 
 
-ReMap benötigt die Information von welchem Quelltyp in welchen Zieltyp übertragen wird. Standardmäßg wird der Mapper alle Felder mit gleichem Typ und gleichem Namen automatisch übertragen. __Es müssen nur Ausnahmen konfiguriert werden!__
+ReMap maps a objects of a source to a destination type. As per default ReMap tries to map all fields from the source to the destination object if the fields have equal name and type. __Only differences must be specified when creating a mapper.__
+  
+# Mapping operations
 
-# Operationen
+The following operations can be declared on a mapper:
+* `omitInSource`: omits a field in the source type and skips the mapping.
+* `omitInDestination`: omits a field in the destination type and skips the mapping.
+* `reassing`: converts a source field to the destination field of the same type while changing the field name.
+* `replace`: converts a source field to the destination field while changing the field name and the type. To transform the source object into the destination type a transformation function is to be specified.  
+* `useMapper`: Registers a specific mapper instance that is used to convert referenced types.
 
-Folgende Operationen können für das Mapping deklariert werden:
-* `omitInSource`: überspringt ein Feld im Quellobjekt und führt kein Mapping aus.
-* `omitInDestination`: überspringt ein Feld im Zielobjekt und führt kein Mapping aus. 
-* `reassing`: überträgt ein Feld aus dem Quellobjekt auf ein Feld gleichen Typs im Zielobjekt wobei sich die Feldnamen unterscheiden.
-* `replace`: überträgt ein Feld aus dem Quellobjekt auf ein Feld im Zielobjekt wobei sich Feldnamen und Typen unterscheiden. Eine angegebene Transformationsfunktion überführt die Datentypen.  
-* `useMapper`: Registriert eine weitere Mapper-Instanz, die f�r die Konvertierung weiterer Datentypen verwendet wird. 
+# Validation
 
-# Validierung
+ReMap validates the mapping configuration und denies the following states:
+* A source field was not mapped to a destination field
+* A destination field is not covered by a source field
+* Multiple mappings where defined for a destination field 
+* `omit` is specified for a source field that already has a mapping configuration  
 
-Die Mapper validiert die Mapping-Konfiguration und lehnt in den folgenden Situationen ab:
-* Ein Feld im Quellobjekt hat kein passendes Feld im Zielobjekt
-* Ein Feld im Zielobjekt hat kein passendes Feld im Quellobjekt
-* Mehrere Operationen werden auf einem Zielfeld ausgeführt
-* `omit` wird auf Quellfeld angewendet obwohl bereits ein anderes Mapping definiert wurde.
+This validation rules make sure that all fields are covered by the mapping configuration when a mapper instance is created.
 
-Mit diesen Validierungsregeln ist beim Erstellen der Mapper-Instanz sicher gestellt, dass jedes Quell/Zielfeld vom Mapping berücksichtigt bzw. übersprungen wird.
+# Features
 
-# Funktionen
+ReMap supports
+* type inheritance
+* mapping object references to fields 
+* restrictive visibilities
+* mapping of nested collections (Attention: maps are not collections!)
+* mapping of maps using `replace` and a transformation function that maps key and values
 
-ReMap unterstützt
-* Vererbungshierarchien
-* Mapping von Objektassoziationen auf Felder 
-* Restriktive Sichtbarkeiten
-* Mapping von verschachtelten Collections (Achtung: Maps sind keine Collections!)
-* manuelle Konvertierung von Maps durch die Operation `replace` und einer Transformation
+# Limitations
+* values of source and destination fields with equal types are not copied. Only references are copied. This may change in a future release.
+* objects that are part of the mapping process must meet the Java Bean convention 
+  * fields can have any visibility
+  * fields have properly named public get/set methods
+  * fields of type Boolean/boolean have public is/set methods
+  * the declaring type has a public default constructor
+  * keywords like `transient` do not have an effect on the mapping
+* multi-classloader environments are currently not supported. All types must be loaded by the same classloader. 
 
-# Einschränkungen
-* Objekte in Quelle und Ziel die den gleichen Typ aufweisen werden nicht kopiert.
-* Die Objekte, die am Mapping beteiligt sind müssen der Java Bean Konvention entsprechen
-  * Felder können beliebige Sichtbarkeit aufweisen
-  * Felder haben öffentliche Getter/Setter-Methoden mit korrekter Benamung
-  * Boolean-Felder öffentliche haben Is/Setter-Methoden
-  * Das Objekt hat einen parameterlosen Standard-Konstruktor 
-  * Schlüsselwörter wie `transient` haben keine Auswirkungen auf das Mapping
-* Multi-Classloader-Umgebungen sind nicht unterstützt. Sämtliche Typen müssen durch den selben Klassloader geladen sein
+# How to use
 
-# Verwendung
-
-Die ReMap Bibliothek kann über Maven Central bezogen werden:
+ReMap is available through Maven Central using the following Maven dependency:
 
 ```
 <dependency>
@@ -139,5 +139,3 @@ Für andere Komponenten stehen die konfigurierten Mapper-Instanzen mit folgendem
   Mapper<Human, Person> mapper2;
 
 `````
-
- 
