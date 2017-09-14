@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Decrypting Sign Key..."
-openssl aes-256-cbc -pass "pass:$SECRET_ENV" -in ./etc/secring.enc -out ./etc/secring -d -a
+openssl aes-256-cbc -pass "pass:$SECRET_ENV" -in ./etc/secring.enc -out ./etc/secring -d -a 2>&1
 
 FILENAME=./etc/secring
 FILESIZE=$(stat -c%s "$FILENAME")
