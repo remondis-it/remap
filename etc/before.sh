@@ -12,3 +12,4 @@ signing.secretKeyRingFile=./etc/secring.gpg
 
 echo "Completed gradle.properties"
 EOF
+
