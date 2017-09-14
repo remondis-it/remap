@@ -70,6 +70,9 @@ if (project.hasProperty('release')) {
     uploadArchives {
         repositories {
             mavenDeployer {
+                // POM signature
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+                    
             	repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     authentication(userName: ossrhUser, password: ossrhPassword)
     		    }
