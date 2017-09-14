@@ -11,6 +11,11 @@ FILENAME=./etc/secring.gpg
 FILESIZE=$(stat -c%s "$FILENAME")
 echo "Size of $FILENAME = $FILESIZE bytes."
 
+echo "Checksumme ./etc/my_key.enc" 
+md5sum ./etc/my_key.enc
+echo "Checksumme ./etc/secring.gpg" 
+md5sum ./etc/secring.gpg
+
 echo "Starting task 'uploadArchives'..."
 ./gradlew uploadArchives -Prelease
 
