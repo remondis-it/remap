@@ -13,7 +13,7 @@ FILESIZE=$(stat -c%s "$FILENAME")
 echo "Size of $FILENAME = $FILESIZE bytes."
 
 
-echo "$MY_SECRET_ENV" ./etc/secret
+echo "$MY_SECRET_ENV" > ./etc/secret
 FILENAME=./etc/secret
 FILESIZE=$(stat -c%s "$FILENAME")
 echo "Size of $FILENAME = $FILESIZE bytes."
