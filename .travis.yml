@@ -1,8 +1,11 @@
 language: java
 
+env:
+   - secure: "KN2Y2Jj6Cnbs3OZdn1fDs4GpJO+Ze5JgwylJWzYbjagoc22kHSZ1wITj4qsUHevAuNs7d06ioyvFUtIwKTwkGpp9ig4KKcaHTUgp3XURY7nAMXRXDKUErXNXiEdrDKspcrWl7j6iMr7RiM/aE4QcbXsemWpvuwiGmuyAgMXuNQU="
+
 deploy:
   skip_cleanup: true
   provider: script
-  script: ./gradlew uploadArchives --debug
+  script: ./etc/deploy.sh
   on:
     branch: master
