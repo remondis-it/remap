@@ -50,66 +50,68 @@ ReMap is available through Maven Central using the following Maven dependency:
 <dependency>
     <groupId>com.remondis</groupId>
     <artifactId>remap</artifactId>
-    <version>0.0.4</version>
+    <version>0.0.5</version>
 </dependency>
 ```
 
-Der ReMap erzeugt zunächst Mapper-Instanzen, die dann mehrfach verwendet werden können. Folgender Codeausschnitt zeigt die Verwendung der API:
+ReMap creates mapper instances that can be reused. The following code shows how to use the API:
 
 ```java
 Mapper<A, AResource> mapper = Mapping
-                                     // Quelltyp ist A
+                                     // source type is A
                                      .from(A.class)
-                                     // Zieltyp ist AResource
+                                     // destination type is AResource
                                      .to(AResource.class)
-                                     // A beinhaltet ein Feld, dass in AResource keine Entsprechung hat.
+                                     // A has a field that does not have a counterpart in AResource
                                      .omitInSource(A::getMoreInA)
-                                     // AResource beinhaltet ein Feld, dass in A keine Entsprechung hat.
+                                     // AResource has a field that does not have a counterpart in A
                                      .omitInDestination(AResource::getMoreInAResource)
-                                     // Das Feld zahlInA in A...
+                                     // the field zahlInA in A...
                                      .reassign(A::getZahlInA)
-                                     // ...wird auf Feld zahlInAResource in AResource �bertragen
+                                     // ...will be mapped to field zahlInAResource in AResource
                                      .to(AResource::getZahlInAResource)
-                                     // Da das Feld b in A und AResource vorhanden ist, wird ein implizites Mapping durchgeführt. Allerdings unterscheiden sich die Feldtypen: B und BResource. Dieses implizite Mapping wird durchgeführt, sofern ein Mapper für das Mapping B->BResource registriert wurde.
+                                     // if A references an object of type B that is to be mapped to BResource in AResource,
+                                     // we have to register a mapper that specifies how to map B to BResource 
                                      .useMapper(Mapping.from(B.class)
                                                        .to(BResource.class)
                                                        .mapper())
-                                     // Der folgende Aufruf validiert die Konfiguration und erzeugt im positiven Fall einen Mapper. Alle implizit möglichen Mappings werden zusätzlich zu den Konfigurationen durchgeführt. Werden die oben genannten Voraussetzungen nicht erfüllt, wird eine MappingException geworfen. 
+                                     // the following method validates the mapping configuration and returns a Mapper instance
                                      .mapper();
 ```
 
-## Assoziationen
+## Object references
 
-ReMap kann verwendet werden, um Objektassoziationen in "flache" Objekte zu konvertieren. Im folgenden Beispiel liegt eine Assoziaton von `A` nach `B` vor, allerdings sollen die Felder von `B` nach `AResource` übertragen werden. 
+ReMap can be used to flatten object references. The following example shows how to map fields of `B` referenced by `A` to the type `AResource`. 
 
 ```
 Mapper<A, AResource> mapper = Mapping
                                          .from(A.class)
                                          .to(AResource.class)
+                                         // Get B referenced by A and map it to field integer in AResource
                                          .replace(A::getB, AResource::getInteger)
+                                         // use the value of field integer in B  
                                          .with(B::getInteger)
+                                         // same example, different fields
                                          .replace(A::getB, AResource::getNumber)
                                          .with(B::getNumber)
-                                         .replace(A::getB, AResource::getString)
-                                         .with(B::getString)
                                          .mapper();
 ```
 
-Der Vorteil dieser Methode ist, dass die einzelnen Zuweisungen nicht getestet werden müssen.
+One advantage here is that the actual mapping must not be tested with unit tests. 
 
 # Tests
 
-Durch die Verwendung der ReMap Bibliothek kann das programmieren von Konvertern eingespart werden. Damit entfallen auch die Tests der einzelnen Zuweisungen. ReMap validiert beim Aufruf der Methode `mapper()` die Mappingkonfiguration und prüft ob jedes Quell/Ziel-Feld in der Konfiguration berücksichtigt wurde. Da die einzelnen Zuweisungen nicht mehr getestet werden müssen, reicht es aus
-* die Mapping-Konfiguration in einem Unit-Test unter der Erwartugn zu prüfen, dass die Methode `mapper()` keine `MappingException`geworfen wird.  
-* die Transformationsfunktionen bei der Replace-Operation über einen Unit-Test abzutesten.
+ReMap makes converter classes and corresponding unit tests obsolete because the actual get/set calls must not be tested. To ensure that the mapping configuration covers all fields ReMap validates the configuration when `mapper()` is invoked. The only things that should be tested in unit tests are
+* that the mapping configurations are valid. You only have to write a simple unit test that asserts that `mapper()` does not throw a `MappingException`.
+* the transformation functions specified for `replace` operations
 
-Es ist nicht nötig in einem Unit-Test konkrete Objekte zu mappen und das Zielobjekt vollständig zu prüfen.
+It is not required to assert a full mapping of test objects in a unit test field by field. 
 
 # Spring-Integration
 
-ReMap kann auf folgende Weise in Spring integriert werden, sodass Mapper-Instancen mit `@Autowired` injiziert werden können. Dabei wird die Typisierung des Mappers mit berücksichtigt.
+ReMap can be nicely integrated in Spring Applications so that mapper instances can be injected using `@Autowired`. Spring also checks the generic type of the mapper to autowire the correct mapping requested. 
 
-Folgende Klasse konfiguriert eine Mapper-Instanz:
+The following bean configuration creates a mappers to convert a `Person` into `Human` and vice-versa:
 
 ```java
 @Configuration
@@ -129,7 +131,7 @@ static class TestConfiguration {
 }
 ```
 
-Für andere Komponenten stehen die konfigurierten Mapper-Instanzen mit folgendem Code-Snippet zur Verfügung:
+Use the following code snippet in components to inject the mapper instances:
 
 ```Java
   @Autowired
