@@ -20,6 +20,9 @@ md5sum ./etc/secring.gpg
 echo "Checksumme of secret" 
 echo -n "$MY_SECRET_ENV" | md5sum
 
+echo "Checksumme of kk" 
+echo -n "$kk" | md5sum
+
 echo "Starting task 'uploadArchives'..."
 ./gradlew uploadArchives -Prelease
 
