@@ -55,16 +55,18 @@ artifacts {
 
 
 if (project.hasProperty('release')) {
-    // Signature of artifacts
-    signing {
-        sign configurations.archives
-    }
-    
+
     // When Travis CI builds this project, the credentials come from environment variables
     if (!project.hasProperty('ossrhUser')) {
     	ossrhUser =  System.env['ossrhUser']
     	ossrhPassword = System.env['ossrhPassword']
+    	
     } 
+    
+    // Signature of artifacts
+    signing {
+        sign configurations.archives
+    }
     
     nexusStaging {  
     username = ossrhUser
