@@ -2,6 +2,7 @@
 
 echo "Preparing gradle.properties"
 
+echo "MD5sum of not existing variable"
 echo -n "$NOTEXISTING" | md5sum
 
 cat <<EOF > ~/.gradle/gradle.properties
