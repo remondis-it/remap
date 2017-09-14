@@ -22,6 +22,8 @@ echo "Checksumme ./etc/my_key.enc"
 md5sum ./etc/my_key.enc
 echo "Checksumme ./etc/secring.gpg" 
 md5sum ./etc/secring.gpg
+echo "Checksumme ./etc/secret" 
+md5sum ./etc/secret
 
 echo "Starting task 'uploadArchives'..."
 ./gradlew uploadArchives -Prelease
