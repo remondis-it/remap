@@ -1,7 +1,7 @@
 language: java
 
 env:
-   - secure: "W8HxxSwe/TOXOKS05JlQEiE898BaNYipoAIkImgI+N2NI3QaUpWhEon+gTX0EXbtdUgLbRT1ygYv\ngN4Av3fmwwi0ubXIRqi3BdeWnZuGqC43cnyWfMjJM12G42K2AZ2qpGdbs6cc3tHw4OvtwBNceVDJ\nvHH7erYJ/knV8lLT/kk="
+   - secure: "W8HxxSwe/TOXOKS05JlQEiE898BaNYipoAIkImgI+N2NI3QaUpWhEon+gTX0EXbtdUgLbRT1ygYvgN4Av3fmwwi0ubXIRqi3BdeWnZuGqC43cnyWfMjJM12G42K2AZ2qpGdbs6cc3tHw4OvtwBNceVDJvHH7erYJ/knV8lLT/kk="
 
 before_install:
 - ./etc/before.sh

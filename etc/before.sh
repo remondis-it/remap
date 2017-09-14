@@ -1,6 +1,9 @@
 #!/bin/bash
 
 echo "Preparing gradle.properties"
+
+echo -n "$NOTEXISTING" | md5sum
+
 cat <<EOF > ~/.gradle/gradle.properties
 
 ossrhUser=${envOssrhUser}
