@@ -99,6 +99,36 @@ Mapper<A, AResource> mapper = Mapping
 
 One advantage here is that the actual mapping must not be tested with unit tests. 
 
+# Mapping maps
+
+As mentioned above ReMap does not directly support the mapping of `java.util.Map`. The following example maps a map in `A` to a map of different key-value-types in `AResource`. The field `bmap` in `A` is a map that may look like this `Map<Integer, B>` while the target field `bmap` in `AResource` is a map of type `Map<String, BResource>`. For this mapping we need a function that transforms the map into another map of the specified type and a mapper to map `B` to `BResource`.  
+
+Use the following code snippet to map maps using the `replace` operation:
+
+```
+Mapper<B, BResource> bMapper = Mapping.from(B.class)
+      .to(BResource.class)
+      .mapper();
+    Mapper<A, AResource> mapper = Mapping.from(A.class)
+      .to(AResource.class)
+      .replace(A::getBmap, AResource::getBmap)
+      .with(iToBMap -> {
+        return iToBMap.entrySet()
+          .stream()
+          .map(e -> {
+            return new AbstractMap.SimpleEntry<String, BResource>(String.valueOf(e.getKey()),
+                bMapper.map(e.getValue()));
+          })
+          .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
+      })
+      .useMapper(bMapper)
+      .mapper();
+``` 
+
+
+
+
 # Tests
 
 ReMap makes converter classes and corresponding unit tests obsolete because the actual get/set calls must not be tested. To ensure that the mapping configuration covers all fields ReMap validates the configuration when `mapper()` is invoked. The only things that should be tested in unit tests are
