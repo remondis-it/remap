@@ -14,6 +14,7 @@ signing.keyId=${envSigningKeyId}
 signing.password=${envSigningPassword}
 signing.secretKeyRingFile=./etc/secring.gpg
 
-echo "Completed gradle.properties"
 EOF
+
+echo "Completed gradle.properties"
 
