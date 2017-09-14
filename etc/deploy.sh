@@ -9,4 +9,3 @@ echo "Size of $FILENAME = $FILESIZE bytes."
 echo "Starting task 'uploadArchives'..."
 ./gradlew uploadArchives -Prelease
 
-rm ./etc/secring
