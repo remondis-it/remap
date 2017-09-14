@@ -8,7 +8,7 @@ ossrhPassword=${envOssrhPassword}
 
 signing.keyId=${envSigningKeyId}
 signing.password=${envSigningPassword}
-signing.secretKeyRingFile=${envSigningSecretKeyRingFile}
+signing.secretKeyRingFile=./etc/secring.gpg
 
 echo "Completed gradle.properties"
 EOF
