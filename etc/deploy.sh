@@ -13,17 +13,12 @@ FILESIZE=$(stat -c%s "$FILENAME")
 echo "Size of $FILENAME = $FILESIZE bytes."
 
 
-echo "$MY_SECRET_ENV" > ./etc/secret
-FILENAME=./etc/secret
-FILESIZE=$(stat -c%s "$FILENAME")
-echo "Size of $FILENAME = $FILESIZE bytes."
-
 echo "Checksumme ./etc/my_key.enc" 
 md5sum ./etc/my_key.enc
 echo "Checksumme ./etc/secring.gpg" 
 md5sum ./etc/secring.gpg
-echo "Checksumme ./etc/secret" 
-md5sum ./etc/secret
+echo "Checksumme of secret" 
+echo -n "$MY_SECRET_ENV" | md5sum
 
 echo "Starting task 'uploadArchives'..."
 ./gradlew uploadArchives -Prelease
