@@ -164,4 +164,35 @@ abstract class Transformation {
     return destinationProperty;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((destinationProperty == null) ? 0 : destinationProperty.hashCode());
+    result = prime * result + ((sourceProperty == null) ? 0 : sourceProperty.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Transformation other = (Transformation) obj;
+    if (destinationProperty == null) {
+      if (other.destinationProperty != null)
+        return false;
+    } else if (!destinationProperty.equals(other.destinationProperty))
+      return false;
+    if (sourceProperty == null) {
+      if (other.sourceProperty != null)
+        return false;
+    } else if (!sourceProperty.equals(other.sourceProperty))
+      return false;
+    return true;
+  }
+
 }

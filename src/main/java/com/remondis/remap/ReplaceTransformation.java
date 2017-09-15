@@ -1,6 +1,6 @@
 package com.remondis.remap;
 
-import static com.remondis.remap.Lang.*;
+import static com.remondis.remap.Properties.asString;
 
 import java.beans.PropertyDescriptor;
 
@@ -17,6 +17,9 @@ import java.beans.PropertyDescriptor;
  */
 class ReplaceTransformation<RD, RS> extends Transformation {
 
+  private static final String REPLACE_MSG = "Replacing %s\n           with %s using transformation";
+  private static final String REPLACE_SKIPPED_MSG = "Replacing but skipping when null %s\n           with %s using transformation";
+
   @SuppressWarnings("rawtypes")
   private Transform transformation;
   private boolean skipWhenNull;
@@ -24,7 +27,6 @@ class ReplaceTransformation<RD, RS> extends Transformation {
   ReplaceTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty, PropertyDescriptor destProperty,
       Transform<RD, RS> transformation, boolean skipWhenNull) {
     super(mapping, sourceProperty, destProperty);
-    denyNull("transformation", transformation);
     this.transformation = transformation;
     this.skipWhenNull = skipWhenNull;
   }
@@ -46,6 +48,19 @@ class ReplaceTransformation<RD, RS> extends Transformation {
 
   @Override
   protected void validateTransformation() throws MappingException {
+  }
+
+  @Override
+  public String toString() {
+    if (skipWhenNull) {
+      return String.format(REPLACE_SKIPPED_MSG, asString(sourceProperty), asString(destinationProperty));
+    } else {
+      return String.format(REPLACE_MSG, asString(sourceProperty), asString(destinationProperty));
+    }
+  }
+
+  boolean isSkipWhenNull() {
+    return skipWhenNull;
   }
 
 }
