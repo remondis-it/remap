@@ -32,22 +32,25 @@ public class ReassignTransformation extends Transformation {
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
-    Object destinationValue = null;
+    // Only if the source value is not null we have to perform the mapping
+    if (sourceValue != null) {
+      Object destinationValue = null;
 
-    Class<?> sourceType = getSourceType();
-    Class<?> destinationType = getDestinationType();
+      Class<?> sourceType = getSourceType();
+      Class<?> destinationType = getDestinationType();
 
-    // Primitive types can be set without any conversion, because we checked type
-    // compatibility before.
-    if (isCollection(sourceType)) {
-      Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
-      Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
-      destinationValue = convertCollection(sourceValue, sourceCollectionType, destinationCollectionType);
-    } else {
-      destinationValue = convertValue(sourceValue, sourceType, destinationType);
+      // Primitive types can be set without any conversion, because we checked type
+      // compatibility before.
+      if (isCollection(sourceType)) {
+        Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
+        Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
+        destinationValue = convertCollection(sourceValue, sourceCollectionType, destinationCollectionType);
+      } else {
+        destinationValue = convertValue(sourceValue, sourceType, destinationType);
+      }
+
+      writeOrFail(destinationProperty, destination, destinationValue);
     }
-
-    writeOrFail(destinationProperty, destination, destinationValue);
   }
 
   @SuppressWarnings({
@@ -72,12 +75,20 @@ public class ReassignTransformation extends Transformation {
       "unchecked", "rawtypes"
   })
   Object convertValue(Object sourceValue, Class<?> sourceType, Class<?> destinationType) {
-    if (isValidPrimitiveMapping(sourceType, destinationType) || isEqualTypes(sourceType, destinationType)) {
+    if (isValidPrimitiveMapping(sourceType, destinationType)) {
       return sourceValue;
     } else {
-      // Object types must be mapped by a registered mapper before setting the value.
-      Mapper delegateMapper = getMapperFor(sourceType, destinationType);
-      return delegateMapper.map(sourceValue);
+      if (isEqualTypes(sourceType, destinationType)) {
+        // If the types are equal we can perform an identity mapping.
+        Mapper<Object, Object> mapper = (Mapper<Object, Object>) Mapping.from(sourceType)
+                                                                        .to(destinationType)
+                                                                        .mapper();
+        return mapper.map(sourceValue);
+      } else {
+        // Object types must be mapped by a registered mapper before setting the value.
+        Mapper delegateMapper = getMapperFor(sourceType, destinationType);
+        return delegateMapper.map(sourceValue);
+      }
     }
   }
 

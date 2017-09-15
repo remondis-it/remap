@@ -1,6 +1,7 @@
 package com.remondis.remap;
 
 import static com.remondis.remap.Lang.denyNull;
+import static com.remondis.remap.ReflectionUtil.isBuildInType;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -64,8 +65,21 @@ abstract class Transformation {
     return sourceProperty.getPropertyType();
   }
 
+  /**
+   * Checks if the specified mapping is a valid primitive/build-in type mapping. The primitive/build-in type mapping is
+   * valid if both
+   * types are equal and Java primitives or Java build-in type such as {@link Integer} or {@link String}.
+   * 
+   * @param sourceType
+   *          The source type
+   * @param destinationType
+   *          The destination type
+   * @return Returns <code>true</code> if both types equal and Java primitives, otherwise <code>false</code> is
+   *         returned.
+   */
   protected boolean isValidPrimitiveMapping(Class<?> sourceType, Class<?> destinationType) {
-    return sourceType.isPrimitive() && destinationType.isPrimitive();
+    return ((sourceType.isPrimitive() && destinationType.isPrimitive())
+        || (isBuildInType(sourceType) && isBuildInType(destinationType))) && isEqualTypes(sourceType, destinationType);
   }
 
   protected boolean isPrimitiveToObjectMapping(Class<?> sourceType, Class<?> destinationType) {
