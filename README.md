@@ -111,11 +111,14 @@ Mapper<B, BResource> bMapper = Mapping.from(B.class)
       .mapper();
     Mapper<A, AResource> mapper = Mapping.from(A.class)
       .to(AResource.class)
+      // specify a replace operation involving the source and the destination field holding the map 
       .replace(A::getBmap, AResource::getBmap)
+      // specify a transformation function (Map<Integer, B>) -> Map<String, BResource>
       .with(iToBMap -> {
         return iToBMap.entrySet()
           .stream()
           .map(e -> {
+            // Perform the type conversion while iterating over the entry set
             return new AbstractMap.SimpleEntry<String, BResource>(String.valueOf(e.getKey()),
                 bMapper.map(e.getValue()));
           })
@@ -124,18 +127,19 @@ Mapper<B, BResource> bMapper = Mapping.from(B.class)
       })
       .useMapper(bMapper)
       .mapper();
-``` 
+```
 
 
 
 
 # Tests
 
-ReMap makes converter classes and corresponding unit tests obsolete because the actual get/set calls must not be tested. To ensure that the mapping configuration covers all fields ReMap validates the configuration when `mapper()` is invoked. The only things that should be tested in unit tests are
+ReMap makes converter classes and corresponding unit tests obsolete because the actual get/set calls must not be tested. To ensure that the mapping configuration covers all fields ReMap validates the configuration when `mapper()` is invoked. The only things that must be tested in unit tests are
 * that the mapping configurations are valid. You only have to write a simple unit test that asserts that `mapper()` does not throw a `MappingException`.
 * the transformation functions specified for `replace` operations
 
-It is not required to assert a full mapping of test objects in a unit test field by field. 
+Different opinions exists whether a full mapping of test objects is to be tested in a unit test. On the one side testing the assignments is not required because this is already tested by the ReMap library. On the other side the mapping specification may be incorrect and you might want to avoid that with a JUnit test. It is up to you to decide what is neccessary in your project. 
+
 
 # Spring-Integration
 
