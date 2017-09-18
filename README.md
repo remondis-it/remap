@@ -9,7 +9,7 @@ ReMap maps a objects of a source to a destination type. As per default ReMap tri
 The following operations can be declared on a mapper:
 * `omitInSource`: omits a field in the source type and skips the mapping.
 * `omitInDestination`: omits a field in the destination type and skips the mapping.
-* `reassing`: converts a source field to the destination field of the same type while changing the field name.
+* `reassign`: converts a source field to the destination field of the same type while changing the field name.
 * `replace`: converts a source field to the destination field while changing the field name and the type. To transform the source object into the destination type a transformation function is to be specified.  
 * `useMapper`: Registers a specific mapper instance that is used to convert referenced types.
 
