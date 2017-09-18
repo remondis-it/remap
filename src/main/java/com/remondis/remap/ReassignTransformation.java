@@ -75,7 +75,7 @@ public class ReassignTransformation extends Transformation {
       "unchecked", "rawtypes"
   })
   Object convertValue(Object sourceValue, Class<?> sourceType, Class<?> destinationType) {
-    if (isValidPrimitiveMapping(sourceType, destinationType)) {
+    if (isReferenceMapping(sourceType, destinationType)) {
       return sourceValue;
     } else {
       if (isEqualTypes(sourceType, destinationType)) {
@@ -142,7 +142,7 @@ public class ReassignTransformation extends Transformation {
   }
 
   private void validateTypeMapping(Class<?> sourceType, Class<?> destinationType) {
-    if (!(isValidPrimitiveMapping(sourceType, destinationType) || isEqualTypes(sourceType, destinationType))) {
+    if (!(isReferenceMapping(sourceType, destinationType) || isEqualTypes(sourceType, destinationType))) {
       getMapperFor(sourceType, destinationType);
     }
   }
