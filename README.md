@@ -106,7 +106,7 @@ As mentioned above ReMap does not directly support the mapping of `java.util.Map
 Use the following code snippet to map maps using the `replace` operation:
 
 ```
-Mapper<B, BResource> bMapper = Mapping.from(B.class)
+    Mapper<B, BResource> bMapper = Mapping.from(B.class)
       .to(BResource.class)
       .mapper();
     Mapper<A, AResource> mapper = Mapping.from(A.class)
