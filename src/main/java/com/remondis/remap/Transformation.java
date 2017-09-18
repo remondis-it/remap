@@ -48,7 +48,7 @@ abstract class Transformation {
      * b) both are primitives but of different types.
      */
     if (isPrimitiveToObjectMapping(sourceType, destinationType)
-        || (isValidPrimitiveMapping(sourceType, destinationType) && !isEqualTypes(sourceType, destinationType))) {
+        || (isReferenceMapping(sourceType, destinationType) && !isEqualTypes(sourceType, destinationType))) {
       throw MappingException.incompatiblePropertyTypes(this, sourceProperty, destinationProperty);
     }
   }
@@ -66,9 +66,13 @@ abstract class Transformation {
   }
 
   /**
-   * Checks if the specified mapping is a valid primitive/build-in type mapping. The primitive/build-in type mapping is
-   * valid if both
-   * types are equal and Java primitives or Java build-in type such as {@link Integer} or {@link String}.
+   * Checks if the specified mapping is a valid reference mapping. A reference mapping should be chosen if
+   * types are equal and
+   * <ul>
+   * <li>Java primitives</li>
+   * <li>or Java build-in type such as {@link Integer} or {@link String}</li>
+   * <li>or if enum values are to be mapped.</li>
+   * </ul>
    * 
    * @param sourceType
    *          The source type
@@ -77,9 +81,14 @@ abstract class Transformation {
    * @return Returns <code>true</code> if both types equal and Java primitives, otherwise <code>false</code> is
    *         returned.
    */
-  protected boolean isValidPrimitiveMapping(Class<?> sourceType, Class<?> destinationType) {
+  protected boolean isReferenceMapping(Class<?> sourceType, Class<?> destinationType) {
     return ((sourceType.isPrimitive() && destinationType.isPrimitive())
-        || (isBuildInType(sourceType) && isBuildInType(destinationType))) && isEqualTypes(sourceType, destinationType);
+        || (isBuildInType(sourceType) && isBuildInType(destinationType)))
+        || ((isEnumType(sourceType) && isEnumType(destinationType))) && isEqualTypes(sourceType, destinationType);
+  }
+
+  private boolean isEnumType(Class<?> type) {
+    return type.isEnum();
   }
 
   protected boolean isPrimitiveToObjectMapping(Class<?> sourceType, Class<?> destinationType) {
