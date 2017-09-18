@@ -20,8 +20,7 @@ class ReplaceTransformation<RD, RS> extends Transformation {
   private static final String REPLACE_MSG = "Replacing %s\n           with %s using transformation";
   private static final String REPLACE_SKIPPED_MSG = "Replacing but skipping when null %s\n           with %s using transformation";
 
-  @SuppressWarnings("rawtypes")
-  private Transform transformation;
+  private Transform<RD, RS> transformation;
   private boolean skipWhenNull;
 
   ReplaceTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty, PropertyDescriptor destProperty,
@@ -42,7 +41,7 @@ class ReplaceTransformation<RD, RS> extends Transformation {
     }
 
     @SuppressWarnings("unchecked")
-    Object destinationValue = transformation.transform(sourceValue);
+    RD destinationValue = transformation.transform((RS) sourceValue);
     writeOrFail(destinationProperty, destination, destinationValue);
   }
 
@@ -57,6 +56,10 @@ class ReplaceTransformation<RD, RS> extends Transformation {
     } else {
       return String.format(REPLACE_MSG, asString(sourceProperty), asString(destinationProperty));
     }
+  }
+
+  Transform<RD, RS> getTransformation() {
+    return transformation;
   }
 
   boolean isSkipWhenNull() {

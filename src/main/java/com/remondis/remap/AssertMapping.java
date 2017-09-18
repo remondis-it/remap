@@ -13,6 +13,7 @@ import java.beans.PropertyDescriptor;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Creates a test for a {@link Mapper} object to assert the mapping specification. The expected mapping is to be
@@ -29,6 +30,10 @@ import java.util.Set;
  * @author schuettec
  */
 public class AssertMapping<S, D> {
+
+  static final String UNEXPECTED_TRANSFORMATION = "The following unexpected transformation were specified on the mapping:\n";
+
+  static final String EXPECTED_TRANSFORMATION = "The following expected transformation were not specified on the mapping:\n";
 
   static final String TRANSFORMATION_ALREADY_ADDED = "The specified transformation was already added as an assertion";
 
@@ -100,8 +105,45 @@ public class AssertMapping<S, D> {
   public void ensure() throws AssertionError {
     checkReplaceTransformations();
     checkTransformations();
+    checkReplaceFunctions();
   }
 
+  /**
+   * This method checks the replace functions against the following scenarios:
+   * <ol>
+   * <li>The functions do not throw an exception when invoked using sample values
+   * <li>
+   * <li>The function is null-safe if null strategy is not skip-when-null</li>
+   * </ol>
+   */
+  @SuppressWarnings("rawtypes")
+  private void checkReplaceFunctions() {
+    Set<Transformation> mappings = mapper.getMapping()
+                                         .getMappings();
+    mappings.stream()
+            .filter(t -> {
+              return (t instanceof ReplaceTransformation);
+            })
+            .map(t -> {
+              return (ReplaceTransformation) t;
+            })
+            .forEach(r -> {
+              Transform<?, ?> transformation = r.getTransformation();
+              if (!r.isSkipWhenNull()) {
+                try {
+                  transformation.transform(null);
+                } catch (Throwable t) {
+                  throw new AssertionError("The specified transformation function is not null-safe for operation:\n"
+                      + t.toString(), t);
+                }
+              }
+            });
+  }
+
+  /**
+   * This method checks that the expected replace transformations and the actual replace transformations have equal null
+   * strategies.
+   */
   @SuppressWarnings("rawtypes")
   private void checkReplaceTransformations() {
     Set<Transformation> mappings = mapper.getMapping()
@@ -115,24 +157,22 @@ public class AssertMapping<S, D> {
               return (ReplaceTransformation) t;
             })
             .forEach(replace -> {
-
-              @SuppressWarnings("rawtypes")
-              Optional<ReplaceTransformation> sameTransformation = assertedTransformations.stream()
-                                                                                          .filter(t -> {
-                                                                                            return (t instanceof ReplaceTransformation);
-                                                                                          })
-                                                                                          .map(t -> {
-                                                                                            return (ReplaceTransformation) t;
-                                                                                          })
-                                                                                          .filter(r -> {
-                                                                                            return r.getSourceProperty()
-                                                                                                    .equals(replace.getSourceProperty());
-                                                                                          })
-                                                                                          .filter(r -> {
-                                                                                            return r.getDestinationProperty()
-                                                                                                    .equals(replace.getDestinationProperty());
-                                                                                          })
-                                                                                          .findFirst();
+              Optional<ReplaceTransformation> sameTransformation = assertedTransformations().stream()
+                                                                                            .filter(t -> {
+                                                                                              return (t instanceof ReplaceTransformation);
+                                                                                            })
+                                                                                            .map(t -> {
+                                                                                              return (ReplaceTransformation) t;
+                                                                                            })
+                                                                                            .filter(r -> {
+                                                                                              return r.getSourceProperty()
+                                                                                                      .equals(replace.getSourceProperty());
+                                                                                            })
+                                                                                            .filter(r -> {
+                                                                                              return r.getDestinationProperty()
+                                                                                                      .equals(replace.getDestinationProperty());
+                                                                                            })
+                                                                                            .findFirst();
               if (sameTransformation.isPresent()) {
                 ReplaceTransformation assertedReplaceTransformation = sameTransformation.get();
                 // Check if the configured replace transformation has the same skip-null configuration than the asserted
@@ -142,23 +182,46 @@ public class AssertMapping<S, D> {
                       + replace.toString() + "\n" + assertedTransformations.toString());
                 }
               }
-
             });
-
   }
 
   private void checkTransformations() {
     Set<Transformation> mappings = getMapping().getMappings();
+    Set<Transformation> assertedTransformations = assertedTransformations();
+
     // we have to check that the mapping list contains all asserted transformations
     mappings.removeAll(assertedTransformations);
+    assertedTransformations.removeAll(getMapping().getMappings());
+
+    if (!assertedTransformations.isEmpty()) {
+      throw new AssertionError(EXPECTED_TRANSFORMATION + listCollection(assertedTransformations));
+    }
+
     if (!mappings.isEmpty()) {
       // if there are more elements left, the remaining transformations must be MapTransformations
-      for (Transformation t : mappings) {
-        if (!(t instanceof MapTransformation)) {
-          throw new AssertionError("An unexpected transformation was specified on the mapping:\n" + t.toString());
-        }
+      Set<Transformation> unexpectedTransformations = mappings.stream()
+                                                              .filter(t -> {
+                                                                return !(t instanceof MapTransformation);
+                                                              })
+                                                              .collect(Collectors.toSet());
+      if (!unexpectedTransformations.isEmpty()) {
+        throw new AssertionError(UNEXPECTED_TRANSFORMATION + listCollection(unexpectedTransformations));
       }
     }
+  }
+
+  private String listCollection(Set<Transformation> transformations) {
+    StringBuilder b = new StringBuilder();
+    transformations.stream()
+                   .forEach(t -> {
+                     b.append("- " + t.toString())
+                      .append("\n");
+                   });
+    return b.toString();
+  }
+
+  private Set<Transformation> assertedTransformations() {
+    return new HashSet<>(assertedTransformations);
   }
 
   void addAssertion(Transformation transformation) {
