@@ -1,6 +1,6 @@
 package com.remondis.remap;
 
-import static com.remondis.remap.Lang.*;
+import static com.remondis.remap.Properties.asString;
 
 import java.beans.PropertyDescriptor;
 
@@ -17,14 +17,15 @@ import java.beans.PropertyDescriptor;
  */
 class ReplaceTransformation<RD, RS> extends Transformation {
 
-  @SuppressWarnings("rawtypes")
-  private Transform transformation;
+  private static final String REPLACE_MSG = "Replacing %s\n           with %s using transformation";
+  private static final String REPLACE_SKIPPED_MSG = "Replacing but skipping when null %s\n           with %s using transformation";
+
+  private Transform<RD, RS> transformation;
   private boolean skipWhenNull;
 
   ReplaceTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty, PropertyDescriptor destProperty,
       Transform<RD, RS> transformation, boolean skipWhenNull) {
     super(mapping, sourceProperty, destProperty);
-    denyNull("transformation", transformation);
     this.transformation = transformation;
     this.skipWhenNull = skipWhenNull;
   }
@@ -40,12 +41,29 @@ class ReplaceTransformation<RD, RS> extends Transformation {
     }
 
     @SuppressWarnings("unchecked")
-    Object destinationValue = transformation.transform(sourceValue);
+    RD destinationValue = transformation.transform((RS) sourceValue);
     writeOrFail(destinationProperty, destination, destinationValue);
   }
 
   @Override
   protected void validateTransformation() throws MappingException {
+  }
+
+  @Override
+  public String toString() {
+    if (skipWhenNull) {
+      return String.format(REPLACE_SKIPPED_MSG, asString(sourceProperty), asString(destinationProperty));
+    } else {
+      return String.format(REPLACE_MSG, asString(sourceProperty), asString(destinationProperty));
+    }
+  }
+
+  Transform<RD, RS> getTransformation() {
+    return transformation;
+  }
+
+  boolean isSkipWhenNull() {
+    return skipWhenNull;
   }
 
 }

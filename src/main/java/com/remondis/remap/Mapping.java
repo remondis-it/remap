@@ -11,7 +11,6 @@ import static com.remondis.remap.ReflectionUtil.newInstance;
 import java.beans.PropertyDescriptor;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,9 +49,8 @@ import java.util.stream.Collectors;
  */
 public final class Mapping<S, D> {
 
-  private static final String TRANSFORM = "transform";
-  private static final String OMIT_FIELD_DEST = "omit in destination";
-  private static final String OMIT_FIELD_SOURCE = "omit in source";
+  static final String OMIT_FIELD_DEST = "omit in destination";
+  static final String OMIT_FIELD_SOURCE = "omit in source";
 
   private Class<S> source;
   private Class<D> destination;
@@ -65,7 +63,7 @@ public final class Mapping<S, D> {
   /**
    * Holds the list of mapping operations
    */
-  private List<Transformation> mappings;
+  private Set<Transformation> mappings;
 
   /**
    * This set keeps track of the mapped source properties.
@@ -80,7 +78,7 @@ public final class Mapping<S, D> {
   Mapping(Class<S> source, Class<D> destination) {
     this.source = source;
     this.destination = destination;
-    this.mappings = new LinkedList<>();
+    this.mappings = new HashSet<>();
     this.mappedSourceProperties = new HashSet<>();
     this.mappedDestinationProperties = new HashSet<>();
     this.mappers = new Hashtable<>();
@@ -150,12 +148,9 @@ public final class Mapping<S, D> {
    * @return Returns this object for method chaining.
    */
   public <RS> ReassignBuilder<S, D, RS> reassign(TypedSelector<RS, S> sourceSelector) {
-    TypedPropertyDescriptor<RS> typedSourceProperty = getTypedPropertyFromFieldSelector(TRANSFORM, this.source,
-                                                                                        sourceSelector);
-    ReassignBuilder<S, D, RS> reassignBuilder = new ReassignBuilder<>();
-    reassignBuilder.tSourceProperty = typedSourceProperty;
-    reassignBuilder.mapping = this;
-    reassignBuilder.destination = this.destination;
+    TypedPropertyDescriptor<RS> typedSourceProperty = getTypedPropertyFromFieldSelector(ReassignBuilder.ASSIGN,
+                                                                                        this.source, sourceSelector);
+    ReassignBuilder<S, D, RS> reassignBuilder = new ReassignBuilder<>(typedSourceProperty, destination, this);
     return reassignBuilder;
   }
 
@@ -175,15 +170,12 @@ public final class Mapping<S, D> {
    */
   public <RD, RS> ReplaceBuilder<S, D, RD, RS> replace(TypedSelector<RS, S> sourceSelector,
       TypedSelector<RD, D> destinationSelector) {
-    TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(TRANSFORM, this.source,
-                                                                                   sourceSelector);
-    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(TRANSFORM, this.destination,
-                                                                                 destinationSelector);
+    TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
+                                                                                   this.source, sourceSelector);
+    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
+                                                                                 this.destination, destinationSelector);
 
-    ReplaceBuilder<S, D, RD, RS> builder = new ReplaceBuilder<>();
-    builder.sourceProperty = sourceProperty;
-    builder.destProperty = destProperty;
-    builder.mapping = this;
+    ReplaceBuilder<S, D, RD, RS> builder = new ReplaceBuilder<>(sourceProperty, destProperty, this);
     return builder;
   }
 
@@ -319,8 +311,8 @@ public final class Mapping<S, D> {
    * @throws MappingException
    *           if a property was specified for mapping but not invoked.
    */
-  <R, T> TypedPropertyDescriptor<R> getTypedPropertyFromFieldSelector(String configurationMethod, Class<T> sensorType,
-      TypedSelector<R, T> selector) {
+  static <R, T> TypedPropertyDescriptor<R> getTypedPropertyFromFieldSelector(String configurationMethod,
+      Class<T> sensorType, TypedSelector<R, T> selector) {
     InvocationSensor<T> invocationSensor = new InvocationSensor<T>(sensorType);
     T sensor = invocationSensor.getSensor();
     // perform the selector lambda on the sensor
@@ -358,7 +350,7 @@ public final class Mapping<S, D> {
    * @throws MappingException
    *           if a property was specified for mapping but not invoked.
    */
-  private <T> PropertyDescriptor getPropertyFromFieldSelector(String configurationMethod, Class<T> sensorType,
+  static <T> PropertyDescriptor getPropertyFromFieldSelector(String configurationMethod, Class<T> sensorType,
       FieldSelector<T> selector) {
     InvocationSensor<T> invocationSensor = new InvocationSensor<T>(sensorType);
     T sensor = invocationSensor.getSensor();
@@ -387,7 +379,7 @@ public final class Mapping<S, D> {
    * @param propertyName
    *          The property name
    */
-  private PropertyDescriptor getPropertyDescriptorOrFail(Class<?> type, String propertyName) {
+  static PropertyDescriptor getPropertyDescriptorOrFail(Class<?> type, String propertyName) {
     Optional<PropertyDescriptor> property;
     property = Properties.getProperties(type)
                          .stream()
@@ -402,13 +394,13 @@ public final class Mapping<S, D> {
 
   }
 
-  private void denyMultipleInteractions(String configurationMethod, List<String> trackedPropertyNames) {
+  static void denyMultipleInteractions(String configurationMethod, List<String> trackedPropertyNames) {
     if (trackedPropertyNames.size() > 1) {
       throw multipleInteractions(configurationMethod, trackedPropertyNames);
     }
   }
 
-  private void denyAlreadyMappedProperty(Set<PropertyDescriptor> mappedProperties,
+  static void denyAlreadyMappedProperty(Set<PropertyDescriptor> mappedProperties,
       PropertyDescriptor propertyDescriptor) {
     if (mappedProperties.contains(propertyDescriptor)) {
       throw alreadyMappedProperty(propertyDescriptor);
@@ -488,6 +480,10 @@ public final class Mapping<S, D> {
 
   Class<D> getDestination() {
     return destination;
+  }
+
+  Set<Transformation> getMappings() {
+    return new HashSet<>(mappings);
   }
 
   @Override

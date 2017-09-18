@@ -17,14 +17,14 @@ import com.remondis.remap.inheritance.ChildResource;
 
 public class MapperTest {
 
-  private static final String MORE_IN_A = "moreInA";
-  private static final Long ZAHL_IN_A = -88L;
-  private static final Integer B_INTEGER = -999;
-  private static final int B_NUMBER = 222;
-  private static final String B_STRING = "b string";
-  private static final Integer INTEGER = 310;
-  private static final int NUMBER = 210;
-  private static final String STRING = "a string";
+  public static final String MORE_IN_A = "moreInA";
+  public static final Long ZAHL_IN_A = -88L;
+  public static final Integer B_INTEGER = -999;
+  public static final int B_NUMBER = 222;
+  public static final String B_STRING = "b string";
+  public static final Integer INTEGER = 310;
+  public static final int NUMBER = 210;
+  public static final String STRING = "a string";
 
   @Test(expected = MappingException.class)
   public void shouldDenyMapNull() {

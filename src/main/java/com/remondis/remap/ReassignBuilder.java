@@ -1,16 +1,25 @@
 package com.remondis.remap;
 
+import static com.remondis.remap.Mapping.getTypedPropertyFromFieldSelector;
+
 import java.beans.PropertyDescriptor;
 
 public class ReassignBuilder<S, D, RS> {
 
-  private static final String ASSIGN = "assign";
+  static final String ASSIGN = "assign";
 
-  TypedPropertyDescriptor<RS> tSourceProperty;
+  private TypedPropertyDescriptor<RS> tSourceProperty;
 
-  Mapping<S, D> mapping;
+  private Mapping<S, D> mapping;
 
-  Class<D> destination;
+  private Class<D> destination;
+
+  ReassignBuilder(TypedPropertyDescriptor<RS> tSourceProperty, Class<D> destination, Mapping<S, D> mapping) {
+    super();
+    this.tSourceProperty = tSourceProperty;
+    this.mapping = mapping;
+    this.destination = destination;
+  }
 
   /**
    * Reassings a source field to the specified destination field.
@@ -21,8 +30,8 @@ public class ReassignBuilder<S, D, RS> {
    * @return Returns the {@link Mapping} for further mapping configuration.
    */
   public Mapping<S, D> to(TypedSelector<RS, D> destinationSelector) {
-    TypedPropertyDescriptor<RS> typedDestProperty = mapping.getTypedPropertyFromFieldSelector(ASSIGN, this.destination,
-        destinationSelector);
+    TypedPropertyDescriptor<RS> typedDestProperty = getTypedPropertyFromFieldSelector(ASSIGN, destination,
+                                                                                      destinationSelector);
     PropertyDescriptor sourceProperty = tSourceProperty.property;
     PropertyDescriptor destinationProperty = typedDestProperty.property;
     ReassignTransformation transformation = new ReassignTransformation(mapping, sourceProperty, destinationProperty);

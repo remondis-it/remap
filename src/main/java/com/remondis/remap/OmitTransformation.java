@@ -1,7 +1,7 @@
 package com.remondis.remap;
 
-import static com.remondis.remap.Lang.*;
-import static com.remondis.remap.Properties.*;
+import static com.remondis.remap.Lang.denyNull;
+import static com.remondis.remap.Properties.asString;
 
 import java.beans.PropertyDescriptor;
 
@@ -29,7 +29,7 @@ class OmitTransformation extends Transformation {
    *          the property to omit in the destination
    * @return Returns a new {@link OmitTransformation}.
    */
-   static OmitTransformation omitDestination(Mapping<?, ?> mapping, PropertyDescriptor destinationProperty) {
+  static OmitTransformation omitDestination(Mapping<?, ?> mapping, PropertyDescriptor destinationProperty) {
     denyNull("mapping", mapping);
     denyNull("destinationProperty", destinationProperty);
     return new OmitTransformation(mapping, null, destinationProperty);
@@ -44,7 +44,7 @@ class OmitTransformation extends Transformation {
    *          the property to omit in the source
    * @return Returns a new {@link OmitTransformation}.
    */
-   static OmitTransformation omitSource(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty) {
+  static OmitTransformation omitSource(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty) {
     denyNull("mapping", mapping);
     denyNull("destinationProperty", sourceProperty);
     return new OmitTransformation(mapping, sourceProperty, null);
