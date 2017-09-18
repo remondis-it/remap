@@ -26,6 +26,7 @@ This validation rules make sure that all fields are covered by the mapping confi
 # Features
 
 ReMap supports
+* mapping of primitives, build-in types, custom Java Beans and enumeration values 
 * type inheritance
 * mapping object references to fields 
 * restrictive visibilities
