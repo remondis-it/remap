@@ -39,7 +39,7 @@ public class MapsTest {
    * {@link Mapping#replace(com.remondis.remap.TypedSelector, com.remondis.remap.TypedSelector)}.
    */
   @Test
-  public void shouldDenyMaps() {
+  public void shouldWorkaroundMappingOfMaps() {
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
       .to(BResource.class)
       .mapper();
