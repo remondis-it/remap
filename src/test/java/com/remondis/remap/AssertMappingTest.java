@@ -319,13 +319,13 @@ public class AssertMappingTest {
                                          .useMapper(bMapper)
                                          .mapper();
 
-    AssertMapping<A, AResource> asserts = AssertMapping.of(mapper)
-                                                       .expectReassign(A::getString)
-                                                       .to(AResource::getAnotherString)
-                                                       .expectReplace(A::getInteger, AResource::getIntegerAsString)
-                                                       .andTest(String::valueOf)
-                                                       .expectOmitInSource(A::getOmitted)
-                                                       .expectOmitInDestination(AResource::getOmitted);
-    asserts.ensure();
+    AssertMapping.of(mapper)
+                 .expectReassign(A::getString)
+                 .to(AResource::getAnotherString)
+                 .expectReplace(A::getInteger, AResource::getIntegerAsString)
+                 .andTest(String::valueOf)
+                 .expectOmitInSource(A::getOmitted)
+                 .expectOmitInDestination(AResource::getOmitted)
+                 .ensure();
   }
 }
