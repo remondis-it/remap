@@ -85,16 +85,16 @@ ReMap can be used to flatten object references. The following example shows how 
 
 ```
 Mapper<A, AResource> mapper = Mapping
-                                         .from(A.class)
-                                         .to(AResource.class)
-                                         // Get B referenced by A and map it to field integer in AResource
-                                         .replace(A::getB, AResource::getInteger)
-                                         // use the value of field integer in B  
-                                         .with(B::getInteger)
-                                         // same example, different fields
-                                         .replace(A::getB, AResource::getNumber)
-                                         .with(B::getNumber)
-                                         .mapper();
+                                     .from(A.class)
+                                     .to(AResource.class)
+                                     // Get B referenced by A and map it to field integer in AResource
+                                     .replace(A::getB, AResource::getInteger)
+                                     // use the value of field integer in B  
+                                     .with(B::getInteger)
+                                     // same example, different fields
+                                     .replace(A::getB, AResource::getNumber)
+                                     .with(B::getNumber)
+                                     .mapper();
 ```
 
 One advantage here is that the actual mapping must not be tested with unit tests. 
@@ -106,27 +106,26 @@ As mentioned above ReMap does not directly support the mapping of `java.util.Map
 Use the following code snippet to map maps using the `replace` operation:
 
 ```
-    Mapper<B, BResource> bMapper = Mapping.from(B.class)
-      .to(BResource.class)
-      .mapper();
-    Mapper<A, AResource> mapper = Mapping.from(A.class)
-      .to(AResource.class)
-      // specify a replace operation involving the source and the destination field holding the map 
-      .replace(A::getBmap, AResource::getBmap)
-      // specify a transformation function (Map<Integer, B>) -> Map<String, BResource>
-      .with(iToBMap -> {
-        return iToBMap.entrySet()
-          .stream()
-          .map(e -> {
-            // Perform the type conversion while iterating over the entry set
-            return new AbstractMap.SimpleEntry<String, BResource>(String.valueOf(e.getKey()),
-                bMapper.map(e.getValue()));
-          })
-          .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-
-      })
-      .useMapper(bMapper)
-      .mapper();
+Mapper<B, BResource> bMapper = Mapping.from(B.class)
+                                      .to(BResource.class)
+                                      .mapper();
+ Mapper<A, AResource> mapper = Mapping.from(A.class)
+                                      .to(AResource.class)
+                                      // specify a replace operation involving the source and the destination field holding the map 
+                                      .replace(A::getBmap, AResource::getBmap)
+                                      // specify a transformation function (Map<Integer, B>) -> Map<String, BResource>
+                                      .with(iToBMap -> {
+                                        return iToBMap.entrySet()
+                                          .stream()
+                                          .map(e -> {
+                                            // Perform the type conversion while iterating over the entry set
+                                            return new AbstractMap.SimpleEntry<String, BResource>(String.valueOf(e.getKey()),
+                                                bMapper.map(e.getValue()));
+                                          })
+                                          .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+                                      })
+                                      .useMapper(bMapper)
+                                      .mapper();
 ```
 
 
@@ -146,32 +145,32 @@ ReMap provides an easy way to assert the mapping specification for a mapper inst
 Given the following mapping...
 
 ``` 
-    Mapper<B, BResource> bMapper = Mapping.from(B.class)
-                                          .to(BResource.class)
-                                          .mapper();
-    Mapper<A, AResource> mapper = Mapping.from(A.class)
-                                         .to(AResource.class)
-                                         .reassign(A::getString)
-                                         .to(AResource::getAnotherString)
-                                         .replace(A::getInteger, AResource::getIntegerAsString)
-                                         .with(String::valueOf)
-                                         .omitInSource(A::getOmitted)
-                                         .omitInDestination(AResource::getOmitted)
-                                         .useMapper(bMapper)
-                                         .mapper();
+Mapper<B, BResource> bMapper = Mapping.from(B.class)
+                                      .to(BResource.class)
+                                      .mapper();
+Mapper<A, AResource> mapper = Mapping.from(A.class)
+                                     .to(AResource.class)
+                                     .reassign(A::getString)
+                                     .to(AResource::getAnotherString)
+                                     .replace(A::getInteger, AResource::getIntegerAsString)
+                                     .with(String::valueOf)
+                                     .omitInSource(A::getOmitted)
+                                     .omitInDestination(AResource::getOmitted)
+                                     .useMapper(bMapper)
+                                     .mapper();
 ```
 
 ...the following assertion can be made to ensure regression validity for the mapping specification:   
 
 ```
-    AssertMapping.of(mapper)
-                 .expectReassign(A::getString)
-                 .to(AResource::getAnotherString)
-                 .expectReplace(A::getInteger, AResource::getIntegerAsString)
-                 .andTest(String::valueOf)
-                 .expectOmitInSource(A::getOmitted)
-                 .expectOmitInDestination(AResource::getOmitted)
-                 .ensure();
+AssertMapping.of(mapper)
+             .expectReassign(A::getString)
+             .to(AResource::getAnotherString)
+             .expectReplace(A::getInteger, AResource::getIntegerAsString)
+             .andTest(String::valueOf)
+             .expectOmitInSource(A::getOmitted)
+             .expectOmitInDestination(AResource::getOmitted)
+             .ensure();
 ```
 
 The asserts check that the expected mappings are also configured on the specified mapper. If there occur differences, the `ensure()` method will throw an assertion error. 
