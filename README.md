@@ -33,7 +33,7 @@ ReMap supports
 * mapping of maps using `replace` and a transformation function that maps key and values
 
 # Limitations
-* values of source and destination fields with equal types are not copied. Only references are copied. This may change in a future release.
+
 * objects that are part of the mapping process must meet the Java Bean convention 
   * fields can have any visibility
   * fields have properly named public get/set methods
@@ -137,9 +137,46 @@ Mapper<B, BResource> bMapper = Mapping.from(B.class)
 ReMap makes converter classes and corresponding unit tests obsolete because the actual get/set calls must not be tested. To ensure that the mapping configuration covers all fields ReMap validates the configuration when `mapper()` is invoked. The only things that must be tested in unit tests are
 * that the mapping configurations are valid. You only have to write a simple unit test that asserts that `mapper()` does not throw a `MappingException`.
 * the transformation functions specified for `replace` operations
+* that the mapping specification is correct. See "Asserting the mapping"
 
-Different opinions exists whether a full mapping of test objects is to be tested in a unit test. On the one side testing the assignments is not required because this is already tested by the ReMap library. On the other side the mapping specification may be incorrect and you might want to avoid that with a JUnit test. It is up to you to decide what is neccessary in your project. 
+### Asserting the mapping
 
+ReMap provides an easy way to assert the mapping specification for a mapper instance. This assertions should be used in unit-tests to provide regression tests for your mapping configuration. The following example shows how to assert a mapping specification:
+
+Given the following mapping...
+
+``` 
+    Mapper<B, BResource> bMapper = Mapping.from(B.class)
+                                          .to(BResource.class)
+                                          .mapper();
+    Mapper<A, AResource> mapper = Mapping.from(A.class)
+                                         .to(AResource.class)
+                                         .reassign(A::getString)
+                                         .to(AResource::getAnotherString)
+                                         .replace(A::getInteger, AResource::getIntegerAsString)
+                                         .with(String::valueOf)
+                                         .omitInSource(A::getOmitted)
+                                         .omitInDestination(AResource::getOmitted)
+                                         .useMapper(bMapper)
+                                         .mapper();
+```
+
+...the following assertion can be made to ensure regression validity for the mapping specification:   
+
+```
+    AssertMapping.of(mapper)
+                 .expectReassign(A::getString)
+                 .to(AResource::getAnotherString)
+                 .expectReplace(A::getInteger, AResource::getIntegerAsString)
+                 .andTest(String::valueOf)
+                 .expectOmitInSource(A::getOmitted)
+                 .expectOmitInDestination(AResource::getOmitted)
+                 .ensure();
+```
+
+The asserts check that the expected mappings are also configured on the specified mapper. If there occur differences, the `ensure()` method will throw an assertion error. 
+
+Note: The `replace` operation supports two null-strategies and the mapper needs to specify the same strategy as the asserts! The transformation function in this example is checked against a `null` when `ensure()` is invoked. If the `replace` operation was added using `withSkipWhenNull()` the specified transformation function is not checked against `null`.  
 
 # Spring-Integration
 
