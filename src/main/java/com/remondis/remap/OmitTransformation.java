@@ -15,7 +15,7 @@ class OmitTransformation extends Transformation {
   private static final String OMITTING_MSG = "Omitting %s";
 
   private OmitTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
-      PropertyDescriptor destinationProperty) {
+                             PropertyDescriptor destinationProperty) {
     super(mapping, sourceProperty, destinationProperty);
   }
 
@@ -47,7 +47,8 @@ class OmitTransformation extends Transformation {
 
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+                                       PropertyDescriptor destinationProperty, Object destination)
+    throws MappingException {
   }
 
   @Override

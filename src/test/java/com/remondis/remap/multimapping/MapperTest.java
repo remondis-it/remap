@@ -25,14 +25,14 @@ public class MapperTest {
     A a = new A(EXPECTED_A_STRING, b);
 
     Mapper<A, AResource> mapper = Mapping.from(A.class)
-        .to(AResource.class)
-        .replace(A::getB, AResource::getInteger)
-        .with(B::getInteger)
-        .replace(A::getB, AResource::getNumber)
-        .with(B::getNumber)
-        .replace(A::getB, AResource::getString)
-        .with(B::getString)
-        .mapper();
+            .to(AResource.class)
+            .replace(A::getB, AResource::getInteger)
+            .with(B::getInteger)
+            .replace(A::getB, AResource::getNumber)
+            .with(B::getNumber)
+            .replace(A::getB, AResource::getString)
+            .with(B::getString)
+            .mapper();
 
     AResource ar = mapper.map(a);
 
@@ -40,15 +40,15 @@ public class MapperTest {
     assertEquals(EXPECTED_A_STRING, ar.getAString());
 
     assertEquals(EXPECTED_INT, (int) a.getB()
-        .getInteger());
+            .getInteger());
     assertEquals(EXPECTED_INT, (int) ar.getInteger());
 
     assertEquals(EXPECTED_NUMBER, a.getB()
-        .getNumber());
+            .getNumber());
     assertEquals(EXPECTED_NUMBER, ar.getNumber());
 
     assertEquals(EXPECTED_STRING, a.getB()
-        .getString());
+            .getString());
     assertEquals(EXPECTED_STRING, ar.getString());
   }
 

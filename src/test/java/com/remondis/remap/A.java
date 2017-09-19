@@ -122,7 +122,7 @@ public class A {
   @Override
   public String toString() {
     return "A [moreInA=" + moreInA + ", string=" + string + ", number=" + number + ", integer=" + integer + ", zahlInA="
-        + zahlInA + ", b=" + b + "]";
+            + zahlInA + ", b=" + b + "]";
   }
 
 }

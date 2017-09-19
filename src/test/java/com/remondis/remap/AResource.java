@@ -119,7 +119,7 @@ public class AResource {
   @Override
   public String toString() {
     return "AResource [moreInAResource=" + moreInAResource + ", string=" + string + ", number=" + number + ", integer="
-        + integer + ", zahlInAResource=" + zahlInAResource + ", b=" + b + "]";
+            + integer + ", zahlInAResource=" + zahlInAResource + ", b=" + b + "]";
   }
 
 }

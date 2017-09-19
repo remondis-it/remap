@@ -118,7 +118,7 @@ class ReflectionUtil {
    */
   static boolean hasReturnType(Method method) {
     return !method.getReturnType()
-        .equals(Void.TYPE);
+            .equals(Void.TYPE);
   }
 
   static boolean isGetterOrSetter(Method method) {
@@ -127,7 +127,7 @@ class ReflectionUtil {
 
   static boolean isSetter(Method method) {
     boolean validName = method.getName()
-        .startsWith(SET);
+            .startsWith(SET);
     boolean hasArguments = hasArguments(method, 1);
     boolean hasReturnType = hasReturnType(method);
     return validName && !hasReturnType && hasArguments;
@@ -136,9 +136,9 @@ class ReflectionUtil {
   static boolean isGetter(Method method) {
     boolean isBool = isBoolGetter(method);
     boolean validName = (isBool ? method.getName()
-        .startsWith(IS)
-        : method.getName()
-            .startsWith(GET));
+            .startsWith(IS)
+            : method.getName()
+                    .startsWith(GET));
     boolean hasArguments = hasArguments(method);
     boolean hasReturnType = hasReturnType(method);
     return validName && hasReturnType && !hasArguments;
@@ -200,13 +200,13 @@ class ReflectionUtil {
    * @throws NoSuchMethodException Thrown if the proxy instance does not provide the desired method.
    */
   static Object invokeMethodProxySafe(Method method, Object targetObject, Object... args)
-      throws IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException {
+          throws IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException {
     Method effectiveMethod = method;
     Class<?> clazz = targetObject.getClass();
     if (Proxy.isProxyClass(clazz)) {
       // schuettec - 08.02.2017 : Find the method on the specified proxy.
       effectiveMethod = targetObject.getClass()
-          .getMethod(method.getName(), method.getParameterTypes());
+              .getMethod(method.getName(), method.getParameterTypes());
     }
     if (args == null) {
       return effectiveMethod.invoke(targetObject);

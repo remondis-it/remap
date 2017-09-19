@@ -21,7 +21,7 @@ public class ReassignAssertBuilder<S, D, RS> {
   private Class<D> destination;
 
   ReassignAssertBuilder(TypedPropertyDescriptor<RS> typedSourceProperty, Class<D> destination,
-      AssertMapping<S, D> asserts) {
+          AssertMapping<S, D> asserts) {
     super();
     this.typedSourceProperty = typedSourceProperty;
     this.asserts = asserts;
@@ -36,11 +36,11 @@ public class ReassignAssertBuilder<S, D, RS> {
    */
   public AssertMapping<S, D> to(TypedSelector<RS, D> destinationSelector) {
     TypedPropertyDescriptor<RS> typedDestProperty = getTypedPropertyFromFieldSelector(ReassignBuilder.ASSIGN,
-        this.destination, destinationSelector);
+            this.destination, destinationSelector);
     PropertyDescriptor sourceProperty = typedSourceProperty.property;
     PropertyDescriptor destinationProperty = typedDestProperty.property;
     ReassignTransformation transformation = new ReassignTransformation(asserts.getMapping(), sourceProperty,
-        destinationProperty);
+            destinationProperty);
     asserts.addAssertion(transformation);
     return asserts;
   }
