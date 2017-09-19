@@ -15,7 +15,7 @@ public class MapTransformation extends ReassignTransformation {
 
   private void denyReassign(PropertyDescriptor sourceProperty, PropertyDescriptor destinationProperty) {
     if (!sourceProperty.getName()
-      .equals(destinationProperty.getName())) {
+        .equals(destinationProperty.getName())) {
       throw new MappingException("Attempt to perform a reassign with MapTransformation - implementation fault!");
     }
   }

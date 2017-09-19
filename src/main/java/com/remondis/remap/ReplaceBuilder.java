@@ -29,8 +29,7 @@ public class ReplaceBuilder<S, D, RD, RS> {
   public Mapping<S, D> with(Transform<RD, RS> transformation) {
     denyNull("tranformation", transformation);
     ReplaceTransformation<RD, RS> replace = new ReplaceTransformation<RD, RS>(mapping, sourceProperty.property,
-                                                                              destProperty.property, transformation,
-                                                                              false);
+        destProperty.property, transformation, false);
     mapping.addMapping(sourceProperty.property, destProperty.property, replace);
     return mapping;
   }
@@ -45,8 +44,7 @@ public class ReplaceBuilder<S, D, RD, RS> {
   public Mapping<S, D> withSkipWhenNull(Transform<RD, RS> transformation) {
     denyNull("tranformation", transformation);
     ReplaceTransformation<RD, RS> replace = new ReplaceTransformation<RD, RS>(mapping, sourceProperty.property,
-                                                                              destProperty.property, transformation,
-                                                                              true);
+        destProperty.property, transformation, true);
     mapping.addMapping(sourceProperty.property, destProperty.property, replace);
     return mapping;
   }

@@ -25,12 +25,12 @@ public class MapsTest {
   @Test(expected = MappingException.class)
   public void shouldDenyImplicitMappingOfMaps() {
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
-      .to(BResource.class)
-      .mapper();
+        .to(BResource.class)
+        .mapper();
     Mapping.from(A.class)
-      .to(AResource.class)
-      .useMapper(bMapper)
-      .mapper();
+        .to(AResource.class)
+        .useMapper(bMapper)
+        .mapper();
   }
 
   /**
@@ -41,23 +41,23 @@ public class MapsTest {
   @Test
   public void shouldWorkaroundMappingOfMaps() {
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
-      .to(BResource.class)
-      .mapper();
+        .to(BResource.class)
+        .mapper();
     Mapper<A, AResource> mapper = Mapping.from(A.class)
-      .to(AResource.class)
-      .replace(A::getBmap, AResource::getBmap)
-      .with(iToBMap -> {
-        return iToBMap.entrySet()
-          .stream()
-          .map(e -> {
-            return new AbstractMap.SimpleEntry<String, BResource>(String.valueOf(e.getKey()),
-                                                                  bMapper.map(e.getValue()));
-          })
-          .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        .to(AResource.class)
+        .replace(A::getBmap, AResource::getBmap)
+        .with(iToBMap -> {
+          return iToBMap.entrySet()
+              .stream()
+              .map(e -> {
+                return new AbstractMap.SimpleEntry<String, BResource>(String.valueOf(e.getKey()),
+                    bMapper.map(e.getValue()));
+              })
+              .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
-      })
-      .useMapper(bMapper)
-      .mapper();
+        })
+        .useMapper(bMapper)
+        .mapper();
 
     String b1String = "b1String";
     int b1Number = 101;
@@ -71,7 +71,7 @@ public class MapsTest {
 
     A a = new A();
     a.addB(1, b1)
-      .addB(2, b2);
+        .addB(2, b2);
     AResource map = mapper.map(a);
 
     Map<String, BResource> bmap = map.getBmap();

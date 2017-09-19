@@ -29,8 +29,7 @@ public class ReassignTransformation extends Transformation {
 
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-                                       PropertyDescriptor destinationProperty, Object destination)
-      throws MappingException {
+      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
     // Only if the source value is not null we have to perform the mapping
     if (sourceValue != null) {
@@ -57,18 +56,18 @@ public class ReassignTransformation extends Transformation {
       "unchecked", "rawtypes"
   })
   private Object convertCollection(Object sourceValue, Class<?> sourceCollectionType,
-                                   Class<?> destinationCollectionType) {
+      Class<?> destinationCollectionType) {
     Collection collection = Collection.class.cast(sourceValue);
     Collector collector = getCollector(collection);
     return collection.stream()
-      .map(o -> {
-        if (isCollection(o)) {
-          return convertCollection(o, sourceCollectionType, destinationCollectionType);
-        } else {
-          return convertValue(o, sourceCollectionType, destinationCollectionType);
-        }
-      })
-      .collect(collector);
+        .map(o -> {
+          if (isCollection(o)) {
+            return convertCollection(o, sourceCollectionType, destinationCollectionType);
+          } else {
+            return convertValue(o, sourceCollectionType, destinationCollectionType);
+          }
+        })
+        .collect(collector);
   }
 
   @SuppressWarnings({
@@ -81,8 +80,8 @@ public class ReassignTransformation extends Transformation {
       if (isEqualTypes(sourceType, destinationType)) {
         // If the types are equal we can perform an identity mapping.
         Mapper<Object, Object> mapper = (Mapper<Object, Object>) Mapping.from(sourceType)
-          .to(destinationType)
-          .mapper();
+            .to(destinationType)
+            .mapper();
         return mapper.map(sourceValue);
       } else {
         // Object types must be mapped by a registered mapper before setting the value.

@@ -69,8 +69,8 @@ public class Mapper<S, D> {
   @SuppressWarnings("unchecked")
   private Collection<D> _mapCollection(Collection<S> source) {
     return (Collection<D>) source.stream()
-      .map(this::map)
-      .collect(getCollector(source));
+        .map(this::map)
+        .collect(getCollector(source));
   }
 
   @Override

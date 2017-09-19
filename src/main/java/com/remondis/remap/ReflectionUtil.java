@@ -118,7 +118,7 @@ class ReflectionUtil {
    */
   static boolean hasReturnType(Method method) {
     return !method.getReturnType()
-      .equals(Void.TYPE);
+        .equals(Void.TYPE);
   }
 
   static boolean isGetterOrSetter(Method method) {
@@ -127,7 +127,7 @@ class ReflectionUtil {
 
   static boolean isSetter(Method method) {
     boolean validName = method.getName()
-      .startsWith(SET);
+        .startsWith(SET);
     boolean hasArguments = hasArguments(method, 1);
     boolean hasReturnType = hasReturnType(method);
     return validName && !hasReturnType && hasArguments;
@@ -136,9 +136,9 @@ class ReflectionUtil {
   static boolean isGetter(Method method) {
     boolean isBool = isBoolGetter(method);
     boolean validName = (isBool ? method.getName()
-      .startsWith(IS)
+        .startsWith(IS)
         : method.getName()
-          .startsWith(GET));
+            .startsWith(GET));
     boolean hasArguments = hasArguments(method);
     boolean hasReturnType = hasReturnType(method);
     return validName && hasReturnType && !hasArguments;
@@ -206,7 +206,7 @@ class ReflectionUtil {
     if (Proxy.isProxyClass(clazz)) {
       // schuettec - 08.02.2017 : Find the method on the specified proxy.
       effectiveMethod = targetObject.getClass()
-        .getMethod(method.getName(), method.getParameterTypes());
+          .getMethod(method.getName(), method.getParameterTypes());
     }
     if (args == null) {
       return effectiveMethod.invoke(targetObject);

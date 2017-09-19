@@ -30,8 +30,7 @@ class ReplaceTransformation<RD, RS> extends Transformation {
 
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-                                       PropertyDescriptor destinationProperty, Object destination)
-      throws MappingException {
+      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
 
     if (sourceValue == null && skipWhenNull) {

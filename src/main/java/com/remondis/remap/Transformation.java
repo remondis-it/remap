@@ -137,8 +137,7 @@ abstract class Transformation {
    * @throws MappingException Thrown on any mapping exception.
    */
   protected abstract void performTransformation(PropertyDescriptor sourceProperty, Object source,
-                                                PropertyDescriptor destinationProperty, Object destination)
-      throws MappingException;
+      PropertyDescriptor destinationProperty, Object destination) throws MappingException;
 
   /**
    * Lets this transformation validate its configuration. If the state of this transformation is invalid,

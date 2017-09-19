@@ -23,20 +23,20 @@ public class MapperTest {
   public void shouldSkipReplaceNullValues() {
     AtomicBoolean called = new AtomicBoolean(false);
     Mapper<A, AResource> mapper = Mapping.from(A.class)
-      .to(AResource.class)
-      .replace(A::getMoreInA, AResource::getMoreInAResource)
-      .withSkipWhenNull(str -> {
-        called.set(true);
-        return str;
-      })
-      .reassign(A::getNamedB)
-      .to(AResource::getOtherNamedB)
-      .reassign(A::getZahlInA)
-      .to(AResource::getZahlInAResource)
-      .useMapper(Mapping.from(B.class)
-        .to(BResource.class)
-        .mapper())
-      .mapper();
+        .to(AResource.class)
+        .replace(A::getMoreInA, AResource::getMoreInAResource)
+        .withSkipWhenNull(str -> {
+          called.set(true);
+          return str;
+        })
+        .reassign(A::getNamedB)
+        .to(AResource::getOtherNamedB)
+        .reassign(A::getZahlInA)
+        .to(AResource::getZahlInAResource)
+        .useMapper(Mapping.from(B.class)
+            .to(BResource.class)
+            .mapper())
+        .mapper();
 
     B b = new B(B_STRING, B_NUMBER, B_INTEGER);
     A a = new A(null, STRING, NUMBER, INTEGER, ZAHL_IN_A, b);
@@ -74,20 +74,20 @@ public class MapperTest {
   public void shouldNotSkipReplaceNullValues() {
     AtomicBoolean called = new AtomicBoolean(false);
     Mapper<A, AResource> mapper = Mapping.from(A.class)
-      .to(AResource.class)
-      .replace(A::getMoreInA, AResource::getMoreInAResource)
-      .with(str -> {
-        called.set(true);
-        return str;
-      })
-      .reassign(A::getNamedB)
-      .to(AResource::getOtherNamedB)
-      .reassign(A::getZahlInA)
-      .to(AResource::getZahlInAResource)
-      .useMapper(Mapping.from(B.class)
-        .to(BResource.class)
-        .mapper())
-      .mapper();
+        .to(AResource.class)
+        .replace(A::getMoreInA, AResource::getMoreInAResource)
+        .with(str -> {
+          called.set(true);
+          return str;
+        })
+        .reassign(A::getNamedB)
+        .to(AResource::getOtherNamedB)
+        .reassign(A::getZahlInA)
+        .to(AResource::getZahlInAResource)
+        .useMapper(Mapping.from(B.class)
+            .to(BResource.class)
+            .mapper())
+        .mapper();
 
     B b = new B(B_STRING, B_NUMBER, B_INTEGER);
     A a = new A(null, STRING, NUMBER, INTEGER, ZAHL_IN_A, b);
@@ -124,17 +124,17 @@ public class MapperTest {
   @Test
   public void shouldReassingNullValue() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
-      .to(AResource.class)
-      .reassign(A::getMoreInA)
-      .to(AResource::getMoreInAResource)
-      .reassign(A::getNamedB)
-      .to(AResource::getOtherNamedB)
-      .reassign(A::getZahlInA)
-      .to(AResource::getZahlInAResource)
-      .useMapper(Mapping.from(B.class)
-        .to(BResource.class)
-        .mapper())
-      .mapper();
+        .to(AResource.class)
+        .reassign(A::getMoreInA)
+        .to(AResource::getMoreInAResource)
+        .reassign(A::getNamedB)
+        .to(AResource::getOtherNamedB)
+        .reassign(A::getZahlInA)
+        .to(AResource::getZahlInAResource)
+        .useMapper(Mapping.from(B.class)
+            .to(BResource.class)
+            .mapper())
+        .mapper();
 
     B b = new B(B_STRING, B_NUMBER, B_INTEGER);
     A a = new A(null, STRING, NUMBER, INTEGER, ZAHL_IN_A, b);

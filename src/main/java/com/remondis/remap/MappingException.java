@@ -38,39 +38,39 @@ public class MappingException extends RuntimeException {
 
   static MappingException zeroInteractions(String configurationMethod) {
     return new MappingException(String
-      .format("The field selector for method '%s' tracked zero interactions with properties.", configurationMethod));
+        .format("The field selector for method '%s' tracked zero interactions with properties.", configurationMethod));
   }
 
   static MappingException multipleInteractions(String configurationMethod, List<String> trackedPropertyNames) {
     return new MappingException(String.format(
-      "The field selector for method '%s' tracked multiple interactions with the following properties: %s."
-          + " Only one interaction perfield selector is allowed!",
-      configurationMethod, String.join(",", trackedPropertyNames)));
+        "The field selector for method '%s' tracked multiple interactions with the following properties: %s."
+            + " Only one interaction perfield selector is allowed!",
+        configurationMethod, String.join(",", trackedPropertyNames)));
   }
 
   static MappingException notAProperty(Class<?> type, String property) {
     return new MappingException(String.format(
-      "The get-method for property '%s' in type %s is not a valid Java Bean property.", property, type.getName()));
+        "The get-method for property '%s' in type %s is not a valid Java Bean property.", property, type.getName()));
   }
 
   static MappingException notAGetter(Method method) {
-    return new MappingException(String.format(
-      "The method '%s' in type %s is not a valid Java Bean property get-method.", method.getName(),
-      method.getDeclaringClass()
-        .getName()));
+    return new MappingException(
+        String.format("The method '%s' in type %s is not a valid Java Bean property get-method.", method.getName(),
+            method.getDeclaringClass()
+                .getName()));
   }
 
   static MappingException noReturnTypeOnGetter(Method method) {
-    return new MappingException(String.format(
-      "The method '%s' in type '%s' is not a valid getter because it has no return type.", method.getName(),
-      method.getDeclaringClass()
-        .getName()));
+    return new MappingException(
+        String.format("The method '%s' in type '%s' is not a valid getter because it has no return type.",
+            method.getName(), method.getDeclaringClass()
+                .getName()));
   }
 
   static MappingException alreadyMappedProperty(PropertyDescriptor propertyDescriptor) {
-    return new MappingException(String.format(
-      "The property '%s' in '%s' is already mapped an cannot be selected more than once.", propertyDescriptor.getName(),
-      getPropertyClass(propertyDescriptor)));
+    return new MappingException(
+        String.format("The property '%s' in '%s' is already mapped an cannot be selected more than once.",
+            propertyDescriptor.getName(), getPropertyClass(propertyDescriptor)));
   }
 
   static MappingException unmappedProperties(Set<PropertyDescriptor> unmapped) {
@@ -79,19 +79,19 @@ public class MappingException extends RuntimeException {
 
   static MappingException noMapperFound(Class<?> sourceType, Class<?> destinationType) {
     return new MappingException(String.format("No mapper found for type mapping from %s to %s.", sourceType.getName(),
-      destinationType.getName()));
+        destinationType.getName()));
   }
 
   static MappingException duplicateMapper(Class<?> source, Class<?> destination) {
     return new MappingException(String.format("A mapper mapping the type %s to type %s was already registered.",
-      source.getName(), destination.getName()));
+        source.getName(), destination.getName()));
   }
 
   static MappingException incompatiblePropertyTypes(Transformation t, PropertyDescriptor sourceProperty,
-                                                    PropertyDescriptor destinationProperty) {
+      PropertyDescriptor destinationProperty) {
     return new MappingException(String
-      .format("The transformation %s cannot be applied on the incompatible property types\n%s\nand %s", t.getClass()
-        .getSimpleName(), asStringWithType(sourceProperty), asStringWithType(destinationProperty)));
+        .format("The transformation %s cannot be applied on the incompatible property types\n%s\nand %s", t.getClass()
+            .getSimpleName(), asStringWithType(sourceProperty), asStringWithType(destinationProperty)));
   }
 
   static MappingException invocationFailed(PropertyDescriptor property, Exception e) {
@@ -106,18 +106,18 @@ public class MappingException extends RuntimeException {
       // If the cause is null, set InvocationTargetException as cause.
       cause = e;
     }
-    return new MappingException(String.format("An access method for property %s threw an exception.",
-      asString(property)), e);
+    return new MappingException(
+        String.format("An access method for property %s threw an exception.", asString(property)), e);
   }
 
   static MappingException noDefaultConstructor(Class<?> type) {
     return new MappingException(String.format(
-      "The type %s does not have a public no-args constructor and cannot be used for mapping.", type.getName()));
+        "The type %s does not have a public no-args constructor and cannot be used for mapping.", type.getName()));
   }
 
   static MappingException noDefaultConstructor(Class<?> type, Exception e) {
     return new MappingException(String.format(
-      "The type %s does not have a public no-args constructor and cannot be used for mapping.", type.getName()), e);
+        "The type %s does not have a public no-args constructor and cannot be used for mapping.", type.getName()), e);
   }
 
   static MappingException newInstanceFailed(Class<?> type, Exception e) {
@@ -126,17 +126,16 @@ public class MappingException extends RuntimeException {
 
   static MappingException unsupportedCollection(Collection<?> collection) {
     return new MappingException(String.format(
-      "The collection '%s' is currently not supported. Only java.util.Set and java.util.List"
-          + " are supported collections.",
-      collection.getClass()
-        .getName()));
+        "The collection '%s' is currently not supported. Only java.util.Set and java.util.List"
+            + " are supported collections.",
+        collection.getClass()
+            .getName()));
   }
 
   static MappingException denyReassignOnMaps(PropertyDescriptor source, PropertyDescriptor dest) {
     return new MappingException(String
-      .format("The implicit mapping of maps is not supported. Use a replace operation for properties holding maps."
-          + " Invalid reassing was:\n%s\n->%s",
-        asStringWithType(source), asStringWithType(dest)));
+        .format("The implicit mapping of maps is not supported. Use a replace operation for properties holding maps."
+            + " Invalid reassing was:\n%s\n->%s", asStringWithType(source), asStringWithType(dest)));
   }
 
   static MappingException denyMappingOfNull() {
