@@ -23,10 +23,8 @@ public class ReassignBuilder<S, D, RS> {
 
   /**
    * Reassings a source field to the specified destination field.
-   * 
-   * @param destinationSelector
-   *        {@link TypedSelector} to select the destination field.
    *
+   * @param destinationSelector {@link TypedSelector} to select the destination field.
    * @return Returns the {@link Mapping} for further mapping configuration.
    */
   public Mapping<S, D> to(TypedSelector<RS, D> destinationSelector) {

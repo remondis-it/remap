@@ -5,12 +5,9 @@ import lombok.EqualsAndHashCode;
 /**
  * This class defines a projection from a type to another type.
  *
- * @param <S>
- *        The source type
- * @param <D>
- *        The destination type
+ * @param <S> The source type
+ * @param <D> The destination type
  * @author schuettec
- *
  */
 @EqualsAndHashCode
 class Projection<S, D> {

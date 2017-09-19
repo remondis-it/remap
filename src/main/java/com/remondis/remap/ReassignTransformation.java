@@ -12,11 +12,10 @@ import java.util.Map;
 import java.util.stream.Collector;
 
 /**
- * The reassing operation maps a field to another field while the field names
- * may differ. A reassign operation is only allowed on fields of the same type.
+ * The reassing operation maps a field to another field while the field names may differ. A reassign operation is only
+ * allowed on fields of the same type.
  *
  * @author schuettec
- *
  */
 public class ReassignTransformation extends Transformation {
 
@@ -30,8 +29,8 @@ public class ReassignTransformation extends Transformation {
 
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-                                       PropertyDescriptor destinationProperty, Object destination)
-      throws MappingException {
+                                       PropertyDescriptor destinationProperty,
+                                       Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
     // Only if the source value is not null we have to perform the mapping
     if (sourceValue != null) {
@@ -94,12 +93,10 @@ public class ReassignTransformation extends Transformation {
   }
 
   /**
-   * Finds the generic return type of a method in nested generics. For example
-   * this method returns {@link String} when called on a method like
-   * <code>List&lt;List&lt;Set&lt;String&gt;&gt;&gt; get();</code>.
+   * Finds the generic return type of a method in nested generics. For example this method returns {@link String} when
+   * called on a method like <code>List&lt;List&lt;Set&lt;String&gt;&gt;&gt; get();</code>.
    *
-   * @param method
-   *        The method to analyze.
+   * @param method The method to analyze.
    * @return Returns the inner generic type.
    */
   static Class<?> findGenericTypeFromMethod(Method method) {

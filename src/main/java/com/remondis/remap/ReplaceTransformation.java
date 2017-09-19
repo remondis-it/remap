@@ -5,14 +5,11 @@ import static com.remondis.remap.Properties.asString;
 import java.beans.PropertyDescriptor;
 
 /**
- * A replace transformation converts a source object into a destination object by applying the specified
- * {@link Transform} function on the source.
+ * A replace transformation converts a source object into a destination object by applying the specified {@link
+ * Transform} function on the source.
  *
- * @param <RS>
- *        The input type
- * @param <RD>
- *        The output type
- *
+ * @param <RS> The input type
+ * @param <RD> The output type
  * @author schuettec
  */
 class ReplaceTransformation<RD, RS> extends Transformation {
@@ -33,8 +30,8 @@ class ReplaceTransformation<RD, RS> extends Transformation {
 
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-                                       PropertyDescriptor destinationProperty, Object destination)
-      throws MappingException {
+                                       PropertyDescriptor destinationProperty,
+                                       Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
 
     if (sourceValue == null && skipWhenNull) {

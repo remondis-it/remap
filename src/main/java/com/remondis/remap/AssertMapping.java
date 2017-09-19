@@ -21,12 +21,9 @@ import java.util.stream.Collectors;
  * mapping configuration of the specified mapper and performs checks using the specified transformation functions.
  * Transformation functions specified for the `replace` operation are checked against <code>null</code> and sample
  * values. It is expected that those test invocations do not throw an exception.
- * 
- * @param <S>
- *        The type of the source objects
- * @param <D>
- *        The type of the destination objects.
  *
+ * @param <S> The type of the source objects
+ * @param <D> The type of the destination objects.
  * @author schuettec
  */
 public class AssertMapping<S, D> {
@@ -50,9 +47,8 @@ public class AssertMapping<S, D> {
 
   /**
    * Creates a new specification of assertions that are to be checked for the specified mapper instance.
-   * 
-   * @param mapper
-   *        The {@link Mapper} instance.
+   *
+   * @param mapper The {@link Mapper} instance.
    * @return Returns a new {@link AssertMapping} for method changing.
    */
   public static <S, D> AssertMapping<S, D> of(Mapper<S, D> mapper) {
@@ -61,9 +57,8 @@ public class AssertMapping<S, D> {
 
   /**
    * Specifies an assertion for a reassing operation.
-   * 
-   * @param sourceSelector
-   *        The source field selector.
+   *
+   * @param sourceSelector The source field selector.
    * @return Returns a {@link ReassignAssertBuilder} for further configuration.
    */
   public <RS> ReassignAssertBuilder<S, D, RS> expectReassign(TypedSelector<RS, S> sourceSelector) {
@@ -77,11 +72,9 @@ public class AssertMapping<S, D> {
 
   /**
    * Specifies an assertion for a replace operation.
-   * 
-   * @param sourceSelector
-   *        The source field selector.
-   * @param destinationSelector
-   *        The destination field selector.
+   *
+   * @param sourceSelector The source field selector.
+   * @param destinationSelector The destination field selector.
    * @return Returns a {@link ReplaceAssertBuilder} for further configuration.
    */
   public <RD, RS> ReplaceAssertBuilder<S, D, RD, RS> expectReplace(TypedSelector<RS, S> sourceSelector,
@@ -104,9 +97,8 @@ public class AssertMapping<S, D> {
 
   /**
    * Specifies an assertion for a source field to be omitted.
-   * 
-   * @param sourceSelector
-   *        The source field selector.
+   *
+   * @param sourceSelector The source field selector.
    * @return Returns a {@link AssertMapping} for further configuration.
    */
   public AssertMapping<S, D> expectOmitInSource(FieldSelector<S> sourceSelector) {
@@ -120,9 +112,8 @@ public class AssertMapping<S, D> {
 
   /**
    * Specifies an assertion for a destination field to be omitted.
-   * 
-   * @param destinationSelector
-   *        The destination field selector.
+   *
+   * @param destinationSelector The destination field selector.
    * @return Returns a {@link AssertMapping} for further configuration.
    */
   public AssertMapping<S, D> expectOmitInDestination(FieldSelector<D> destinationSelector) {
@@ -137,9 +128,8 @@ public class AssertMapping<S, D> {
    * Performs the specified assertions against the specified mapper instance. If a replace operation was specified with
    * a transformation function to be also called for <code>null</code> values a null check is performed against the
    * function.
-   * 
-   * @throws AssertionError
-   *         Thrown if an assertion made about the {@link Mapper} object failed.
+   *
+   * @throws AssertionError Thrown if an assertion made about the {@link Mapper} object failed.
    */
   public void ensure() throws AssertionError {
     checkReplaceTransformations();
@@ -150,9 +140,11 @@ public class AssertMapping<S, D> {
   /**
    * This method checks the replace functions. The following scenarios are tested:
    * <ol>
-   * <li>The functions do not throw an exception when invoked using sample values
+   * <li>The functions do not throw
+   * an exception when invoked using sample values
    * <li>
-   * <li>The function is null-safe if null strategy is not skip-when-null</li>
+   * <li>The function is null-safe if null strategy is not
+   * skip-when-null</li>
    * </ol>
    */
   @SuppressWarnings("rawtypes")

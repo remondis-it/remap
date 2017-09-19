@@ -21,7 +21,6 @@ import net.sf.cglib.proxy.InvocationHandler;
  * available to the {@link Mapper}.
  *
  * @author schuettec
- *
  */
 class InvocationSensor<T> {
 
@@ -72,7 +71,6 @@ class InvocationSensor<T> {
   /**
    * @return Returns <code>true</code> if there were at least one interaction with a property. Otherwise
    *         <code>false</code> is returned.
-   *
    */
   boolean hasTrackedProperties() {
     return !propertyNames.isEmpty();
