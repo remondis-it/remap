@@ -19,24 +19,16 @@ import java.util.stream.Collectors;
 
 /**
  * The {@link Mapping} object is used to specify the mapping of the fields from a source object/type to a destination
- * object/type. Only properties can be mapped. Properties are defined with the Java Bean Convention:
- * <ul>
- * <li>A property
- * is a field with any visibility</li>
- * <li>A property has a public getter/setter pair exactly named as the field</li>
- * <li>Boolean values have is/setter methods.</li>
- * <li>A bean has a default zero-args constructor.</li>
- * </ul>
- * For the
+ * object/type. Only properties can be mapped. Properties are defined with the Java Bean Convention: <ul> <li>A property
+ * is a field with any visibility</li> <li>A property has a public getter/setter pair exactly named as the field</li>
+ * <li>Boolean values have is/setter methods.</li> <li>A bean has a default zero-args constructor.</li> </ul> For the
  * mapping, keywords like <code>transient</code> do not have any effect.
  *
- * <p>
- * The mapper always tries to map all properties with name from the source to the destination object. To retrieve a
+ * <p> The mapper always tries to map all properties with name from the source to the destination object. To retrieve a
  * valid mapper, all properties must be either mapped/reassinged or omitted. If there are unmapped properties in
  * source/destination type, the {@link Mapping#mapper()} throws an error. If the mapping contains nested mappings of
  * other complex types, a delegation mapper must be registered using {@link #useMapper(Mapper)}, otherweise a {@link
- * MappingException} is thrown.
- * </p>
+ * MappingException} is thrown. </p>
  *
  * @param <S> source type of the mapping
  * @param <D> destination type of the mapping
@@ -93,7 +85,7 @@ public final class Mapping<S, D> {
    * Marks a destination field as omitted. The mapping will not touch this field in the destination object.
    *
    * @param destinationSelector The {@link FieldSelector} lambda that selects the field with invoking the
-   *        corresponding getter method.
+   *   corresponding getter method.
    * @return Returns this object for method chaining.
    */
   public Mapping<S, D> omitInDestination(FieldSelector<D> destinationSelector) {
@@ -118,7 +110,7 @@ public final class Mapping<S, D> {
    * Marks a source field as omitted. The mapping will not touch this field in the source object.
    *
    * @param sourceSelector The {@link FieldSelector} lambda that selects the field with invoking the corresponding
-   *        getter method.
+   *   getter method.
    * @return Returns this object for method chaining.
    */
   public Mapping<S, D> omitInSource(FieldSelector<S> sourceSelector) {
@@ -150,7 +142,7 @@ public final class Mapping<S, D> {
    *
    * @param sourceSelector The {@link FieldSelector}s selecting the source property with get-method invocation.
    * @param destinationSelector The {@link FieldSelector}s selecting the destination property with get-method
-   *        invocation.
+   *   invocation.
    * @return Returns this object for method chaining.
    */
   public <RD, RS> ReplaceBuilder<S, D, RD, RS> replace(TypedSelector<RS, S> sourceSelector,
@@ -285,7 +277,7 @@ public final class Mapping<S, D> {
    * PropertyDescriptor} of the property selected.
    *
    * @param configurationMethod The configuration method this {@link PropertyDescriptor} is used for. Only needed for
-   *        exception messages.
+   *   exception messages.
    * @param sensorType The type of sensor object.
    * @param selector The selector lambda.
    * @return Returns the {@link PropertyDescriptor} selected by the lambda.
@@ -321,7 +313,7 @@ public final class Mapping<S, D> {
    * PropertyDescriptor} of the property selected.
    *
    * @param configurationMethod The configuration method this {@link PropertyDescriptor} is used for. Only needed for
-   *        exception messages.
+   *   exception messages.
    * @param sensorType The type of sensor object.
    * @param selector The selector lambda.
    * @return Returns the {@link PropertyDescriptor} selected with the lambda.

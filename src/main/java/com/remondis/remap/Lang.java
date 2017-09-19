@@ -14,7 +14,7 @@ class Lang {
    * @param argument The actual argument.
    * @return Returns the argument
    * @throws IllegalArgumentException Thrown with a detailed message if argument is <code>null</code>. Returns
-   *         immediately otherwise.
+   *   immediately otherwise.
    */
   static <T> T denyNull(String fieldName, T argument) throws IllegalArgumentException {
     if (argument == null) {
