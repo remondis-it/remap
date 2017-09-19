@@ -100,13 +100,13 @@ public final class Mapping<S, D> {
    * object.
    *
    * @param destinationSelector
-   *          The {@link FieldSelector} lambda that selects the field with invoking
-   *          the corresponding getter method.
+   *          The {@link FieldSelector} lambda that selects the field with invoking the corresponding
+   *          getter method.
    * @return Returns this object for method chaining.
    */
   public Mapping<S, D> omitInDestination(FieldSelector<D> destinationSelector) {
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(OMIT_FIELD_DEST, destination,
-                                                                         destinationSelector);
+      destinationSelector);
     OmitTransformation omitDestination = OmitTransformation.omitDestination(this, propertyDescriptor);
     omitMapping(mappedDestinationProperties, propertyDescriptor, omitDestination);
     return this;
@@ -126,14 +126,14 @@ public final class Mapping<S, D> {
    * Marks a source field as omitted. The mapping will not touch this field in the source object.
    *
    * @param sourceSelector
-   *          The {@link FieldSelector} lambda that selects the field with invoking the
-   *          corresponding getter method.
+   *          The {@link FieldSelector} lambda that selects the field with invoking the corresponding
+   *          getter method.
    * @return Returns this object for method chaining.
    */
   public Mapping<S, D> omitInSource(FieldSelector<S> sourceSelector) {
     // Omit in destination
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(OMIT_FIELD_SOURCE, this.source,
-                                                                         sourceSelector);
+      sourceSelector);
     OmitTransformation omitSource = OmitTransformation.omitSource(this, propertyDescriptor);
     omitMapping(mappedSourceProperties, propertyDescriptor, omitSource);
     return this;
@@ -143,13 +143,12 @@ public final class Mapping<S, D> {
    * Reassigns a property from the source to the specified property of the destination object.
    *
    * @param sourceSelector
-   *          The {@link FieldSelector}s selecting the source property with get-method
-   *          invocation.
+   *          The {@link FieldSelector}s selecting the source property with get-method invocation.
    * @return Returns this object for method chaining.
    */
   public <RS> ReassignBuilder<S, D, RS> reassign(TypedSelector<RS, S> sourceSelector) {
     TypedPropertyDescriptor<RS> typedSourceProperty = getTypedPropertyFromFieldSelector(ReassignBuilder.ASSIGN,
-                                                                                        this.source, sourceSelector);
+      this.source, sourceSelector);
     ReassignBuilder<S, D, RS> reassignBuilder = new ReassignBuilder<>(typedSourceProperty, destination, this);
     return reassignBuilder;
   }
@@ -161,19 +160,17 @@ public final class Mapping<S, D> {
    * to test the transformation function!</b>
    *
    * @param sourceSelector
-   *          The {@link FieldSelector}s selecting the source property with get-method
-   *          invocation.
+   *          The {@link FieldSelector}s selecting the source property with get-method invocation.
    * @param destinationSelector
-   *          The {@link FieldSelector}s selecting the destination property with
-   *          get-method invocation.
+   *          The {@link FieldSelector}s selecting the destination property with get-method invocation.
    * @return Returns this object for method chaining.
    */
   public <RD, RS> ReplaceBuilder<S, D, RD, RS> replace(TypedSelector<RS, S> sourceSelector,
       TypedSelector<RD, D> destinationSelector) {
     TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
-                                                                                   this.source, sourceSelector);
+      this.source, sourceSelector);
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
-                                                                                 this.destination, destinationSelector);
+      this.destination, destinationSelector);
 
     ReplaceBuilder<S, D, RD, RS> builder = new ReplaceBuilder<>(sourceProperty, destProperty, this);
     return builder;
@@ -221,7 +218,7 @@ public final class Mapping<S, D> {
     // Get all unmapped properties from destination because this will be the only properties that can be mapped from
     // source.
     Set<PropertyDescriptor> unmappedDestinationProperties = getUnmappedProperties(destination,
-                                                                                  mappedDestinationProperties);
+      mappedDestinationProperties);
     // Get the set of property names
     Set<String> unmappedDestinationPropertyNames = unmappedDestinationProperties.stream()
       .map(PropertyDescriptor::getName)
@@ -234,7 +231,7 @@ public final class Mapping<S, D> {
         // destination properties and add reassign
         // transformation
         PropertyDescriptor destinationProperty = getPropertyDescriptorByPropertyName(unmappedDestinationProperties,
-                                                                                     pd.getName());
+          pd.getName());
         MapTransformation transformation = new MapTransformation(this, pd, destinationProperty);
         addMapping(pd, destinationProperty, transformation);
       });
@@ -250,7 +247,8 @@ public final class Mapping<S, D> {
     if (matchedPropertiesByName.isEmpty() || matchedPropertiesByName.size() > 1) {
       throw new MappingException(String
         .format("Cannot assign source property '%s' to destination, but this was determined to be possible"
-            + " - this is an implementation fault.", propertyName));
+            + " - this is an implementation fault.",
+          propertyName));
     } else {
       return matchedPropertiesByName.iterator()
         .next();
@@ -301,7 +299,8 @@ public final class Mapping<S, D> {
    * {@link PropertyDescriptor} of the property selected.
    *
    * @param configurationMethod
-   *          The configuration method this {@link PropertyDescriptor} is used for. Only needed for exception messages.
+   *          The configuration method this {@link PropertyDescriptor} is used for. Only needed for
+   *          exception messages.
    * @param sensorType
    *          The type of sensor object.
    * @param selector
@@ -339,8 +338,8 @@ public final class Mapping<S, D> {
    * {@link PropertyDescriptor} of the property selected.
    *
    * @param configurationMethod
-   *          The configuration method this {@link PropertyDescriptor} is used
-   *          for. Only needed for exception messages.
+   *          The configuration method this {@link PropertyDescriptor} is used for. Only needed for
+   *          exception messages.
    * @param sensorType
    *          The type of sensor object.
    * @param selector

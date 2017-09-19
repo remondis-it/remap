@@ -24,8 +24,6 @@
 
 
 	<module name="TreeWalker">
-		<module name="FileContentsHolder" />
-
 		<module name="OuterTypeFilename" />
 		<module name="IllegalTokenText">
 			<property name="tokens" value="STRING_LITERAL, CHAR_LITERAL" />
