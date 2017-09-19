@@ -29,7 +29,7 @@ public class ParentResource {
 
   /**
    * @param moreInParentResource
-   *          the moreInParentResource to set
+   *        the moreInParentResource to set
    */
   public void setMoreInParentResource(Object moreInParentResource) {
     this.moreInParentResource = moreInParentResource;
@@ -44,7 +44,7 @@ public class ParentResource {
 
   /**
    * @param shouldNotMap
-   *          the shouldNotMap to set
+   *        the shouldNotMap to set
    */
   public void setShouldNotMap(Object shouldNotMap) {
     this.shouldNotMap = shouldNotMap;
@@ -59,7 +59,7 @@ public class ParentResource {
 
   /**
    * @param string
-   *          the string to set
+   *        the string to set
    */
   public void setString(String string) {
     this.string = string;
@@ -74,7 +74,7 @@ public class ParentResource {
 
   /**
    * @param b
-   *          the b to set
+   *        the b to set
    */
   public void setB(BResource b) {
     this.b = b;

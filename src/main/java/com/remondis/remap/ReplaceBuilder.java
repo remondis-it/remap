@@ -23,7 +23,7 @@ public class ReplaceBuilder<S, D, RD, RS> {
    * {@link #withSkipWhenNull(Transform)} to skip on <code>null</code> input values.</b>
    *
    * @param transformation
-   *          The transform function.
+   *        The transform function.
    * @return Returns the {@link Mapping} for further mapping configuration.
    */
   public Mapping<S, D> with(Transform<RD, RS> transformation) {
@@ -40,7 +40,7 @@ public class ReplaceBuilder<S, D, RD, RS> {
    * skips the execution of the transform function if the source value is null.</b>
    *
    * @param transformation
-   *          The transform function.
+   *        The transform function.
    * @return Returns the {@link Mapping} for further mapping configuration.
    */
   public Mapping<S, D> withSkipWhenNull(Transform<RD, RS> transformation) {

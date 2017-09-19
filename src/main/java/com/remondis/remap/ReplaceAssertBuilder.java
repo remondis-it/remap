@@ -6,13 +6,13 @@ import static com.remondis.remap.Lang.denyNull;
  * Builder to assert a replace operation on a {@link Mapper} object using {@link AssertMapping}.
  *
  * @param <S>
- *          The source type
+ *        The source type
  * @param <D>
- *          The destination type
+ *        The destination type
  * @param <RS>
- *          The type of the source field
+ *        The type of the source field
  * @param <RD>
- *          The type of the destination field
+ *        The type of the destination field
  *
  * @author schuettec
  */
@@ -34,7 +34,7 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
    * Specifies the transformation function that will be checked against null input.
    *
    * @param transformation
-   *          The transformation to test.
+   *        The transformation to test.
    * @return Returns the {@link AssertMapping} for further configuration.
    */
   public AssertMapping<S, D> andTest(Transform<RD, RS> transformation) {
@@ -52,7 +52,7 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
    * tested. In a future release this method may allow to test the transformation function.
    *
    * @param transformation
-   *          The transformation function
+   *        The transformation function
    * @return Returns the {@link AssertMapping} for further configuration.
    */
   public AssertMapping<S, D> andTestButSkipWhenNull(Transform<RD, RS> transformation) {

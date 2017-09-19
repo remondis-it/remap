@@ -21,7 +21,7 @@ class Properties {
    * A readable string representation for a {@link PropertyDescriptor}.
    *
    * @param pd
-   *          The pd
+   *        The pd
    * @return Returns a readable string.
    */
   static String asStringWithType(PropertyDescriptor pd) {
@@ -34,7 +34,7 @@ class Properties {
    * A readable string representation for a {@link PropertyDescriptor}.
    *
    * @param pd
-   *          The pd
+   *        The pd
    * @return Returns a readable string.
    */
   static String asString(PropertyDescriptor pd) {
@@ -46,7 +46,7 @@ class Properties {
    * Returns the class declaring the property.
    *
    * @param propertyDescriptor
-   *          the {@link PropertyDescriptor}
+   *        the {@link PropertyDescriptor}
    * @return Returns the class name of the declaring class.
    */
   static String getPropertyClass(PropertyDescriptor propertyDescriptor) {
@@ -59,7 +59,7 @@ class Properties {
    * Creates a message showing all currently unmapped properties.
    *
    * @param unmapped
-   *          The set of unmapped properties.
+   *        The set of unmapped properties.
    * @return Returns the message.
    */
   static String createUnmappedMessage(Set<PropertyDescriptor> unmapped) {
@@ -84,10 +84,10 @@ class Properties {
    * Returns a {@link Set} of properties with read and write access.
    *
    * @param inspectType
-   *          The type to inspect.
+   *        The type to inspect.
    * @return Returns the list of {@link PropertyDescriptor}s that grant read and write access.
    * @throws MappingException
-   *           Thrown on any introspection error.
+   *         Thrown on any introspection error.
    */
   static Set<PropertyDescriptor> getProperties(Class<?> inspectType) {
     try {

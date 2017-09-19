@@ -5,9 +5,9 @@ package com.remondis.remap;
  *
  *
  * @param <S>
- *          the source type
+ *        the source type
  * @param <D>
- *          the destination type
+ *        the destination type
  *
  * @author schuettec
  */
@@ -17,10 +17,10 @@ public interface Transform<D, S> {
    * Transforms the source into a destination object.
    *
    * @param source
-   *          The source object
+   *        The source object
    * @return The destination object.
    * @throws MappingException
-   *           Thrown on any error while performing the transformation.
+   *         Thrown on any error while performing the transformation.
    */
   D transform(S source) throws MappingException;
 

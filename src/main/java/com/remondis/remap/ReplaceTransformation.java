@@ -9,9 +9,9 @@ import java.beans.PropertyDescriptor;
  * {@link Transform} function on the source.
  *
  * @param <RS>
- *          The input type
+ *        The input type
  * @param <RD>
- *          The output type
+ *        The output type
  *
  * @author schuettec
  */
@@ -33,7 +33,8 @@ class ReplaceTransformation<RD, RS> extends Transformation {
 
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+                                       PropertyDescriptor destinationProperty, Object destination)
+      throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
 
     if (sourceValue == null && skipWhenNull) {

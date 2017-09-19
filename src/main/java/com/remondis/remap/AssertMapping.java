@@ -23,9 +23,9 @@ import java.util.stream.Collectors;
  * values. It is expected that those test invocations do not throw an exception.
  * 
  * @param <S>
- *          The type of the source objects
+ *        The type of the source objects
  * @param <D>
- *          The type of the destination objects.
+ *        The type of the destination objects.
  *
  * @author schuettec
  */
@@ -52,7 +52,7 @@ public class AssertMapping<S, D> {
    * Creates a new specification of assertions that are to be checked for the specified mapper instance.
    * 
    * @param mapper
-   *          The {@link Mapper} instance.
+   *        The {@link Mapper} instance.
    * @return Returns a new {@link AssertMapping} for method changing.
    */
   public static <S, D> AssertMapping<S, D> of(Mapper<S, D> mapper) {
@@ -63,13 +63,12 @@ public class AssertMapping<S, D> {
    * Specifies an assertion for a reassing operation.
    * 
    * @param sourceSelector
-   *          The source field selector.
+   *        The source field selector.
    * @return Returns a {@link ReassignAssertBuilder} for further configuration.
    */
   public <RS> ReassignAssertBuilder<S, D, RS> expectReassign(TypedSelector<RS, S> sourceSelector) {
     TypedPropertyDescriptor<RS> typedSourceProperty = getTypedPropertyFromFieldSelector(ASSIGN,
-                                                                                        getMapping().getSource(),
-                                                                                        sourceSelector);
+      getMapping().getSource(), sourceSelector);
     ReassignAssertBuilder<S, D, RS> reassignBuilder = new ReassignAssertBuilder<S, D, RS>(typedSourceProperty,
                                                                                           getMapping().getDestination(),
                                                                                           this);
@@ -80,18 +79,17 @@ public class AssertMapping<S, D> {
    * Specifies an assertion for a replace operation.
    * 
    * @param sourceSelector
-   *          The source field selector.
+   *        The source field selector.
    * @param destinationSelector
-   *          The destination field selector.
+   *        The destination field selector.
    * @return Returns a {@link ReplaceAssertBuilder} for further configuration.
    */
   public <RD, RS> ReplaceAssertBuilder<S, D, RD, RS> expectReplace(TypedSelector<RS, S> sourceSelector,
-      TypedSelector<RD, D> destinationSelector) {
+                                                                   TypedSelector<RD, D> destinationSelector) {
     TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(TRANSFORM, getMapping().getSource(),
-                                                                                   sourceSelector);
+      sourceSelector);
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(TRANSFORM,
-                                                                                 getMapping().getDestination(),
-                                                                                 destinationSelector);
+      getMapping().getDestination(), destinationSelector);
 
     ReplaceAssertBuilder<S, D, RD, RS> builder = new ReplaceAssertBuilder<>(sourceProperty, destProperty, this);
     return builder;
@@ -108,13 +106,13 @@ public class AssertMapping<S, D> {
    * Specifies an assertion for a source field to be omitted.
    * 
    * @param sourceSelector
-   *          The source field selector.
+   *        The source field selector.
    * @return Returns a {@link AssertMapping} for further configuration.
    */
   public AssertMapping<S, D> expectOmitInSource(FieldSelector<S> sourceSelector) {
     // Omit in destination
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(OMIT_FIELD_SOURCE, getMapping().getSource(),
-                                                                         sourceSelector);
+      sourceSelector);
     OmitTransformation omitSource = omitSource(getMapping(), propertyDescriptor);
     _add(omitSource);
     return this;
@@ -124,12 +122,12 @@ public class AssertMapping<S, D> {
    * Specifies an assertion for a destination field to be omitted.
    * 
    * @param destinationSelector
-   *          The destination field selector.
+   *        The destination field selector.
    * @return Returns a {@link AssertMapping} for further configuration.
    */
   public AssertMapping<S, D> expectOmitInDestination(FieldSelector<D> destinationSelector) {
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(OMIT_FIELD_DEST, getMapping().getDestination(),
-                                                                         destinationSelector);
+      destinationSelector);
     OmitTransformation omitDestination = omitDestination(getMapping(), propertyDescriptor);
     _add(omitDestination);
     return this;
@@ -141,7 +139,7 @@ public class AssertMapping<S, D> {
    * function.
    * 
    * @throws AssertionError
-   *           Thrown if an assertion made about the {@link Mapper} object failed.
+   *         Thrown if an assertion made about the {@link Mapper} object failed.
    */
   public void ensure() throws AssertionError {
     checkReplaceTransformations();

@@ -37,9 +37,9 @@ abstract class Transformation {
    * equal.
    *
    * @param sourceType
-   *          The source type
+   *        The source type
    * @param destinationType
-   *          The destination type
+   *        The destination type
    */
   protected void denyDifferentPrimitiveTypes(Class<?> sourceType, Class<?> destinationType) {
     // We can check here for !destinationType.isAssignableFrom(sourceType) but this would result in type casts and this
@@ -78,9 +78,9 @@ abstract class Transformation {
    * </ul>
    *
    * @param sourceType
-   *          The source type
+   *        The source type
    * @param destinationType
-   *          The destination type
+   *        The destination type
    * @return Returns <code>true</code> if both types equal and Java primitives, otherwise <code>false</code> is
    *         returned.
    */
@@ -126,11 +126,11 @@ abstract class Transformation {
    * Performs the transformation for the specified source and destinatione.
    *
    * @param source
-   *          The source object
+   *        The source object
    * @param destination
-   *          The destination object.
+   *        The destination object.
    * @throws MappingException
-   *           Thrown on any transformation error.
+   *         Thrown on any transformation error.
    */
   public void performTransformation(Object source, Object destination) throws MappingException {
     performTransformation(sourceProperty, source, destinationProperty, destination);
@@ -140,25 +140,26 @@ abstract class Transformation {
    * Performs a single transformation step while mapping.
    *
    * @param sourceProperty
-   *          The source property
+   *        The source property
    * @param source
-   *          The source object to map from.
+   *        The source object to map from.
    * @param destinationProperty
-   *          The destination property
+   *        The destination property
    * @param destination
-   *          The destination object to map to.
+   *        The destination object to map to.
    * @throws MappingException
-   *           Thrown on any mapping exception.
+   *         Thrown on any mapping exception.
    */
   protected abstract void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException;
+                                                PropertyDescriptor destinationProperty, Object destination)
+      throws MappingException;
 
   /**
    * Lets this transformation validate its configuration. If the state of this transformation is invalid,
    * implementations may throw a {@link MappingException}.
    *
    * @throws MappingException
-   *           Thrown if the transformation setup is invalid
+   *         Thrown if the transformation setup is invalid
    */
   protected abstract void validateTransformation() throws MappingException;
 
@@ -166,9 +167,9 @@ abstract class Transformation {
    * Returns a mapper to map the specified source type to the specified destination type when registered.
    *
    * @param sourceType
-   *          The source type
+   *        The source type
    * @param destinationType
-   *          The destination type
+   *        The destination type
    * @return Returns a mapper for the specified mapping if one was registered. Otherwise a {@link MappingException} is
    *         thrown.
    */

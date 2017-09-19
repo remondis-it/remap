@@ -9,7 +9,7 @@ package com.remondis.remap;
  * {@link Mapping#omitInDestination(FieldSelector)},{@link Mapping#omitInSource(FieldSelector)} .
  *
  * @param <T>
- *          The object type selecting a field on.
+ *        The object type selecting a field on.
  * @author schuettec
  *
  */
@@ -21,7 +21,7 @@ public interface FieldSelector<T> {
    * the mapper which property is to be selected for the following configuration.
    *
    * @param destination
-   *          The destination object to perform a get-method invocation on.
+   *        The destination object to perform a get-method invocation on.
    */
   void selectField(T destination);
 

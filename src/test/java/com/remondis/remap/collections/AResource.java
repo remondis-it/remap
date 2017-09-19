@@ -35,7 +35,7 @@ public class AResource {
 
   /**
    * @param nestedLists
-   *          the nestedLists to set
+   *        the nestedLists to set
    */
   public void setNestedLists(List<List<BResource>> nestedLists) {
     this.nestedLists = nestedLists;
@@ -50,7 +50,7 @@ public class AResource {
 
   /**
    * @param strings
-   *          the strings to set
+   *        the strings to set
    */
   public void setStrings(Set<String> strings) {
     this.strings = strings;
@@ -65,7 +65,7 @@ public class AResource {
 
   /**
    * @param bs
-   *          the bs to set
+   *        the bs to set
    */
   public void setBs(List<BResource> bs) {
     this.bs = bs;

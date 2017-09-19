@@ -75,7 +75,7 @@ class ReflectionUtil {
    * primitives like {@link Integer}, {@link Long} but also {@link String}.
    *
    * @param type
-   *          The type to check
+   *        The type to check
    * @return Returns <code>true</code> if the specified type is a java build-in type.
    */
   public static boolean isBuildInType(Class<?> type) {
@@ -87,7 +87,7 @@ class ReflectionUtil {
    * https://docs.oracle.com/javase/tutorial/java/nutsandbolts/datatypes.html for more information.
    *
    * @param type
-   *          The type of the primitive.
+   *        The type of the primitive.
    * @return Returns the default value of the specified primitive type.
    */
   @SuppressWarnings("unchecked")
@@ -101,7 +101,7 @@ class ReflectionUtil {
    * {@link List}.
    *
    * @param collection
-   *          The actual collection instance.
+   *        The actual collection instance.
    * @return Returns the {@link Collector} that creates a new {@link Collection}
    *         of the same type.
    */
@@ -120,7 +120,7 @@ class ReflectionUtil {
    * Checks if the method has a return type.
    *
    * @param method
-   *          the method
+   *        the method
    * @return <code>true</code>, if return type is not {@link Void} or <code>false</code>
    *         otherwise.
    */
@@ -172,7 +172,7 @@ class ReflectionUtil {
    * Returns the name of a property represented with either a getter or setter method.
    *
    * @param method
-   *          The getter or setter method.
+   *        The getter or setter method.
    * @return Returns the name of the property.
    */
   static String toPropertyName(Method method) {
@@ -200,20 +200,20 @@ class ReflectionUtil {
    * proxy. (Proxy instances are not classes of the type the method was declared in.)
    *
    * @param method
-   *          The method to be invoked
+   *        The method to be invoked
    * @param targetObject
-   *          The target object or proxy instance.
+   *        The target object or proxy instance.
    * @param args
-   *          (Optional) Arguments to pass to the invoked method or <code>null</code> indicating no parameters.
+   *        (Optional) Arguments to pass to the invoked method or <code>null</code> indicating no parameters.
    * @return Returns the return value of the method on demand.
    * @throws IllegalAccessException
-   *           Thrown on any access error.
+   *         Thrown on any access error.
    * @throws InvocationTargetException
-   *           Thrown on any invocation error.
+   *         Thrown on any invocation error.
    * @throws SecurityException
-   *           Thrown if the reflective operation is not allowed
+   *         Thrown if the reflective operation is not allowed
    * @throws NoSuchMethodException
-   *           Thrown if the proxy instance does not provide the desired method.
+   *         Thrown if the proxy instance does not provide the desired method.
    */
   static Object invokeMethodProxySafe(Method method, Object targetObject, Object... args)
       throws IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException {
@@ -235,7 +235,7 @@ class ReflectionUtil {
    * Creates a new instance of the specified type.
    *
    * @param type
-   *          The type to instantiate
+   *        The type to instantiate
    * @return Returns a new instance.
    */
   static <D> D newInstance(Class<D> type) {

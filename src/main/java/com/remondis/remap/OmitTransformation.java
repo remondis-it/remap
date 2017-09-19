@@ -24,9 +24,9 @@ class OmitTransformation extends Transformation {
    * Omits a property in the destination object.
    *
    * @param mapping
-   *          The mapper to link to.
+   *        The mapper to link to.
    * @param destinationProperty
-   *          the property to omit in the destination
+   *        the property to omit in the destination
    * @return Returns a new {@link OmitTransformation}.
    */
   static OmitTransformation omitDestination(Mapping<?, ?> mapping, PropertyDescriptor destinationProperty) {
@@ -39,9 +39,9 @@ class OmitTransformation extends Transformation {
    * Omits a property in the source object.
    *
    * @param mapping
-   *          The mapper to link to.
+   *        The mapper to link to.
    * @param sourceProperty
-   *          the property to omit in the source
+   *        the property to omit in the source
    * @return Returns a new {@link OmitTransformation}.
    */
   static OmitTransformation omitSource(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty) {
@@ -52,7 +52,8 @@ class OmitTransformation extends Transformation {
 
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+                                       PropertyDescriptor destinationProperty, Object destination)
+      throws MappingException {
   }
 
   @Override

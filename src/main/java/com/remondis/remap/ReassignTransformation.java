@@ -30,7 +30,8 @@ public class ReassignTransformation extends Transformation {
 
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+                                       PropertyDescriptor destinationProperty, Object destination)
+      throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
     // Only if the source value is not null we have to perform the mapping
     if (sourceValue != null) {
@@ -57,7 +58,7 @@ public class ReassignTransformation extends Transformation {
       "unchecked", "rawtypes"
   })
   private Object convertCollection(Object sourceValue, Class<?> sourceCollectionType,
-      Class<?> destinationCollectionType) {
+                                   Class<?> destinationCollectionType) {
     Collection collection = Collection.class.cast(sourceValue);
     Collector collector = getCollector(collection);
     return collection.stream()
@@ -98,7 +99,7 @@ public class ReassignTransformation extends Transformation {
    * <code>List&lt;List&lt;Set&lt;String&gt;&gt;&gt; get();</code>.
    *
    * @param method
-   *          The method to analyze.
+   *        The method to analyze.
    * @return Returns the inner generic type.
    */
   static Class<?> findGenericTypeFromMethod(Method method) {
