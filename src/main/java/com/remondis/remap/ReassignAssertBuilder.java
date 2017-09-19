@@ -18,16 +18,16 @@ import java.beans.PropertyDescriptor;
  */
 public class ReassignAssertBuilder<S, D, RS> {
 
-  private TypedPropertyDescriptor<RS> tSourceProperty;
+  private TypedPropertyDescriptor<RS> typedSourceProperty;
 
   private AssertMapping<S, D> asserts;
 
   private Class<D> destination;
 
-  ReassignAssertBuilder(TypedPropertyDescriptor<RS> tSourceProperty, Class<D> destination,
+  ReassignAssertBuilder(TypedPropertyDescriptor<RS> typedSourceProperty, Class<D> destination,
       AssertMapping<S, D> asserts) {
     super();
-    this.tSourceProperty = tSourceProperty;
+    this.typedSourceProperty = typedSourceProperty;
     this.asserts = asserts;
     this.destination = destination;
   }
@@ -44,7 +44,7 @@ public class ReassignAssertBuilder<S, D, RS> {
     TypedPropertyDescriptor<RS> typedDestProperty = getTypedPropertyFromFieldSelector(ReassignBuilder.ASSIGN,
                                                                                       this.destination,
                                                                                       destinationSelector);
-    PropertyDescriptor sourceProperty = tSourceProperty.property;
+    PropertyDescriptor sourceProperty = typedSourceProperty.property;
     PropertyDescriptor destinationProperty = typedDestProperty.property;
     ReassignTransformation transformation = new ReassignTransformation(asserts.getMapping(), sourceProperty,
                                                                        destinationProperty);

@@ -61,14 +61,14 @@ public class ReassignTransformation extends Transformation {
     Collection collection = Collection.class.cast(sourceValue);
     Collector collector = getCollector(collection);
     return collection.stream()
-                     .map(o -> {
-                       if (isCollection(o)) {
-                         return convertCollection(o, sourceCollectionType, destinationCollectionType);
-                       } else {
-                         return convertValue(o, sourceCollectionType, destinationCollectionType);
-                       }
-                     })
-                     .collect(collector);
+      .map(o -> {
+        if (isCollection(o)) {
+          return convertCollection(o, sourceCollectionType, destinationCollectionType);
+        } else {
+          return convertValue(o, sourceCollectionType, destinationCollectionType);
+        }
+      })
+      .collect(collector);
   }
 
   @SuppressWarnings({
@@ -81,8 +81,8 @@ public class ReassignTransformation extends Transformation {
       if (isEqualTypes(sourceType, destinationType)) {
         // If the types are equal we can perform an identity mapping.
         Mapper<Object, Object> mapper = (Mapper<Object, Object>) Mapping.from(sourceType)
-                                                                        .to(destinationType)
-                                                                        .mapper();
+          .to(destinationType)
+          .mapper();
         return mapper.map(sourceValue);
       } else {
         // Object types must be mapped by a registered mapper before setting the value.
@@ -95,7 +95,7 @@ public class ReassignTransformation extends Transformation {
   /**
    * Finds the generic return type of a method in nested generics. For example
    * this method returns {@link String} when called on a method like
-   * <code>List<List<Set<String>>> get();</code>.
+   * <code>List&lt;List&lt;Set&lt;String&gt;&gt;&gt; get();</code>.
    *
    * @param method
    *          The method to analyze.

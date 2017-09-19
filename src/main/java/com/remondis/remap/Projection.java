@@ -1,5 +1,7 @@
 package com.remondis.remap;
 
+import lombok.EqualsAndHashCode;
+
 /**
  * This class defines a projection from a type to another type.
  *
@@ -10,6 +12,7 @@ package com.remondis.remap;
  * @author schuettec
  *
  */
+@EqualsAndHashCode
 class Projection<S, D> {
 
   private Class<S> source;
@@ -21,50 +24,12 @@ class Projection<S, D> {
     this.destination = destination;
   }
 
-  /**
-   * @return the source
-   */
-  public Class<S> getSource() {
+  Class<S> getSource() {
     return source;
   }
 
-  /**
-   * @return the destination
-   */
-  public Class<D> getDestination() {
+  Class<D> getDestination() {
     return destination;
-  }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((destination == null) ? 0 : destination.hashCode());
-    result = prime * result + ((source == null) ? 0 : source.hashCode());
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    @SuppressWarnings("rawtypes")
-    Projection other = (Projection) obj;
-    if (destination == null) {
-      if (other.destination != null)
-        return false;
-    } else if (!destination.equals(other.destination))
-      return false;
-    if (source == null) {
-      if (other.source != null)
-        return false;
-    } else if (!source.equals(other.source))
-      return false;
-    return true;
   }
 
   @Override

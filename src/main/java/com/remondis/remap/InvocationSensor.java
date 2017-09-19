@@ -1,6 +1,10 @@
 package com.remondis.remap;
 
-import static com.remondis.remap.ReflectionUtil.*;
+import static com.remondis.remap.ReflectionUtil.defaultValue;
+import static com.remondis.remap.ReflectionUtil.hasReturnType;
+import static com.remondis.remap.ReflectionUtil.invokeMethodProxySafe;
+import static com.remondis.remap.ReflectionUtil.isGetter;
+import static com.remondis.remap.ReflectionUtil.toPropertyName;
 
 import java.lang.reflect.Method;
 import java.util.Collections;

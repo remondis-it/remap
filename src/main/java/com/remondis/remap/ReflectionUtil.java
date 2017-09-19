@@ -73,7 +73,7 @@ class ReflectionUtil {
   /**
    * Checks if the specified type is a Java build-in type. The build-in types are the object versions of the Java
    * primitives like {@link Integer}, {@link Long} but also {@link String}.
-   * 
+   *
    * @param type
    *          The type to check
    * @return Returns <code>true</code> if the specified type is a java build-in type.
@@ -126,7 +126,7 @@ class ReflectionUtil {
    */
   static boolean hasReturnType(Method method) {
     return !method.getReturnType()
-                  .equals(Void.TYPE);
+      .equals(Void.TYPE);
   }
 
   static boolean isGetterOrSetter(Method method) {
@@ -135,7 +135,7 @@ class ReflectionUtil {
 
   static boolean isSetter(Method method) {
     boolean validName = method.getName()
-                              .startsWith(SET);
+      .startsWith(SET);
     boolean hasArguments = hasArguments(method, 1);
     boolean hasReturnType = hasReturnType(method);
     return validName && !hasReturnType && hasArguments;
@@ -144,9 +144,9 @@ class ReflectionUtil {
   static boolean isGetter(Method method) {
     boolean isBool = isBoolGetter(method);
     boolean validName = (isBool ? method.getName()
-                                        .startsWith(IS)
+      .startsWith(IS)
         : method.getName()
-                .startsWith(GET));
+          .startsWith(GET));
     boolean hasArguments = hasArguments(method);
     boolean hasReturnType = hasReturnType(method);
     return validName && hasReturnType && !hasArguments;
@@ -189,7 +189,7 @@ class ReflectionUtil {
   }
 
   private static String firstCharacterToLowerCase(String input) {
-    char c[] = input.toCharArray();
+    char[] c = input.toCharArray();
     c[0] = Character.toLowerCase(c[0]);
     return new String(c);
   }
@@ -222,7 +222,7 @@ class ReflectionUtil {
     if (Proxy.isProxyClass(clazz)) {
       // schuettec - 08.02.2017 : Find the method on the specified proxy.
       effectiveMethod = targetObject.getClass()
-                                    .getMethod(method.getName(), method.getParameterTypes());
+        .getMethod(method.getName(), method.getParameterTypes());
     }
     if (args == null) {
       return effectiveMethod.invoke(targetObject);
@@ -233,7 +233,7 @@ class ReflectionUtil {
 
   /**
    * Creates a new instance of the specified type.
-   * 
+   *
    * @param type
    *          The type to instantiate
    * @return Returns a new instance.

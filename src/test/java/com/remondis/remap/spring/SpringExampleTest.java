@@ -24,14 +24,14 @@ public class SpringExampleTest {
   Mapper<Human, Person> mapper2;
 
   @Test
-  public void testPersonHumanMapper(){
+  public void testPersonHumanMapper() {
     Person person = new Person("Bob");
     Human human = mapper1.map(person);
     assertThat(human.getName()).isEqualTo("Bob");
   }
 
   @Test
-  public void testHumanPersonMapper(){
+  public void testHumanPersonMapper() {
     Human human = new Human("ET");
     Person person = mapper2.map(human);
     assertThat(person.getName()).isEqualTo("ET");
@@ -41,17 +41,17 @@ public class SpringExampleTest {
   static class TestConfiguration {
 
     @Bean
-    Mapper<Person, Human> personHumanMapper(){
+    Mapper<Person, Human> personHumanMapper() {
       return Mapping.from(Person.class)
-          .to(Human.class)
-          .mapper();
+        .to(Human.class)
+        .mapper();
     }
 
     @Bean
-    Mapper<Human, Person> humanPersonMapper(){
+    Mapper<Human, Person> humanPersonMapper() {
       return Mapping.from(Human.class)
-          .to(Person.class)
-          .mapper();
+        .to(Person.class)
+        .mapper();
     }
 
   }

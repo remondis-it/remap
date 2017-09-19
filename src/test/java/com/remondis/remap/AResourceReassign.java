@@ -5,18 +5,18 @@ public class AResourceReassign {
   private int zahl;
   private int firstNumberInAResource;
   private int secondNumberInAResource;
-  
+
   public AResourceReassign() {
     super();
   }
-  
+
   public AResourceReassign(int zahl, int firstNumberInAResource, int secondNumberInAResource) {
     super();
-    this.zahl= zahl;
+    this.zahl = zahl;
     this.firstNumberInAResource = firstNumberInAResource;
     this.secondNumberInAResource = secondNumberInAResource;
   }
-  
+
   public int getZahl() {
     return zahl;
   }
@@ -41,5 +41,4 @@ public class AResourceReassign {
     this.secondNumberInAResource = secondNumberInAResource;
   }
 
-  
 }

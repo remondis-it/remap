@@ -51,7 +51,7 @@ public class MapsTest {
           .stream()
           .map(e -> {
             return new AbstractMap.SimpleEntry<String, BResource>(String.valueOf(e.getKey()),
-                bMapper.map(e.getValue()));
+                                                                  bMapper.map(e.getValue()));
           })
           .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 

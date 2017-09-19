@@ -19,8 +19,8 @@ public class CopyObjectTest {
     A a = new A(b);
 
     Mapper<A, AResource> mapper = Mapping.from(A.class)
-                                         .to(AResource.class)
-                                         .mapper();
+      .to(AResource.class)
+      .mapper();
     AResource ar = mapper.map(a);
     assertTrue(b == a.getB());
     assertFalse(b == ar.getB());

@@ -61,7 +61,7 @@ public final class Mapping<S, D> {
   private Map<Projection<?, ?>, Mapper<?, ?>> mappers;
 
   /**
-   * Holds the list of mapping operations
+   * Holds the list of mapping operations.
    */
   private Set<Transformation> mappings;
 
@@ -195,12 +195,12 @@ public final class Mapping<S, D> {
     if (mappedSourceProperties.contains(sourceProperty)) {
       // Search for omit-Operations
       mappings.stream()
-              .forEach(t -> {
-                if (t instanceof OmitTransformation && t.getSourceProperty()
-                                                        .equals(sourceProperty)) {
-                  throw alreadyMappedProperty(sourceProperty);
-                }
-              });
+        .forEach(t -> {
+          if (t instanceof OmitTransformation && t.getSourceProperty()
+            .equals(sourceProperty)) {
+            throw alreadyMappedProperty(sourceProperty);
+          }
+        });
     }
   }
 
@@ -224,37 +224,36 @@ public final class Mapping<S, D> {
                                                                                   mappedDestinationProperties);
     // Get the set of property names
     Set<String> unmappedDestinationPropertyNames = unmappedDestinationProperties.stream()
-                                                                                .map(PropertyDescriptor::getName)
-                                                                                .collect(Collectors.toSet());
+      .map(PropertyDescriptor::getName)
+      .collect(Collectors.toSet());
     // Add a reassign for all properties of source that are unmapped properties in the destination
     getUnmappedProperties(source, mappedSourceProperties).stream()
-                                                         .filter(pd -> unmappedDestinationPropertyNames.contains(pd.getName()))
-                                                         .forEach(pd -> {
-                                                           // find the corresponding PropertyDescriptor in the unmapped
-                                                           // destination properties and add reassign
-                                                           // transformation
-                                                           PropertyDescriptor destinationProperty = getPropertyDescriptorByPropertyName(unmappedDestinationProperties,
-                                                                                                                                        pd.getName());
-                                                           MapTransformation transformation = new MapTransformation(this,
-                                                                                                                    pd,
-                                                                                                                    destinationProperty);
-                                                           addMapping(pd, destinationProperty, transformation);
-                                                         });
+      .filter(pd -> unmappedDestinationPropertyNames.contains(pd.getName()))
+      .forEach(pd -> {
+        // find the corresponding PropertyDescriptor in the unmapped
+        // destination properties and add reassign
+        // transformation
+        PropertyDescriptor destinationProperty = getPropertyDescriptorByPropertyName(unmappedDestinationProperties,
+                                                                                     pd.getName());
+        MapTransformation transformation = new MapTransformation(this, pd, destinationProperty);
+        addMapping(pd, destinationProperty, transformation);
+      });
 
   }
 
   private PropertyDescriptor getPropertyDescriptorByPropertyName(Set<PropertyDescriptor> descriptors,
       String propertyName) {
     Set<PropertyDescriptor> matchedPropertiesByName = descriptors.stream()
-                                                                 .filter(pd -> pd.getName()
-                                                                                 .equals(propertyName))
-                                                                 .collect(Collectors.toSet());
+      .filter(pd -> pd.getName()
+        .equals(propertyName))
+      .collect(Collectors.toSet());
     if (matchedPropertiesByName.isEmpty() || matchedPropertiesByName.size() > 1) {
-      throw new MappingException(String.format("Cannot assign source property '%s' to destination, but this was determined to be possible - this is an implementation fault.",
-                                               propertyName));
+      throw new MappingException(String
+        .format("Cannot assign source property '%s' to destination, but this was determined to be possible"
+            + " - this is an implementation fault.", propertyName));
     } else {
       return matchedPropertiesByName.iterator()
-                                    .next();
+        .next();
     }
   }
 
@@ -382,10 +381,10 @@ public final class Mapping<S, D> {
   static PropertyDescriptor getPropertyDescriptorOrFail(Class<?> type, String propertyName) {
     Optional<PropertyDescriptor> property;
     property = Properties.getProperties(type)
-                         .stream()
-                         .filter(pd -> pd.getName()
-                                         .equals(propertyName))
-                         .findFirst();
+      .stream()
+      .filter(pd -> pd.getName()
+        .equals(propertyName))
+      .findFirst();
     if (property.isPresent()) {
       return property.get();
     } else {
@@ -419,9 +418,9 @@ public final class Mapping<S, D> {
   public Mapping<S, D> useMapper(Mapper<?, ?> mapper) {
     denyNull("mapper", mapper);
     Class<?> source = mapper.getMapping()
-                            .getSource();
+      .getSource();
     Class<?> destination = mapper.getMapping()
-                                 .getDestination();
+      .getDestination();
 
     Projection<?, ?> projection = new Projection<>(source, destination);
     if (mappers.containsKey(projection)) {
@@ -489,14 +488,14 @@ public final class Mapping<S, D> {
   @Override
   public String toString() {
     StringBuilder b = new StringBuilder("Mapping from ").append(source.getName())
-                                                        .append("\n\t  to ")
-                                                        .append(destination.getName())
-                                                        .append("\n with transformation:\n");
+      .append("\n\t  to ")
+      .append(destination.getName())
+      .append("\n with transformation:\n");
 
     for (Transformation t : mappings) {
       b.append("- ")
-       .append(t.toString())
-       .append("\n");
+        .append(t.toString())
+        .append("\n");
     }
 
     Set<PropertyDescriptor> unmappedProperties = getUnmappedProperties();

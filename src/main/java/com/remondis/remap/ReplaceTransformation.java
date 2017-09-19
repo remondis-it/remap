@@ -18,7 +18,8 @@ import java.beans.PropertyDescriptor;
 class ReplaceTransformation<RD, RS> extends Transformation {
 
   private static final String REPLACE_MSG = "Replacing %s\n           with %s using transformation";
-  private static final String REPLACE_SKIPPED_MSG = "Replacing but skipping when null %s\n           with %s using transformation";
+  private static final String REPLACE_SKIPPED_MSG = "Replacing but skipping when null %s\n"
+      + "           with %s using transformation";
 
   private Transform<RD, RS> transformation;
   private boolean skipWhenNull;

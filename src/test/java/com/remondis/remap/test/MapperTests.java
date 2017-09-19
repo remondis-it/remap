@@ -11,396 +11,419 @@ import com.remondis.remap.test.MapperTests.PersonWithAddress.Address;
 
 public class MapperTests {
 
-	@Test
-	public void mapsBeansWithSameFields() {
-		Mapper<BeanWithConstructors, BeanWithEmptyConstructor> mapper = Mapping.from(BeanWithConstructors.class)
-				.to(BeanWithEmptyConstructor.class).mapper();
-		BeanWithEmptyConstructor result = mapper.map(new BeanWithConstructors(42, "42"));
-		assertThat(result.getIntField()).isEqualTo(42);
-		assertThat(result.getStringField()).isEqualTo("42");
-	}
-
-	@Test
-	public void mapsWithDefaultConstructor() {
-		// when a bean does not have a constructor, it should work with using the
-		// default constructor
-		Mapper<BeanWithConstructors, BeanWithoutConstructor> mapper = Mapping.from(BeanWithConstructors.class)
-				.to(BeanWithoutConstructor.class).mapper();
-		BeanWithoutConstructor result = mapper.map(new BeanWithConstructors(42, "42"));
-		assertThat(result.getIntField()).isEqualTo(42);
-		assertThat(result.getStringField()).isEqualTo("42");
-	}
-
-	@Test(expected = MappingException.class)
-	public void failsWithoutEmptyConstructor() {
-		// when a bean does not have an empty constructor, mapping should fail
-		Mapping.from(BeanWithConstructors.class).to(BeanWithoutEmptyConstructor.class).mapper();
-	}
-
-	@Test(expected = MappingException.class)
-	public void failsOnUnspecifiedFields() {
-		Mapping.from(BeanWithConstructors.class).to(Person.class).mapper();
-	}
-
-	@Test
-	public void reassignsFields() {
-		Mapper<BeanWithConstructors, Person> mapper = Mapping.from(BeanWithConstructors.class).to(Person.class)
-				.reassign(BeanWithConstructors::getIntField).to(Person::getAge)
-				.reassign(BeanWithConstructors::getStringField).to(Person::getName).mapper();
-
-		Person person = mapper.map(new BeanWithConstructors(42, "42"));
-		assertThat(person.getAge()).isEqualTo(42);
-		assertThat(person.getName()).isEqualTo("42");
-	}
-
-	@Test
-	public void omitsSourceField() {
-		Mapper<Person, Name> mapper = Mapping.from(Person.class).to(Name.class).omitInSource(Person::getAge).mapper();
-
-		Name name = mapper.map(new Person("Bob", 42));
-		assertThat(name.getName()).isEqualTo("Bob");
-	}
-
-	@Test
-	public void omitsDestinationField() {
-		Mapper<Name, Person> mapper = Mapping.from(Name.class).to(Person.class).omitInDestination(Person::getAge)
-				.mapper();
-
-		Person person = mapper.map(new Name("Bob"));
-		assertThat(person.getName()).isEqualTo("Bob");
-	}
-
-	@Test(expected = MappingException.class)
-	public void failsOnMissingNestedMapper() {
-		Mapping.from(PersonWithAddress.class).to(HumanWithAddress.class).mapper();
-	}
-
-	@Test
-	public void mapsNested() {
-		Mapper<PersonWithAddress, HumanWithAddress> mapper = Mapping.from(PersonWithAddress.class)
-				.to(HumanWithAddress.class)
-				.useMapper(Mapping.from(PersonWithAddress.Address.class).to(HumanWithAddress.Address.class).mapper())
-				.mapper();
-
-		PersonWithAddress person = new PersonWithAddress();
-		person.setName("Bob");
-		person.setAddress(new Address("Elm Street"));
-
-		HumanWithAddress human = mapper.map(person);
-		assertThat(human.getName()).isEqualTo("Bob");
-		assertThat(human.getAddress().getStreet()).isEqualTo("Elm Street");
-	}
-
-	@Test
-	public void replaces() {
-		Mapper<PersonWithAddress, PersonWithFoo> mapper = Mapping.from(PersonWithAddress.class).to(PersonWithFoo.class)
-				.replace(PersonWithAddress::getAddress, PersonWithFoo::getFoo)
-				.with(address -> new PersonWithFoo.Foo(address.getStreet())).mapper();
-
-		PersonWithAddress person = new PersonWithAddress();
-		person.setName("Bob");
-		person.setAddress(new Address("Elm Street"));
-
-		PersonWithFoo personWithFoo = mapper.map(person);
-		assertThat(personWithFoo.getName()).isEqualTo("Bob");
-		assertThat(personWithFoo.getFoo().getBar()).isEqualTo("Elm Street");
-	}
-
-	public static class BeanWithoutConstructor {
-
-		private int intField;
-		private String stringField;
-
-		public int getIntField() {
-			return intField;
-		}
+  @Test
+  public void mapsBeansWithSameFields() {
+    Mapper<BeanWithConstructors, BeanWithEmptyConstructor> mapper = Mapping.from(BeanWithConstructors.class)
+      .to(BeanWithEmptyConstructor.class)
+      .mapper();
+    BeanWithEmptyConstructor result = mapper.map(new BeanWithConstructors(42, "42"));
+    assertThat(result.getIntField()).isEqualTo(42);
+    assertThat(result.getStringField()).isEqualTo("42");
+  }
+
+  @Test
+  public void mapsWithDefaultConstructor() {
+    // when a bean does not have a constructor, it should work with using the
+    // default constructor
+    Mapper<BeanWithConstructors, BeanWithoutConstructor> mapper = Mapping.from(BeanWithConstructors.class)
+      .to(BeanWithoutConstructor.class)
+      .mapper();
+    BeanWithoutConstructor result = mapper.map(new BeanWithConstructors(42, "42"));
+    assertThat(result.getIntField()).isEqualTo(42);
+    assertThat(result.getStringField()).isEqualTo("42");
+  }
+
+  @Test(expected = MappingException.class)
+  public void failsWithoutEmptyConstructor() {
+    // when a bean does not have an empty constructor, mapping should fail
+    Mapping.from(BeanWithConstructors.class)
+      .to(BeanWithoutEmptyConstructor.class)
+      .mapper();
+  }
+
+  @Test(expected = MappingException.class)
+  public void failsOnUnspecifiedFields() {
+    Mapping.from(BeanWithConstructors.class)
+      .to(Person.class)
+      .mapper();
+  }
+
+  @Test
+  public void reassignsFields() {
+    Mapper<BeanWithConstructors, Person> mapper = Mapping.from(BeanWithConstructors.class)
+      .to(Person.class)
+      .reassign(BeanWithConstructors::getIntField)
+      .to(Person::getAge)
+      .reassign(BeanWithConstructors::getStringField)
+      .to(Person::getName)
+      .mapper();
+
+    Person person = mapper.map(new BeanWithConstructors(42, "42"));
+    assertThat(person.getAge()).isEqualTo(42);
+    assertThat(person.getName()).isEqualTo("42");
+  }
+
+  @Test
+  public void omitsSourceField() {
+    Mapper<Person, Name> mapper = Mapping.from(Person.class)
+      .to(Name.class)
+      .omitInSource(Person::getAge)
+      .mapper();
+
+    Name name = mapper.map(new Person("Bob", 42));
+    assertThat(name.getName()).isEqualTo("Bob");
+  }
+
+  @Test
+  public void omitsDestinationField() {
+    Mapper<Name, Person> mapper = Mapping.from(Name.class)
+      .to(Person.class)
+      .omitInDestination(Person::getAge)
+      .mapper();
+
+    Person person = mapper.map(new Name("Bob"));
+    assertThat(person.getName()).isEqualTo("Bob");
+  }
+
+  @Test(expected = MappingException.class)
+  public void failsOnMissingNestedMapper() {
+    Mapping.from(PersonWithAddress.class)
+      .to(HumanWithAddress.class)
+      .mapper();
+  }
+
+  @Test
+  public void mapsNested() {
+    Mapper<PersonWithAddress, HumanWithAddress> mapper = Mapping.from(PersonWithAddress.class)
+      .to(HumanWithAddress.class)
+      .useMapper(Mapping.from(PersonWithAddress.Address.class)
+        .to(HumanWithAddress.Address.class)
+        .mapper())
+      .mapper();
+
+    PersonWithAddress person = new PersonWithAddress();
+    person.setName("Bob");
+    person.setAddress(new Address("Elm Street"));
+
+    HumanWithAddress human = mapper.map(person);
+    assertThat(human.getName()).isEqualTo("Bob");
+    assertThat(human.getAddress()
+      .getStreet()).isEqualTo("Elm Street");
+  }
+
+  @Test
+  public void replaces() {
+    Mapper<PersonWithAddress, PersonWithFoo> mapper = Mapping.from(PersonWithAddress.class)
+      .to(PersonWithFoo.class)
+      .replace(PersonWithAddress::getAddress, PersonWithFoo::getFoo)
+      .with(address -> new PersonWithFoo.Foo(address.getStreet()))
+      .mapper();
 
-		public void setIntField(int intField) {
-			this.intField = intField;
-		}
+    PersonWithAddress person = new PersonWithAddress();
+    person.setName("Bob");
+    person.setAddress(new Address("Elm Street"));
 
-		public String getStringField() {
-			return stringField;
-		}
+    PersonWithFoo personWithFoo = mapper.map(person);
+    assertThat(personWithFoo.getName()).isEqualTo("Bob");
+    assertThat(personWithFoo.getFoo()
+      .getBar()).isEqualTo("Elm Street");
+  }
 
-		public void setStringField(String stringField) {
-			this.stringField = stringField;
-		}
-	}
+  public static class BeanWithoutConstructor {
 
-	public static class BeanWithoutEmptyConstructor {
+    private int intField;
+    private String stringField;
 
-		private int intField;
-		private String stringField;
+    public int getIntField() {
+      return intField;
+    }
 
-		public BeanWithoutEmptyConstructor(int intField, String stringField) {
-			this.intField = intField;
-			this.stringField = stringField;
-		}
+    public void setIntField(int intField) {
+      this.intField = intField;
+    }
 
-		public int getIntField() {
-			return intField;
-		}
+    public String getStringField() {
+      return stringField;
+    }
 
-		public void setIntField(int intField) {
-			this.intField = intField;
-		}
+    public void setStringField(String stringField) {
+      this.stringField = stringField;
+    }
+  }
 
-		public String getStringField() {
-			return stringField;
-		}
+  public static class BeanWithoutEmptyConstructor {
 
-		public void setStringField(String stringField) {
-			this.stringField = stringField;
-		}
-	}
+    private int intField;
+    private String stringField;
 
-	public static class BeanWithConstructors {
+    public BeanWithoutEmptyConstructor(int intField, String stringField) {
+      this.intField = intField;
+      this.stringField = stringField;
+    }
 
-		private int intField;
-		private String stringField;
+    public int getIntField() {
+      return intField;
+    }
 
-		public BeanWithConstructors(int intField, String stringField) {
-			this.intField = intField;
-			this.stringField = stringField;
-		}
+    public void setIntField(int intField) {
+      this.intField = intField;
+    }
 
-		public BeanWithConstructors() {
-		}
+    public String getStringField() {
+      return stringField;
+    }
 
-		public int getIntField() {
-			return intField;
-		}
+    public void setStringField(String stringField) {
+      this.stringField = stringField;
+    }
+  }
 
-		public void setIntField(int intField) {
-			this.intField = intField;
-		}
+  public static class BeanWithConstructors {
 
-		public String getStringField() {
-			return stringField;
-		}
+    private int intField;
+    private String stringField;
 
-		public void setStringField(String stringField) {
-			this.stringField = stringField;
-		}
-	}
+    public BeanWithConstructors(int intField, String stringField) {
+      this.intField = intField;
+      this.stringField = stringField;
+    }
 
-	public static class BeanWithEmptyConstructor {
+    public BeanWithConstructors() {
+    }
 
-		private int intField;
-		private String stringField;
+    public int getIntField() {
+      return intField;
+    }
 
-		public BeanWithEmptyConstructor() {
-		}
+    public void setIntField(int intField) {
+      this.intField = intField;
+    }
 
-		public int getIntField() {
-			return intField;
-		}
+    public String getStringField() {
+      return stringField;
+    }
 
-		public void setIntField(int intField) {
-			this.intField = intField;
-		}
+    public void setStringField(String stringField) {
+      this.stringField = stringField;
+    }
+  }
 
-		public String getStringField() {
-			return stringField;
-		}
+  public static class BeanWithEmptyConstructor {
 
-		public void setStringField(String stringField) {
-			this.stringField = stringField;
-		}
-	}
+    private int intField;
+    private String stringField;
 
-	public static class Person {
+    public BeanWithEmptyConstructor() {
+    }
 
-		private String name;
-		private int age;
+    public int getIntField() {
+      return intField;
+    }
 
-		public Person(String name, int age) {
-			this.name = name;
-			this.age = age;
-		}
+    public void setIntField(int intField) {
+      this.intField = intField;
+    }
 
-		public Person() {
-		}
+    public String getStringField() {
+      return stringField;
+    }
 
-		public String getName() {
-			return name;
-		}
+    public void setStringField(String stringField) {
+      this.stringField = stringField;
+    }
+  }
 
-		public void setName(String name) {
-			this.name = name;
-		}
+  public static class Person {
 
-		public int getAge() {
-			return age;
-		}
+    private String name;
+    private int age;
 
-		public void setAge(int age) {
-			this.age = age;
-		}
-	}
+    public Person(String name, int age) {
+      this.name = name;
+      this.age = age;
+    }
 
-	public static class Name {
+    public Person() {
+    }
 
-		private String name;
+    public String getName() {
+      return name;
+    }
 
-		public Name(String name) {
-			this.name = name;
-		}
+    public void setName(String name) {
+      this.name = name;
+    }
 
-		public Name() {
-		}
+    public int getAge() {
+      return age;
+    }
 
-		public String getName() {
-			return name;
-		}
+    public void setAge(int age) {
+      this.age = age;
+    }
+  }
 
-		public void setName(String name) {
-			this.name = name;
-		}
-	}
+  public static class Name {
 
-	public static class PersonWithAddress {
+    private String name;
 
-		private String name;
-		private Address address;
+    public Name(String name) {
+      this.name = name;
+    }
 
-		public PersonWithAddress() {
-		}
+    public Name() {
+    }
 
-		public String getName() {
-			return name;
-		}
+    public String getName() {
+      return name;
+    }
 
-		public void setName(String name) {
-			this.name = name;
-		}
+    public void setName(String name) {
+      this.name = name;
+    }
+  }
 
-		public Address getAddress() {
-			return address;
-		}
+  public static class PersonWithAddress {
 
-		public void setAddress(Address address) {
-			this.address = address;
-		}
+    private String name;
+    private Address address;
 
-		public static class Address {
+    public PersonWithAddress() {
+    }
 
-			private String street;
+    public String getName() {
+      return name;
+    }
 
-			public Address(String street) {
-				this.street = street;
-			}
+    public void setName(String name) {
+      this.name = name;
+    }
 
-			public Address() {
-			}
+    public Address getAddress() {
+      return address;
+    }
 
-			public String getStreet() {
-				return street;
-			}
+    public void setAddress(Address address) {
+      this.address = address;
+    }
 
-			public void setStreet(String street) {
-				this.street = street;
-			}
-		}
-	}
+    public static class Address {
 
-	public static class HumanWithAddress {
+      private String street;
 
-		private String name;
-		private Address address;
+      public Address(String street) {
+        this.street = street;
+      }
 
-		public HumanWithAddress() {
-		}
+      public Address() {
+      }
 
-		public HumanWithAddress(String name, Address address) {
-			this.name = name;
-			this.address = address;
-		}
+      public String getStreet() {
+        return street;
+      }
 
-		public String getName() {
-			return name;
-		}
+      public void setStreet(String street) {
+        this.street = street;
+      }
+    }
+  }
 
-		public void setName(String name) {
-			this.name = name;
-		}
+  public static class HumanWithAddress {
 
-		public Address getAddress() {
-			return address;
-		}
+    private String name;
+    private Address address;
 
-		public void setAddress(Address address) {
-			this.address = address;
-		}
+    public HumanWithAddress() {
+    }
 
-		public static class Address {
+    public HumanWithAddress(String name, Address address) {
+      this.name = name;
+      this.address = address;
+    }
 
-			private String street;
+    public String getName() {
+      return name;
+    }
 
-			public Address(String street) {
-				this.street = street;
-			}
+    public void setName(String name) {
+      this.name = name;
+    }
 
-			public Address() {
-			}
+    public Address getAddress() {
+      return address;
+    }
 
-			public String getStreet() {
-				return street;
-			}
+    public void setAddress(Address address) {
+      this.address = address;
+    }
 
-			public void setStreet(String street) {
-				this.street = street;
-			}
-		}
-	}
+    public static class Address {
 
-	public static class PersonWithFoo {
-		private String name;
-		private Foo foo;
+      private String street;
 
-		public PersonWithFoo() {
-		}
+      public Address(String street) {
+        this.street = street;
+      }
 
-		public PersonWithFoo(String name, Foo foo) {
-			this.name = name;
-			this.foo = foo;
-		}
+      public Address() {
+      }
 
-		public String getName() {
-			return name;
-		}
+      public String getStreet() {
+        return street;
+      }
 
-		public void setName(String name) {
-			this.name = name;
-		}
+      public void setStreet(String street) {
+        this.street = street;
+      }
+    }
+  }
 
-		public Foo getFoo() {
-			return foo;
-		}
+  public static class PersonWithFoo {
+    private String name;
+    private Foo foo;
 
-		public void setFoo(Foo foo) {
-			this.foo = foo;
-		}
+    public PersonWithFoo() {
+    }
 
-		public static class Foo {
-			private String bar;
+    public PersonWithFoo(String name, Foo foo) {
+      this.name = name;
+      this.foo = foo;
+    }
 
-			public Foo() {
-			}
+    public String getName() {
+      return name;
+    }
 
-			public Foo(String bar) {
-				this.bar = bar;
-			}
+    public void setName(String name) {
+      this.name = name;
+    }
 
-			public String getBar() {
-				return bar;
-			}
+    public Foo getFoo() {
+      return foo;
+    }
 
-			public void setBar(String bar) {
-				this.bar = bar;
-			}
-		}
-	}
+    public void setFoo(Foo foo) {
+      this.foo = foo;
+    }
+
+    public static class Foo {
+      private String bar;
+
+      public Foo() {
+      }
+
+      public Foo(String bar) {
+        this.bar = bar;
+      }
+
+      public String getBar() {
+        return bar;
+      }
+
+      public void setBar(String bar) {
+        this.bar = bar;
+      }
+    }
+  }
 
 }

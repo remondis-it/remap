@@ -26,9 +26,6 @@ public class Mapper<S, D> {
     this.mapping = mapping;
   }
 
-  /**
-   * @return the mapping
-   */
   Mapping<S, D> getMapping() {
     return mapping;
   }
@@ -55,13 +52,6 @@ public class Mapper<S, D> {
     return _mapCollection(source);
   }
 
-  @SuppressWarnings("unchecked")
-  private Collection<D> _mapCollection(Collection<S> source) {
-    return (Collection<D>) source.stream()
-                                 .map(this::map)
-                                 .collect(getCollector(source));
-  }
-
   /**
    * Performs the mapping for the specified {@link List}.
    *
@@ -82,6 +72,13 @@ public class Mapper<S, D> {
    */
   public Set<D> map(Set<S> source) {
     return (Set<D>) _mapCollection(source);
+  }
+
+  @SuppressWarnings("unchecked")
+  private Collection<D> _mapCollection(Collection<S> source) {
+    return (Collection<D>) source.stream()
+      .map(this::map)
+      .collect(getCollector(source));
   }
 
   @Override

@@ -7,6 +7,8 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import lombok.EqualsAndHashCode;
+
 /**
  * This is the base class for a transformation that performs a single step when mapping from an object to another
  * object. There will be different implementations for mapping operations.
@@ -15,6 +17,7 @@ import java.lang.reflect.Method;
  * @author schuettec
  *
  */
+@EqualsAndHashCode(exclude = "mapping")
 abstract class Transformation {
 
   protected PropertyDescriptor sourceProperty;
@@ -73,7 +76,7 @@ abstract class Transformation {
    * <li>or Java build-in type such as {@link Integer} or {@link String}</li>
    * <li>or if enum values are to be mapped.</li>
    * </ul>
-   * 
+   *
    * @param sourceType
    *          The source type
    * @param destinationType
@@ -169,53 +172,16 @@ abstract class Transformation {
    * @return Returns a mapper for the specified mapping if one was registered. Otherwise a {@link MappingException} is
    *         thrown.
    */
-  protected <S, T> Mapper<S, T> getMapperFor(Class<S> sourceType, Class<T> destinationType) {
+  <S, T> Mapper<S, T> getMapperFor(Class<S> sourceType, Class<T> destinationType) {
     return this.mapping.getMapperFor(sourceType, destinationType);
   }
 
-  /**
-   * @return the sourceProperty
-   */
-  public PropertyDescriptor getSourceProperty() {
+  PropertyDescriptor getSourceProperty() {
     return sourceProperty;
   }
 
-  /**
-   * @return the destinationProperty
-   */
-  public PropertyDescriptor getDestinationProperty() {
+  PropertyDescriptor getDestinationProperty() {
     return destinationProperty;
-  }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((destinationProperty == null) ? 0 : destinationProperty.hashCode());
-    result = prime * result + ((sourceProperty == null) ? 0 : sourceProperty.hashCode());
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    Transformation other = (Transformation) obj;
-    if (destinationProperty == null) {
-      if (other.destinationProperty != null)
-        return false;
-    } else if (!destinationProperty.equals(other.destinationProperty))
-      return false;
-    if (sourceProperty == null) {
-      if (other.sourceProperty != null)
-        return false;
-    } else if (!sourceProperty.equals(other.sourceProperty))
-      return false;
-    return true;
   }
 
 }

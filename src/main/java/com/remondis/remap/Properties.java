@@ -26,7 +26,8 @@ class Properties {
    */
   static String asStringWithType(PropertyDescriptor pd) {
     String sourceClassname = Properties.getPropertyClass(pd);
-    return String.format("Property '%s' (%s) in %s", pd.getName(), pd.getPropertyType().getName(), sourceClassname);
+    return String.format("Property '%s' (%s) in %s", pd.getName(), pd.getPropertyType()
+      .getName(), sourceClassname);
   }
 
   /**
@@ -49,7 +50,9 @@ class Properties {
    * @return Returns the class name of the declaring class.
    */
   static String getPropertyClass(PropertyDescriptor propertyDescriptor) {
-    return propertyDescriptor.getReadMethod().getDeclaringClass().getName();
+    return propertyDescriptor.getReadMethod()
+      .getDeclaringClass()
+      .getName();
   }
 
   /**
@@ -62,10 +65,17 @@ class Properties {
   static String createUnmappedMessage(Set<PropertyDescriptor> unmapped) {
     StringBuilder msg = new StringBuilder("The following properties are unmapped:\n");
     for (PropertyDescriptor pd : unmapped) {
-      String getter = pd.getReadMethod().getName();
-      String setter = pd.getWriteMethod().getName();
-      msg.append("- ").append(asString(pd)).append("\n\taccess methods: ").append(getter).append("() / ").append(setter)
-          .append("()\n");
+      String getter = pd.getReadMethod()
+        .getName();
+      String setter = pd.getWriteMethod()
+        .getName();
+      msg.append("- ")
+        .append(asString(pd))
+        .append("\n\taccess methods: ")
+        .append(getter)
+        .append("() / ")
+        .append(setter)
+        .append("()\n");
     }
     return msg.toString();
   }
@@ -83,8 +93,11 @@ class Properties {
     try {
       BeanInfo beanInfo = Introspector.getBeanInfo(inspectType);
       PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
-      return new HashSet<>(Arrays.asList(propertyDescriptors).stream().filter(Properties::hasGetter)
-          .filter(Properties::hasSetter).collect(Collectors.toList()));
+      return new HashSet<>(Arrays.asList(propertyDescriptors)
+        .stream()
+        .filter(Properties::hasGetter)
+        .filter(Properties::hasSetter)
+        .collect(Collectors.toList()));
     } catch (IntrospectionException e) {
       throw new MappingException(String.format("Cannot introspect the type %s.", inspectType.getName()));
     }

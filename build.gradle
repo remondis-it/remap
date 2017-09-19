@@ -32,6 +32,8 @@ repositories {
 
 dependencies {
     compile "cglib:cglib:3.2.5"
+    compile "org.projectlombok:lombok:1.16.16"
+
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-core:2.7.17"
     testCompile "org.assertj:assertj-core:3.5.1"
@@ -39,6 +41,15 @@ dependencies {
     testCompile "org.springframework:spring-test:4.3.10.RELEASE"
     testCompile "org.springframework:spring-context:4.3.10.RELEASE"
 }
+
+sourceSets {
+    main {
+        java {
+            srcDir "src/main/java"
+        }
+    }
+}
+
 
 checkstyle {
     configFile = rootProject.file("shared/config/checkstyle/checkstyle.xml")
@@ -70,8 +81,8 @@ if (project.hasProperty('release')) {
     signing {
         sign configurations.archives
     }
-    
-    nexusStaging {  
+
+    nexusStaging {
     username = ossrhUser
     password = ossrhPassword
 	}
@@ -82,7 +93,7 @@ if (project.hasProperty('release')) {
             mavenDeployer {
                 // POM signature
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-                    
+
             	repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     authentication(userName: ossrhUser, password: ossrhPassword)
     		    }
@@ -106,8 +117,8 @@ if (project.hasProperty('release')) {
 			            }
 			        }
 
-                    developers { 
-			        	developer { 
+                    developers {
+			        	developer {
 			        		name = 'Christopher Schütte'
 			        		email = 'christopher.schuette@remondis.de'
 			        		organization = 'REMONDIS IT Services GmbH & Co. KG'

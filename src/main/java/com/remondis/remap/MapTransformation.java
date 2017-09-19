@@ -1,6 +1,6 @@
 package com.remondis.remap;
 
-import static com.remondis.remap.Properties.*;
+import static com.remondis.remap.Properties.asString;
 
 import java.beans.PropertyDescriptor;
 
@@ -14,7 +14,8 @@ public class MapTransformation extends ReassignTransformation {
   }
 
   private void denyReassign(PropertyDescriptor sourceProperty, PropertyDescriptor destinationProperty) {
-    if (!sourceProperty.getName().equals(destinationProperty.getName())) {
+    if (!sourceProperty.getName()
+      .equals(destinationProperty.getName())) {
       throw new MappingException("Attempt to perform a reassign with MapTransformation - implementation fault!");
     }
   }
