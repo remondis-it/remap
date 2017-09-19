@@ -3,14 +3,22 @@ target/
 .classpath
 .project
 bin/
-.gradle/**/*
+.gradle
+
+# IntelliJ config files
 .idea/**/*
+!.idea/compiler.xml
+!.idea/checkstyle-idea.xml
+!.idea/inspectionProfiles/Project_Default.xml
 classes/**/*
+**/node_modules
 **/*.iml
 **/*.ipr
 **/*.iws
+
 **/build
 out
 *.log
 
 /.gradle/
+.checkstyle
