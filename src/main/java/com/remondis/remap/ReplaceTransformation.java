@@ -16,13 +16,13 @@ class ReplaceTransformation<RD, RS> extends Transformation {
 
   private static final String REPLACE_MSG = "Replacing %s\n           with %s using transformation";
   private static final String REPLACE_SKIPPED_MSG = "Replacing but skipping when null %s\n"
-    + "           with %s using transformation";
+      + "           with %s using transformation";
 
   private Transform<RD, RS> transformation;
   private boolean skipWhenNull;
 
   ReplaceTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty, PropertyDescriptor destProperty,
-                        Transform<RD, RS> transformation, boolean skipWhenNull) {
+      Transform<RD, RS> transformation, boolean skipWhenNull) {
     super(mapping, sourceProperty, destProperty);
     this.transformation = transformation;
     this.skipWhenNull = skipWhenNull;
@@ -30,8 +30,8 @@ class ReplaceTransformation<RD, RS> extends Transformation {
 
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-                                       PropertyDescriptor destinationProperty,
-                                       Object destination) throws MappingException {
+                                       PropertyDescriptor destinationProperty, Object destination)
+      throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
 
     if (sourceValue == null && skipWhenNull) {

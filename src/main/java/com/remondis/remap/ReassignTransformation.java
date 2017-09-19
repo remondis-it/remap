@@ -22,15 +22,15 @@ public class ReassignTransformation extends Transformation {
   private static final String REASSIGNING_MSG = "Reassigning %s\n           to %s";
 
   ReassignTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
-                         PropertyDescriptor destinationProperty) {
+      PropertyDescriptor destinationProperty) {
     super(mapping, sourceProperty, destinationProperty);
     denyDifferentPrimitiveTypes(getSourceType(), getDestinationType());
   }
 
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-                                       PropertyDescriptor destinationProperty,
-                                       Object destination) throws MappingException {
+                                       PropertyDescriptor destinationProperty, Object destination)
+      throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
     // Only if the source value is not null we have to perform the mapping
     if (sourceValue != null) {
@@ -54,7 +54,7 @@ public class ReassignTransformation extends Transformation {
   }
 
   @SuppressWarnings({
-    "unchecked", "rawtypes"
+      "unchecked", "rawtypes"
   })
   private Object convertCollection(Object sourceValue, Class<?> sourceCollectionType,
                                    Class<?> destinationCollectionType) {
@@ -72,7 +72,7 @@ public class ReassignTransformation extends Transformation {
   }
 
   @SuppressWarnings({
-    "unchecked", "rawtypes"
+      "unchecked", "rawtypes"
   })
   Object convertValue(Object sourceValue, Class<?> sourceType, Class<?> destinationType) {
     if (isReferenceMapping(sourceType, destinationType)) {

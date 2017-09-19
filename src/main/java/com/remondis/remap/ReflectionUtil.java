@@ -137,8 +137,8 @@ class ReflectionUtil {
     boolean isBool = isBoolGetter(method);
     boolean validName = (isBool ? method.getName()
       .startsWith(IS)
-      : method.getName()
-        .startsWith(GET));
+        : method.getName()
+          .startsWith(GET));
     boolean hasArguments = hasArguments(method);
     boolean hasReturnType = hasReturnType(method);
     return validName && hasReturnType && !hasArguments;
@@ -199,9 +199,8 @@ class ReflectionUtil {
    * @throws SecurityException Thrown if the reflective operation is not allowed
    * @throws NoSuchMethodException Thrown if the proxy instance does not provide the desired method.
    */
-  static Object invokeMethodProxySafe(Method method, Object targetObject,
-                                      Object... args) throws IllegalAccessException, InvocationTargetException,
-                                                             SecurityException, NoSuchMethodException {
+  static Object invokeMethodProxySafe(Method method, Object targetObject, Object... args)
+      throws IllegalAccessException, InvocationTargetException, SecurityException, NoSuchMethodException {
     Method effectiveMethod = method;
     Class<?> clazz = targetObject.getClass();
     if (Proxy.isProxyClass(clazz)) {

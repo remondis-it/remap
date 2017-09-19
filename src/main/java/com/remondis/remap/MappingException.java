@@ -44,7 +44,7 @@ public class MappingException extends RuntimeException {
   static MappingException multipleInteractions(String configurationMethod, List<String> trackedPropertyNames) {
     return new MappingException(String.format(
       "The field selector for method '%s' tracked multiple interactions with the following properties: %s."
-        + " Only one interaction perfield selector is allowed!",
+          + " Only one interaction perfield selector is allowed!",
       configurationMethod, String.join(",", trackedPropertyNames)));
   }
 
@@ -127,7 +127,7 @@ public class MappingException extends RuntimeException {
   static MappingException unsupportedCollection(Collection<?> collection) {
     return new MappingException(String.format(
       "The collection '%s' is currently not supported. Only java.util.Set and java.util.List"
-        + " are supported collections.",
+          + " are supported collections.",
       collection.getClass()
         .getName()));
   }
