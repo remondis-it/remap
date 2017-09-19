@@ -13,6 +13,7 @@ buildscript {
 }
 
 apply plugin: 'java'
+apply plugin: 'checkstyle'
 apply plugin: 'signing'
 apply plugin: 'maven'
 apply plugin: 'idea'
@@ -38,6 +39,15 @@ dependencies {
     testCompile "org.springframework:spring-test:4.3.10.RELEASE"
     testCompile "org.springframework:spring-context:4.3.10.RELEASE"
 }
+
+checkstyle {
+    configFile = rootProject.file("shared/config/checkstyle/checkstyle.xml")
+    toolVersion = "7.7"
+    maxErrors = 0
+    maxWarnings = 0
+    sourceSets = [project.sourceSets.main]
+}
+
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
