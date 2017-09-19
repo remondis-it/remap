@@ -23,8 +23,8 @@ public class CollectionsTest {
   @Test(expected = MappingException.class)
   public void shouldCheckForRequiredMappers() {
     Mapping.from(A.class)
-            .to(AResource.class)
-            .mapper();
+        .to(AResource.class)
+        .mapper();
   }
 
   @SuppressWarnings("unchecked")
@@ -32,12 +32,12 @@ public class CollectionsTest {
   public void shouldMapNestedCollections() {
 
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
-            .to(BResource.class)
-            .mapper();
+        .to(BResource.class)
+        .mapper();
     Mapper<A, AResource> aMapper = Mapping.from(A.class)
-            .to(AResource.class)
-            .useMapper(bMapper)
-            .mapper();
+        .to(AResource.class)
+        .useMapper(bMapper)
+        .mapper();
 
     String[] stringsArr = new String[] {
         "A", "B", "C", "D"
@@ -91,14 +91,14 @@ public class CollectionsTest {
   public void shouldMapCollections() {
 
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
-            .to(BResource.class)
-            .mapper();
+        .to(BResource.class)
+        .mapper();
     Mapper<A, AResource> aMapper = Mapping.from(A.class)
-            .to(AResource.class)
-            .useMapper(bMapper)
-            .omitInSource(A::getNestedLists)
-            .omitInDestination(AResource::getNestedLists)
-            .mapper();
+        .to(AResource.class)
+        .useMapper(bMapper)
+        .omitInSource(A::getNestedLists)
+        .omitInDestination(AResource::getNestedLists)
+        .mapper();
 
     String[] stringsArr = new String[] {
         "A", "B", "C", "D"

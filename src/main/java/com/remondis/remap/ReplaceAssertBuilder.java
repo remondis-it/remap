@@ -18,7 +18,7 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
   private AssertMapping<S, D> asserts;
 
   ReplaceAssertBuilder(TypedPropertyDescriptor<RS> sourceProperty, TypedPropertyDescriptor<RD> destProperty,
-          AssertMapping<S, D> asserts) {
+      AssertMapping<S, D> asserts) {
     super();
     this.sourceProperty = sourceProperty;
     this.destProperty = destProperty;
@@ -34,7 +34,7 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
   public AssertMapping<S, D> andTest(Transform<RD, RS> transformation) {
     denyNull("tranfromation", transformation);
     ReplaceTransformation<RD, RS> replace = new ReplaceTransformation<RD, RS>(asserts.getMapping(),
-            sourceProperty.property, destProperty.property, transformation, false);
+        sourceProperty.property, destProperty.property, transformation, false);
     asserts.addAssertion(replace);
     return asserts;
   }
@@ -49,7 +49,7 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
   public AssertMapping<S, D> andTestButSkipWhenNull(Transform<RD, RS> transformation) {
     denyNull("tranfromation", transformation);
     ReplaceTransformation<RD, RS> replace = new ReplaceTransformation<RD, RS>(asserts.getMapping(),
-            sourceProperty.property, destProperty.property, transformation, true);
+        sourceProperty.property, destProperty.property, transformation, true);
     asserts.addAssertion(replace);
     return asserts;
   }

@@ -47,7 +47,7 @@ abstract class Transformation {
      * b) both are primitives but of different types.
      */
     if (isPrimitiveToObjectMapping(sourceType, destinationType)
-            || (isReferenceMapping(sourceType, destinationType) && !isEqualTypes(sourceType, destinationType))) {
+        || (isReferenceMapping(sourceType, destinationType) && !isEqualTypes(sourceType, destinationType))) {
       throw MappingException.incompatiblePropertyTypes(this, sourceProperty, destinationProperty);
     }
   }
@@ -80,8 +80,8 @@ abstract class Transformation {
    */
   protected boolean isReferenceMapping(Class<?> sourceType, Class<?> destinationType) {
     return ((sourceType.isPrimitive() && destinationType.isPrimitive())
-            || (isBuildInType(sourceType) && isBuildInType(destinationType)))
-            || ((isEnumType(sourceType) && isEnumType(destinationType))) && isEqualTypes(sourceType, destinationType);
+        || (isBuildInType(sourceType) && isBuildInType(destinationType)))
+        || ((isEnumType(sourceType) && isEnumType(destinationType))) && isEqualTypes(sourceType, destinationType);
   }
 
   private boolean isEnumType(Class<?> type) {
@@ -137,7 +137,7 @@ abstract class Transformation {
    * @throws MappingException Thrown on any mapping exception.
    */
   protected abstract void performTransformation(PropertyDescriptor sourceProperty, Object source,
-          PropertyDescriptor destinationProperty, Object destination) throws MappingException;
+      PropertyDescriptor destinationProperty, Object destination) throws MappingException;
 
   /**
    * Lets this transformation validate its configuration. If the state of this transformation is invalid,

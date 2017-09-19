@@ -43,15 +43,15 @@ public class SpringExampleTest {
     @Bean
     Mapper<Person, Human> personHumanMapper() {
       return Mapping.from(Person.class)
-              .to(Human.class)
-              .mapper();
+          .to(Human.class)
+          .mapper();
     }
 
     @Bean
     Mapper<Human, Person> humanPersonMapper() {
       return Mapping.from(Human.class)
-              .to(Person.class)
-              .mapper();
+          .to(Person.class)
+          .mapper();
     }
 
   }
