@@ -33,7 +33,8 @@ import java.util.stream.Collectors;
  */
 public class AssertMapping<S, D> {
 
-  static final String DIFFERENT_NULL_STRATEGY = "The replace transformation specified by the mapper has a different null value strategy than the expected transformation:\n";
+  static final String DIFFERENT_NULL_STRATEGY = "The replace transformation specified by the mapper has a different "
+      + "null value strategy than the expected transformation:\n";
 
   static final String UNEXPECTED_EXCEPTION = "Function threw an unexpected exception for transformation:\n";
 

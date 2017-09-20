@@ -60,9 +60,7 @@ class ReplaceTransformation<RD, RS> extends Transformation {
         }
         writeOrFail(destinationProperty, destination, destinationValue);
       }
-    } else
-
-    {
+    } else {
       if (sourceValue == null && skipWhenNull) {
         // Skip if source value is null and the transformation was declared to skip on null input.
         return;
