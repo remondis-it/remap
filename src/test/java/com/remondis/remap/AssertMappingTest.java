@@ -15,6 +15,156 @@ import com.remondis.remap.assertion.BResource;
 public class AssertMappingTest {
 
   @Test
+  public void shouldDenyIllegalArguments() {
+
+    Mapper<B, BResource> bMapper = Mapping.from(B.class)
+        .to(BResource.class)
+        .mapper();
+    Mapper<A, AResource> mapper = Mapping.from(A.class)
+        .to(AResource.class)
+        .reassign(A::getString)
+        .to(AResource::getAnotherString)
+        .replace(A::getInteger, AResource::getIntegerAsString)
+        .with(String::valueOf)
+        .omitInSource(A::getOmitted)
+        .omitInDestination(AResource::getOmitted)
+        .useMapper(bMapper)
+        .mapper();
+
+    assertThatThrownBy(() -> {
+      AssertMapping.of(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      AssertMapping.of(mapper)
+          .expectReassign(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      AssertMapping.of(mapper)
+          .expectReassign(A::getString)
+          .to(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      AssertMapping.of(mapper)
+          .expectReassign(A::getString)
+          .to(AResource::getAnotherString)
+          .expectReplace(null, AResource::getIntegerAsString);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      AssertMapping.of(mapper)
+          .expectReassign(A::getString)
+          .to(AResource::getAnotherString)
+          .expectReplace(A::getInteger, null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      AssertMapping.of(mapper)
+          .expectReassign(A::getString)
+          .to(AResource::getAnotherString)
+          .expectReplace(A::getInteger, AResource::getIntegerAsString)
+          .andTest(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      AssertMapping.of(mapper)
+          .expectReassign(A::getString)
+          .to(AResource::getAnotherString)
+          .expectReplace(A::getInteger, AResource::getIntegerAsString)
+          .andTest(String::valueOf)
+          .expectOmitInSource(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      AssertMapping.of(mapper)
+          .expectReassign(A::getString)
+          .to(AResource::getAnotherString)
+          .expectReplace(A::getInteger, AResource::getIntegerAsString)
+          .andTest(String::valueOf)
+          .expectOmitInSource(A::getOmitted)
+          .expectOmitInDestination(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+  }
+
+  @Test
+  public void shouldThrowExceptionOfFunctionAsCause() {
+    Mapper<B, BResource> bMapper = Mapping.from(B.class)
+        .to(BResource.class)
+        .mapper();
+    Mapper<A, AResource> mapper = Mapping.from(A.class)
+        .to(AResource.class)
+        .reassign(A::getString)
+        .to(AResource::getAnotherString)
+        .replace(A::getInteger, AResource::getIntegerAsString)
+        .with(b -> {
+          throw new Error("Thrown for test purposes");
+        })
+        .omitInSource(A::getOmitted)
+        .omitInDestination(AResource::getOmitted)
+        .useMapper(bMapper)
+        .mapper();
+
+    assertThatThrownBy(() -> {
+      AssertMapping.of(mapper)
+          .expectReassign(A::getString)
+          .to(AResource::getAnotherString)
+          .expectReplace(A::getInteger, AResource::getIntegerAsString)
+          .andTest(String::valueOf)
+          .expectOmitInSource(A::getOmitted)
+          .expectOmitInDestination(AResource::getOmitted)
+          .ensure();
+    }).isInstanceOf(AssertionError.class)
+        .hasMessageStartingWith(AssertMapping.UNEXPECTED_EXCEPTION)
+        .hasCauseExactlyInstanceOf(Error.class);
+  }
+
+  @Test
+  public void regression_checkTransformationAgainstNullCausesWrongExceptionMessage() {
+    // There was a bug that causes an AssertionException with a wrong operation name
+    Mapper<B, BResource> bMapper = Mapping.from(B.class)
+        .to(BResource.class)
+        .mapper();
+    Mapper<A, AResource> mapper = Mapping.from(A.class)
+        .to(AResource.class)
+        .reassign(A::getString)
+        .to(AResource::getAnotherString)
+        .replace(A::getInteger, AResource::getIntegerAsString)
+        // To reproduce the bug, the specified function must throw an NPE
+        .with(b -> {
+          throw new NullPointerException();
+        })
+        .omitInSource(A::getOmitted)
+        .omitInDestination(AResource::getOmitted)
+        .useMapper(bMapper)
+        .mapper();
+
+    assertThatThrownBy(() -> {
+      AssertMapping.of(mapper)
+          .expectReassign(A::getString)
+          .to(AResource::getAnotherString)
+          .expectReplace(A::getInteger, AResource::getIntegerAsString)
+          .andTest(String::valueOf)
+          .expectOmitInSource(A::getOmitted)
+          .expectOmitInDestination(AResource::getOmitted)
+          .ensure();
+    }).isInstanceOf(AssertionError.class)
+        .hasMessageEndingWith(
+            "with Property 'integerAsString' in com.remondis.remap.assertion.AResource using transformation")
+        .hasCauseExactlyInstanceOf(NullPointerException.class);
+  }
+
+  @Test
   public void shouldThrowAssertionError_multipleAssertsOperationsInvolvingSameDestinationFields() {
 
     Mapper<B, BResource> bMapper = Mapping.from(B.class)

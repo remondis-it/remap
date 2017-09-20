@@ -1,5 +1,6 @@
 package com.remondis.remap;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -359,4 +360,63 @@ public class MapperTest {
     }
   }
 
+  @Test
+  public void shouldDenyIllegalArguments() {
+
+    assertThatThrownBy(() -> {
+      Mapping.from(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      Mapping.from(A.class)
+          .to(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      Mapping.from(A.class)
+          .to(AResource.class)
+          .omitInSource(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      Mapping.from(A.class)
+          .to(AResource.class)
+          .omitInSource(A::getMoreInA)
+          .omitInDestination(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      Mapping.from(A.class)
+          .to(AResource.class)
+          .omitInSource(A::getMoreInA)
+          .omitInDestination(AResource::getMoreInAResource)
+          .reassign(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      Mapping.from(A.class)
+          .to(AResource.class)
+          .omitInSource(A::getMoreInA)
+          .omitInDestination(AResource::getMoreInAResource)
+          .reassign(A::getZahlInA)
+          .to(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      Mapping.from(A.class)
+          .to(AResource.class)
+          .omitInSource(A::getMoreInA)
+          .omitInDestination(AResource::getMoreInAResource)
+          .reassign(A::getZahlInA)
+          .to(AResource::getZahlInAResource)
+          .useMapper(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+  }
 }

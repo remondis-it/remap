@@ -79,7 +79,7 @@ class InvocationSensor<T> {
   /**
    * Resets all tracked information.
    */
-  void reset() {
+  void reset() { 
     propertyNames.clear();
   }
 
