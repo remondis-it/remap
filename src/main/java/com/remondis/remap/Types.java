@@ -26,6 +26,12 @@ public final class Types<S> {
 
   }
 
+  /**
+   * Specifies the destination type of the specified mapping.
+   * 
+   * @param destination The destination type to map to.
+   * @return Returns {@link Mapping} for further mapping configurations.
+   */
   public <D> Mapping<S, D> to(Class<D> destination) {
     denyNull("destination", destination);
     denyNoDefaultConstructor(destination);

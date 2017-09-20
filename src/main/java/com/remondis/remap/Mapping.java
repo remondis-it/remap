@@ -456,14 +456,14 @@ public final class Mapping<S, D> {
     }
   }
 
-  /** 
+  /**
    * Performs the actual mapping with iteration recursively through the object hierarchy.
    *
    * @param source
    *        The source object to map to a new destination object.
    * @return Returns a newly created destination object.
    */
-  D map(S source) { 
+  D map(S source) {
     if (source == null) {
       throw MappingException.denyMappingOfNull();
     }

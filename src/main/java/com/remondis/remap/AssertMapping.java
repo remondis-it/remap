@@ -14,7 +14,7 @@ import java.beans.PropertyDescriptor;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors; 
+import java.util.stream.Collectors;
 
 /**
  * Creates a test for a {@link Mapper} object to assert the mapping specification. The expected mapping is to be

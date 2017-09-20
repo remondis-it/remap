@@ -32,7 +32,7 @@ public class ReassignBuilder<S, D, RS> {
    */
   public Mapping<S, D> to(TypedSelector<RS, D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
- TypedPropertyDescriptor<RS> typedDestProperty = getTypedPropertyFromFieldSelector(ASSIGN, destination,
+    TypedPropertyDescriptor<RS> typedDestProperty = getTypedPropertyFromFieldSelector(ASSIGN, destination,
         destinationSelector);
     PropertyDescriptor sourceProperty = typedSourceProperty.property;
     PropertyDescriptor destinationProperty = typedDestProperty.property;
