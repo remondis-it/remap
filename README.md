@@ -1,5 +1,20 @@
 # ReMap - A declarative object mapper
 
+# Table of Contents
+1. [Long story short](#long-story-short)
+2. [About ReMap](#about-remap)
+3. [Mapping operations](#mapping-operations)
+4. [Validation](#validation)
+5. [Features](#features)
+6. [Limitations](#limitations)
+7. [How to use](#how-to-use)
+    1. [Object references](#object-references)
+    2. [Mapping maps](#mapping-maps)
+    3. [Tests](#tests)
+    4. [Asserting the mapping](#asserting-the-mapping)
+8. [Spring integration](#spring-integration)
+9. [How to contribute](#how-to-contribute)
+
 ## Long story short
 
 ReMap is a library that simplifies conversion of objects field by field. You can get this library via Maven Central using the following coordinates
@@ -31,20 +46,13 @@ Mapper<A, AResource> mapper = Mapping
 
 You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/demo/DemoTest.java)
 
-# Table of Contents
-1. [Example](#example)
-2. [Example2](#example2)
-3. [Third Example](#third-example)
-
-## Example
-## Example2
-## Third Example
+## About ReMap
 
 ReMap is a library that simplifies conversion of objects field by field. It was developed to make conversion of database entities to DTOs (data transfer objects) easier. The use of ReMap makes converter classes and unit tests for converters obsolete: ReMap only needs a specification of what fields are to be mapped, but the amount of code that actually performs the assignments and transformations is minimized. Therefore the code that must be unit-tested is also minimized.
 
 ReMap maps a objects of a source to a destination type. As per default ReMap tries to map all fields from the source to the destination object if the fields have equal name and type. __Only differences must be specified when creating a mapper.__
 
-# Mapping operations
+## Mapping operations
 
 The following operations can be declared on a mapper:
 * `omitInSource`: omits a field in the source type and skips the mapping.
@@ -53,7 +61,7 @@ The following operations can be declared on a mapper:
 * `replace`: converts a source field to the destination field while changing the field name and the type. To transform the source object into the destination type a transformation function is to be specified.
 * `useMapper`: Registers a specific mapper instance that is used to convert referenced types.
 
-# Validation
+## Validation
 
 ReMap validates the mapping configuration und denies the following states:
 * A source field was not mapped to a destination field
@@ -63,7 +71,7 @@ ReMap validates the mapping configuration und denies the following states:
 
 This validation rules make sure that all fields are covered by the mapping configuration when a mapper instance is created.
 
-# Features
+## Features
 
 ReMap supports
 * mapping of primitives, build-in types, custom Java Beans and enumeration values
@@ -73,7 +81,7 @@ ReMap supports
 * mapping of nested collections (Attention: maps are not collections!)
 * mapping of maps using `replace` and a transformation function that maps key and values
 
-# Limitations
+## Limitations
 
 * objects that are part of the mapping process must meet the Java Bean convention
   * fields can have any visibility
@@ -83,7 +91,7 @@ ReMap supports
   * keywords like `transient` do not have an effect on the mapping
 * multi-classloader environments are currently not supported. All types must be loaded by the same classloader.
 
-# How to use
+## How to use
 
 ReMap is available through Maven Central using the following Maven dependency:
 
@@ -120,7 +128,7 @@ Mapper<A, AResource> mapper = Mapping
                                      .mapper();
 ```
 
-## Object references
+### Object references
 
 ReMap can be used to flatten object references. The following example shows how to map fields of `B` referenced by `A` to the type `AResource`.
 
@@ -140,7 +148,7 @@ Mapper<A, AResource> mapper = Mapping
 
 One advantage here is that the actual mapping must not be tested with unit tests.
 
-## Mapping maps
+### Mapping maps
 
 As mentioned above ReMap does not directly support the mapping of `java.util.Map`. The following example maps a map in `A` to a map of different key-value-types in `AResource`. The field `bmap` in `A` is a map that may look like this `Map<Integer, B>` while the target field `bmap` in `AResource` is a map of type `Map<String, BResource>`. For this mapping we need a function that transforms the map into another map of the specified type and a mapper to map `B` to `BResource`.
 
@@ -172,7 +180,7 @@ Mapper<B, BResource> bMapper = Mapping.from(B.class)
 
 
 
-## Tests
+### Tests
 
 ReMap makes converter classes and corresponding unit tests obsolete because the actual get/set calls must not be tested. To ensure that the mapping configuration covers all fields ReMap validates the configuration when `mapper()` is invoked. The only things that must be tested in unit tests are
 * that the mapping configurations are valid. You only have to write a simple unit test that asserts that `mapper()` does not throw a `MappingException`.
