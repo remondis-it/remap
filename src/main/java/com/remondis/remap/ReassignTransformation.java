@@ -112,11 +112,11 @@ public class ReassignTransformation extends Transformation {
     return (Class<?>) type;
   }
 
-  boolean isCollection(Class<?> type) {
+  static boolean isCollection(Class<?> type) {
     return Collection.class.isAssignableFrom(type);
   }
 
-  boolean isCollection(Object collection) {
+  static boolean isCollection(Object collection) {
     return collection instanceof Collection;
   }
 

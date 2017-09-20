@@ -1,8 +1,10 @@
 package com.remondis.remap;
 
 import static com.remondis.remap.Properties.asString;
+import static com.remondis.remap.ReflectionUtil.getCollector;
 
 import java.beans.PropertyDescriptor;
+import java.util.Collection;
 
 /**
  * A replace transformation converts a source object into a destination object by applying the specified {@link
@@ -29,6 +31,9 @@ class ReplaceTransformation<RD, RS> extends Transformation {
   }
 
   @Override
+  @SuppressWarnings({
+      "rawtypes", "unchecked"
+  })
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
@@ -38,9 +43,16 @@ class ReplaceTransformation<RD, RS> extends Transformation {
       return;
     }
 
-    @SuppressWarnings("unchecked")
-    RD destinationValue = transformation.transform((RS) sourceValue);
-    writeOrFail(destinationProperty, destination, destinationValue);
+    if (sourceValue instanceof Collection) {
+      Collection collection = (Collection) sourceValue;
+      Collection<RD> destinationValue = (Collection<RD>) collection.stream()
+          .map(sourceItem -> transformation.transform((RS) sourceItem))
+          .collect(getCollector(collection));
+      writeOrFail(destinationProperty, destination, destinationValue);
+    } else {
+      RD destinationValue = transformation.transform((RS) sourceValue);
+      writeOrFail(destinationProperty, destination, destinationValue);
+    }
   }
 
   @Override
