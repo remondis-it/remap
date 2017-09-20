@@ -94,7 +94,7 @@ ReMap supports
 
 ## How to use
 
-The short mapping shown under [Long story short](#long-story-short) uses a
+The short mapping shown under [Long story short](#long-story-short) uses all common operations. When a mapping becomes a little more complex the following code snippets may help.
 
 ### Object references
 
