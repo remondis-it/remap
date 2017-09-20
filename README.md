@@ -30,18 +30,19 @@ ReMap is a library that simplifies conversion of objects field by field. You can
 The following code snippet shows how to map an source type to a destination type:
 
 ```java
-Mapper<A, AResource> mapper = Mapping
-                                     .from(Customer.class)
-                                     .to(Person.class)
-                                     // A customer has an address, a person might have no address
-                                     .omitInSource(Customer::getAddress)
-                                     // A person has a body height that is not available for a customer
-                                     .omitInDestination(Person::getBodyHeight)
-                                     // A customer has a titles aka. salutation that maps to a persons salutation.
-                                     .reassign(Customer::getTitle).to(Person::getSalutation)
-                                     // A customer has a gender as string, person uses a gender enumeration
-                                     .replace()
-                                     .mapper();
+Mapping.from(Customer.class)
+        .to(Person.class)
+        // A customer has an address, a person might have no address
+        .omitInSource(Customer::getAddress)
+        // A person has a body height that is not available for a customer
+        .omitInDestination(Person::getBodyHeight)
+        // A customer has a titles aka. salutation that maps to a persons salutation.
+        .reassign(Customer::getTitle)
+        .to(Person::getSalutation)
+        // A customer has a gender as string, person uses a gender enumeration
+        .replace(Customer::getGender, Person::getGender)
+        .withSkipWhenNull(Gender::valueOf)
+        .mapper();
 ```
 
 You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/demo/DemoTest.java)
@@ -93,40 +94,7 @@ ReMap supports
 
 ## How to use
 
-ReMap is available through Maven Central using the following Maven dependency:
-
-```
-<dependency>
-    <groupId>com.remondis</groupId>
-    <artifactId>remap</artifactId>
-    <version>0.0.5</version>
-</dependency>
-```
-
-ReMap creates mapper instances that can be reused. The following code shows how to use the API:
-
-```java
-Mapper<A, AResource> mapper = Mapping
-                                     // source type is A
-                                     .from(A.class)
-                                     // destination type is AResource
-                                     .to(AResource.class)
-                                     // A has a field that does not have a counterpart in AResource
-                                     .omitInSource(A::getMoreInA)
-                                     // AResource has a field that does not have a counterpart in A
-                                     .omitInDestination(AResource::getMoreInAResource)
-                                     // the field zahlInA in A...
-                                     .reassign(A::getZahlInA)
-                                     // ...will be mapped to field zahlInAResource in AResource
-                                     .to(AResource::getZahlInAResource)
-                                     // if A references an object of type B that is to be mapped to BResource in AResource,
-                                     // we have to register a mapper that specifies how to map B to BResource
-                                     .useMapper(Mapping.from(B.class)
-                                                       .to(BResource.class)
-                                                       .mapper())
-                                     // the following method validates the mapping configuration and returns a Mapper instance
-                                     .mapper();
-```
+The short mapping shown under [Long story short](#long-story-short) uses a
 
 ### Object references
 
