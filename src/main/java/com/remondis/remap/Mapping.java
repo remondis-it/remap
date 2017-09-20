@@ -176,6 +176,9 @@ public final class Mapping<S, D> {
    */
   public <RD, RS> ReplaceBuilder<S, D, RD, RS> replace(TypedSelector<RS, S> sourceSelector,
       TypedSelector<RD, D> destinationSelector) {
+    denyNull("sourceSelector", sourceSelector);
+    denyNull("destinationSelector", destinationSelector);
+
     TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
         this.source, sourceSelector);
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
@@ -201,6 +204,8 @@ public final class Mapping<S, D> {
    */
   public <RD, RS> ReplaceCollectionBuilder<S, D, RD, RS> replaceCollection(
       TypedSelector<Collection<RS>, S> sourceSelector, TypedSelector<Collection<RD>, D> destinationSelector) {
+    denyNull("sourceSelector", sourceSelector);
+    denyNull("destinationSelector", destinationSelector);
     TypedPropertyDescriptor<Collection<RS>> sourceProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
         this.source, sourceSelector);
     TypedPropertyDescriptor<Collection<RD>> destProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
