@@ -11,9 +11,7 @@ import java.lang.reflect.Method;
  * This is the base class for a transformation that performs a single step when mapping from an object to another
  * object. There will be different implementations for mapping operations.
  *
- *
  * @author schuettec
- *
  */
 abstract class Transformation {
 
@@ -33,10 +31,8 @@ abstract class Transformation {
    * This method throws a {@link MappingException} if the source and destination types of this transformation are not
    * equal.
    *
-   * @param sourceType
-   *          The source type
-   * @param destinationType
-   *          The destination type
+   * @param sourceType The source type
+   * @param destinationType The destination type
    */
   protected void denyDifferentPrimitiveTypes(Class<?> sourceType, Class<?> destinationType) {
     // We can check here for !destinationType.isAssignableFrom(sourceType) but this would result in type casts and this
@@ -66,18 +62,16 @@ abstract class Transformation {
   }
 
   /**
-   * Checks if the specified mapping is a valid reference mapping. A reference mapping should be chosen if
-   * types are equal and
+   * Checks if the specified mapping is a valid reference mapping. A reference mapping should be chosen if types are
+   * equal and
    * <ul>
    * <li>Java primitives</li>
    * <li>or Java build-in type such as {@link Integer} or {@link String}</li>
    * <li>or if enum values are to be mapped.</li>
    * </ul>
-   * 
-   * @param sourceType
-   *          The source type
-   * @param destinationType
-   *          The destination type
+   *
+   * @param sourceType The source type
+   * @param destinationType The destination type
    * @return Returns <code>true</code> if both types equal and Java primitives, otherwise <code>false</code> is
    *         returned.
    */
@@ -122,12 +116,9 @@ abstract class Transformation {
   /**
    * Performs the transformation for the specified source and destinatione.
    *
-   * @param source
-   *          The source object
-   * @param destination
-   *          The destination object.
-   * @throws MappingException
-   *           Thrown on any transformation error.
+   * @param source The source object
+   * @param destination The destination object.
+   * @throws MappingException Thrown on any transformation error.
    */
   public void performTransformation(Object source, Object destination) throws MappingException {
     performTransformation(sourceProperty, source, destinationProperty, destination);
@@ -136,16 +127,11 @@ abstract class Transformation {
   /**
    * Performs a single transformation step while mapping.
    *
-   * @param sourceProperty
-   *          The source property
-   * @param source
-   *          The source object to map from.
-   * @param destinationProperty
-   *          The destination property
-   * @param destination
-   *          The destination object to map to.
-   * @throws MappingException
-   *           Thrown on any mapping exception.
+   * @param sourceProperty The source property
+   * @param source The source object to map from.
+   * @param destinationProperty The destination property
+   * @param destination The destination object to map to.
+   * @throws MappingException Thrown on any mapping exception.
    */
   protected abstract void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException;
@@ -154,36 +140,27 @@ abstract class Transformation {
    * Lets this transformation validate its configuration. If the state of this transformation is invalid,
    * implementations may throw a {@link MappingException}.
    *
-   * @throws MappingException
-   *           Thrown if the transformation setup is invalid
+   * @throws MappingException Thrown if the transformation setup is invalid
    */
   protected abstract void validateTransformation() throws MappingException;
 
   /**
    * Returns a mapper to map the specified source type to the specified destination type when registered.
    *
-   * @param sourceType
-   *          The source type
-   * @param destinationType
-   *          The destination type
+   * @param sourceType The source type
+   * @param destinationType The destination type
    * @return Returns a mapper for the specified mapping if one was registered. Otherwise a {@link MappingException} is
    *         thrown.
    */
-  protected <S, T> Mapper<S, T> getMapperFor(Class<S> sourceType, Class<T> destinationType) {
+  <S, T> Mapper<S, T> getMapperFor(Class<S> sourceType, Class<T> destinationType) {
     return this.mapping.getMapperFor(sourceType, destinationType);
   }
 
-  /**
-   * @return the sourceProperty
-   */
-  public PropertyDescriptor getSourceProperty() {
+  PropertyDescriptor getSourceProperty() {
     return sourceProperty;
   }
 
-  /**
-   * @return the destinationProperty
-   */
-  public PropertyDescriptor getDestinationProperty() {
+  PropertyDescriptor getDestinationProperty() {
     return destinationProperty;
   }
 
@@ -198,23 +175,30 @@ abstract class Transformation {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     Transformation other = (Transformation) obj;
     if (destinationProperty == null) {
-      if (other.destinationProperty != null)
+      if (other.destinationProperty != null) {
         return false;
-    } else if (!destinationProperty.equals(other.destinationProperty))
+      }
+    } else if (!destinationProperty.equals(other.destinationProperty)) {
       return false;
+    }
     if (sourceProperty == null) {
-      if (other.sourceProperty != null)
+      if (other.sourceProperty != null) {
         return false;
-    } else if (!sourceProperty.equals(other.sourceProperty))
+      }
+    } else if (!sourceProperty.equals(other.sourceProperty)) {
       return false;
+    }
     return true;
   }
 

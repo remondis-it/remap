@@ -5,20 +5,18 @@ import static com.remondis.remap.Properties.asString;
 import java.beans.PropertyDescriptor;
 
 /**
- * A replace transformation converts a source object into a destination object by applying the specified
- * {@link Transform} function on the source.
+ * A replace transformation converts a source object into a destination object by applying the specified {@link
+ * Transform} function on the source.
  *
- * @param <RS>
- *          The input type
- * @param <RD>
- *          The output type
- *
+ * @param <RS> The input type
+ * @param <RD> The output type
  * @author schuettec
  */
 class ReplaceTransformation<RD, RS> extends Transformation {
 
   private static final String REPLACE_MSG = "Replacing %s\n           with %s using transformation";
-  private static final String REPLACE_SKIPPED_MSG = "Replacing but skipping when null %s\n           with %s using transformation";
+  private static final String REPLACE_SKIPPED_MSG = "Replacing but skipping when null %s\n"
+      + "           with %s using transformation";
 
   private Transform<RD, RS> transformation;
   private boolean skipWhenNull;

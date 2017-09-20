@@ -3,12 +3,9 @@ package com.remondis.remap;
 /**
  * This class defines a projection from a type to another type.
  *
- * @param <S>
- *          The source type
- * @param <D>
- *          The destination type
+ * @param <S> The source type
+ * @param <D> The destination type
  * @author schuettec
- *
  */
 class Projection<S, D> {
 
@@ -21,17 +18,11 @@ class Projection<S, D> {
     this.destination = destination;
   }
 
-  /**
-   * @return the source
-   */
-  public Class<S> getSource() {
+  Class<S> getSource() {
     return source;
   }
 
-  /**
-   * @return the destination
-   */
-  public Class<D> getDestination() {
+  Class<D> getDestination() {
     return destination;
   }
 
@@ -46,24 +37,31 @@ class Projection<S, D> {
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     @SuppressWarnings("rawtypes")
     Projection other = (Projection) obj;
     if (destination == null) {
-      if (other.destination != null)
+      if (other.destination != null) {
         return false;
-    } else if (!destination.equals(other.destination))
+      }
+    } else if (!destination.equals(other.destination)) {
       return false;
+    }
     if (source == null) {
-      if (other.source != null)
+      if (other.source != null) {
         return false;
-    } else if (!source.equals(other.source))
+      }
+    } else if (!source.equals(other.source)) {
       return false;
+    }
     return true;
   }
 

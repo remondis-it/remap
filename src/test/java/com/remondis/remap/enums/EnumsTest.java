@@ -12,8 +12,8 @@ public class EnumsTest {
   @Test
   public void shouldMapEnums() {
     Mapper<Person, PersonResource> mapper = Mapping.from(Person.class)
-                                                   .to(PersonResource.class)
-                                                   .mapper();
+        .to(PersonResource.class)
+        .mapper();
 
     String forename = "Armin";
     String name = "Loaf";

@@ -9,7 +9,6 @@ import java.beans.PropertyDescriptor;
  * The omit transformation marks a property as omitted.
  *
  * @author schuettec
- *
  */
 class OmitTransformation extends Transformation {
 
@@ -23,10 +22,8 @@ class OmitTransformation extends Transformation {
   /**
    * Omits a property in the destination object.
    *
-   * @param mapping
-   *          The mapper to link to.
-   * @param destinationProperty
-   *          the property to omit in the destination
+   * @param mapping The mapper to link to.
+   * @param destinationProperty the property to omit in the destination
    * @return Returns a new {@link OmitTransformation}.
    */
   static OmitTransformation omitDestination(Mapping<?, ?> mapping, PropertyDescriptor destinationProperty) {
@@ -38,10 +35,8 @@ class OmitTransformation extends Transformation {
   /**
    * Omits a property in the source object.
    *
-   * @param mapping
-   *          The mapper to link to.
-   * @param sourceProperty
-   *          the property to omit in the source
+   * @param mapping The mapper to link to.
+   * @param sourceProperty the property to omit in the source
    * @return Returns a new {@link OmitTransformation}.
    */
   static OmitTransformation omitSource(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty) {

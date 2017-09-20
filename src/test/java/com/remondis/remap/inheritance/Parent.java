@@ -30,7 +30,7 @@ public class Parent {
 
   /**
    * @param moreInParent
-   *          the moreInParent to set
+   *        the moreInParent to set
    */
   public void setMoreInParent(Object moreInParent) {
     this.moreInParent = moreInParent;
@@ -45,7 +45,7 @@ public class Parent {
 
   /**
    * @param shouldNotMap
-   *          the shouldNotMap to set
+   *        the shouldNotMap to set
    */
   public void setShouldNotMap(Object shouldNotMap) {
     this.shouldNotMap = shouldNotMap;
@@ -60,7 +60,7 @@ public class Parent {
 
   /**
    * @param string
-   *          the string to set
+   *        the string to set
    */
   public void setString(String string) {
     this.string = string;
@@ -75,7 +75,7 @@ public class Parent {
 
   /**
    * @param b
-   *          the b to set
+   *        the b to set
    */
   public void setB(B b) {
     this.b = b;

@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.remondis.remap;
 
 /**
@@ -13,14 +10,11 @@ class Lang {
   /**
    * This method throws an {@link IllegalArgumentException} if the specified argument is null.
    *
-   * @param fieldName
-   *          The parameter name.
-   * @param argument
-   *          The actual argument.
+   * @param fieldName The parameter name.
+   * @param argument The actual argument.
    * @return Returns the argument
-   * @throws IllegalArgumentException
-   *           Thrown with a detailed message if argument is
-   *           <code>null</code>. Returns immediately otherwise.
+   * @throws IllegalArgumentException Thrown with a detailed message if argument is <code>null</code>. Returns
+   *         immediately otherwise.
    */
   static <T> T denyNull(String fieldName, T argument) throws IllegalArgumentException {
     if (argument == null) {
