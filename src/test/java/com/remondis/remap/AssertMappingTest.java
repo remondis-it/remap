@@ -16,7 +16,6 @@ public class AssertMappingTest {
 
   @Test
   public void shouldThrowExceptionOfFunctionAsCause() {
-    // There was a bug that causes an AssertionException with a wrong operation name
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
         .mapper();
@@ -25,7 +24,6 @@ public class AssertMappingTest {
         .reassign(A::getString)
         .to(AResource::getAnotherString)
         .replace(A::getInteger, AResource::getIntegerAsString)
-        // To reproduce the bug, the specified function must throw an NPE
         .with(b -> {
           throw new Error("Thrown for test purposes");
         })
