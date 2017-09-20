@@ -1,5 +1,6 @@
 package com.remondis.remap;
 
+import static com.remondis.remap.Lang.denyNull;
 import static com.remondis.remap.Mapping.OMIT_FIELD_DEST;
 import static com.remondis.remap.Mapping.OMIT_FIELD_SOURCE;
 import static com.remondis.remap.Mapping.getPropertyFromFieldSelector;
@@ -46,6 +47,7 @@ public class AssertMapping<S, D> {
   private Set<Transformation> assertedTransformations;
 
   private AssertMapping(Mapper<S, D> mapper) {
+    denyNull("mapper", mapper);
     this.mapper = mapper;
     this.assertedTransformations = new HashSet<>();
   }
@@ -69,6 +71,7 @@ public class AssertMapping<S, D> {
    * @return Returns a {@link ReassignAssertBuilder} for further configuration.
    */
   public <RS> ReassignAssertBuilder<S, D, RS> expectReassign(TypedSelector<RS, S> sourceSelector) {
+    denyNull("sourceSelector", sourceSelector);
     TypedPropertyDescriptor<RS> typedSourceProperty = getTypedPropertyFromFieldSelector(ASSIGN,
         getMapping().getSource(), sourceSelector);
     ReassignAssertBuilder<S, D, RS> reassignBuilder = new ReassignAssertBuilder<S, D, RS>(typedSourceProperty,
@@ -87,6 +90,9 @@ public class AssertMapping<S, D> {
    */
   public <RD, RS> ReplaceAssertBuilder<S, D, RD, RS> expectReplace(TypedSelector<RS, S> sourceSelector,
       TypedSelector<RD, D> destinationSelector) {
+    denyNull("sourceSelector", sourceSelector);
+    denyNull("destinationSelector", destinationSelector);
+
     TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(TRANSFORM, getMapping().getSource(),
         sourceSelector);
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(TRANSFORM,
@@ -111,6 +117,7 @@ public class AssertMapping<S, D> {
    * @return Returns a {@link AssertMapping} for further configuration.
    */
   public AssertMapping<S, D> expectOmitInSource(FieldSelector<S> sourceSelector) {
+    denyNull("sourceSelector", sourceSelector);
     // Omit in destination
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(OMIT_FIELD_SOURCE, getMapping().getSource(),
         sourceSelector);
@@ -127,6 +134,7 @@ public class AssertMapping<S, D> {
    * @return Returns a {@link AssertMapping} for further configuration.
    */
   public AssertMapping<S, D> expectOmitInDestination(FieldSelector<D> destinationSelector) {
+    denyNull("destinationSelector", destinationSelector);
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(OMIT_FIELD_DEST, getMapping().getDestination(),
         destinationSelector);
     OmitTransformation omitDestination = omitDestination(getMapping(), propertyDescriptor);

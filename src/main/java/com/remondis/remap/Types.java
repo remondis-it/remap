@@ -1,5 +1,7 @@
 package com.remondis.remap;
 
+import static com.remondis.remap.Lang.denyNull;
+
 import java.lang.reflect.Constructor;
 
 public final class Types<S> {
@@ -7,6 +9,7 @@ public final class Types<S> {
   private Class<S> source;
 
   Types(Class<S> source) {
+    denyNull("source", source);
     this.source = source;
     denyNoDefaultConstructor(source);
   }
@@ -24,6 +27,7 @@ public final class Types<S> {
   }
 
   public <D> Mapping<S, D> to(Class<D> destination) {
+    denyNull("destination", destination);
     denyNoDefaultConstructor(destination);
     return new Mapping<>(source, destination);
   }

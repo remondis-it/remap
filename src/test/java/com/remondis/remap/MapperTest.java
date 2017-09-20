@@ -1,5 +1,6 @@
 package com.remondis.remap;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -30,15 +31,15 @@ public class MapperTest {
   @Test(expected = MappingException.class)
   public void shouldDenyMapNull() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
-                                         .to(AResource.class)
-                                         .reassign(A::getMoreInA)
-                                         .to(AResource::getMoreInAResource)
-                                         .reassign(A::getZahlInA)
-                                         .to(AResource::getZahlInAResource)
-                                         .useMapper(Mapping.from(B.class)
-                                                           .to(BResource.class)
-                                                           .mapper())
-                                         .mapper();
+        .to(AResource.class)
+        .reassign(A::getMoreInA)
+        .to(AResource::getMoreInAResource)
+        .reassign(A::getZahlInA)
+        .to(AResource::getZahlInAResource)
+        .useMapper(Mapping.from(B.class)
+            .to(BResource.class)
+            .mapper())
+        .mapper();
     mapper.map((A) null);
   }
 
@@ -48,13 +49,13 @@ public class MapperTest {
   @Test
   public void shouldMapInheritedFields() {
     Mapper<Child, ChildResource> map = Mapping.from(Child.class)
-                                              .to(ChildResource.class)
-                                              .omitInSource(Child::getMoreInParent)
-                                              .omitInDestination(ChildResource::getMoreInParentResource)
-                                              .useMapper(Mapping.from(B.class)
-                                                                .to(BResource.class)
-                                                                .mapper())
-                                              .mapper();
+        .to(ChildResource.class)
+        .omitInSource(Child::getMoreInParent)
+        .omitInDestination(ChildResource::getMoreInParentResource)
+        .useMapper(Mapping.from(B.class)
+            .to(BResource.class)
+            .mapper())
+        .mapper();
 
     B b = new B(B_STRING, B_NUMBER, B_INTEGER);
     Object shouldNotMap = new Object();
@@ -89,15 +90,15 @@ public class MapperTest {
   @Test
   public void shouldMapCorrectly() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
-                                         .to(AResource.class)
-                                         .omitInSource(A::getMoreInA)
-                                         .omitInDestination(AResource::getMoreInAResource)
-                                         .reassign(A::getZahlInA)
-                                         .to(AResource::getZahlInAResource)
-                                         .useMapper(Mapping.from(B.class)
-                                                           .to(BResource.class)
-                                                           .mapper())
-                                         .mapper();
+        .to(AResource.class)
+        .omitInSource(A::getMoreInA)
+        .omitInDestination(AResource::getMoreInAResource)
+        .reassign(A::getZahlInA)
+        .to(AResource::getZahlInAResource)
+        .useMapper(Mapping.from(B.class)
+            .to(BResource.class)
+            .mapper())
+        .mapper();
 
     B b = new B(B_STRING, B_NUMBER, B_INTEGER);
     A a = new A(MORE_IN_A, STRING, NUMBER, INTEGER, ZAHL_IN_A, b);
@@ -131,8 +132,8 @@ public class MapperTest {
   @Test(expected = MappingException.class)
   public void oneMoreSourceFieldInA() {
     Mapping.from(AWithOneMoreSourceField.class)
-           .to(AResourceWithOneMoreSourceField.class)
-           .mapper();
+        .to(AResourceWithOneMoreSourceField.class)
+        .mapper();
   }
 
   /**
@@ -140,10 +141,11 @@ public class MapperTest {
    */
   @Test
   public void oneMoreSourceFieldInAButItIsOmitted() {
-    Mapper<AWithOneMoreSourceField, AResourceWithOneMoreSourceField> mapper = Mapping.from(AWithOneMoreSourceField.class)
-                                                                                     .to(AResourceWithOneMoreSourceField.class)
-                                                                                     .omitInSource(a -> a.getOnlyInA())
-                                                                                     .mapper();
+    Mapper<AWithOneMoreSourceField, AResourceWithOneMoreSourceField> mapper = Mapping
+        .from(AWithOneMoreSourceField.class)
+        .to(AResourceWithOneMoreSourceField.class)
+        .omitInSource(a -> a.getOnlyInA())
+        .mapper();
 
     AWithOneMoreSourceField aWithOneMoreSourceField = new AWithOneMoreSourceField(1, 10, "text");
     AResourceWithOneMoreSourceField map = mapper.map(aWithOneMoreSourceField);
@@ -160,8 +162,8 @@ public class MapperTest {
   @Test(expected = MappingException.class)
   public void oneMoreDestinationFieldInAResource() {
     Mapping.from(AWithOneMoreDestinationField.class)
-           .to(AResourceWithOneMoreDestinationField.class)
-           .mapper();
+        .to(AResourceWithOneMoreDestinationField.class)
+        .mapper();
   }
 
   /**
@@ -169,10 +171,11 @@ public class MapperTest {
    */
   @Test
   public void oneMoreDestinationFieldInAResourceButItsOmmited() {
-    Mapper<AWithOneMoreDestinationField, AResourceWithOneMoreDestinationField> mapper = Mapping.from(AWithOneMoreDestinationField.class)
-                                                                                               .to(AResourceWithOneMoreDestinationField.class)
-                                                                                               .omitInDestination(ar -> ar.getOnlyInAResource())
-                                                                                               .mapper();
+    Mapper<AWithOneMoreDestinationField, AResourceWithOneMoreDestinationField> mapper = Mapping
+        .from(AWithOneMoreDestinationField.class)
+        .to(AResourceWithOneMoreDestinationField.class)
+        .omitInDestination(ar -> ar.getOnlyInAResource())
+        .mapper();
 
     AWithOneMoreDestinationField aWithOneMoreDestinationField = new AWithOneMoreDestinationField(10, "text");
     AResourceWithOneMoreDestinationField map = mapper.map(aWithOneMoreDestinationField);
@@ -187,12 +190,12 @@ public class MapperTest {
   @Test
   public void reassign() {
     Mapper<AReassign, AResourceReassign> mapper = Mapping.from(AReassign.class)
-                                                         .to(AResourceReassign.class)
-                                                         .reassign(AReassign::getFirstNumberInA)
-                                                         .to(AResourceReassign::getFirstNumberInAResource)
-                                                         .reassign(AReassign::getSecondNumberInA)
-                                                         .to(AResourceReassign::getSecondNumberInAResource)
-                                                         .mapper();
+        .to(AResourceReassign.class)
+        .reassign(AReassign::getFirstNumberInA)
+        .to(AResourceReassign::getFirstNumberInAResource)
+        .reassign(AReassign::getSecondNumberInA)
+        .to(AResourceReassign::getSecondNumberInAResource)
+        .mapper();
 
     AReassign aReassgin = new AReassign(1, 2, 3);
     AResourceReassign map = mapper.map(aReassgin);
@@ -208,13 +211,13 @@ public class MapperTest {
   @Test(expected = MappingException.class)
   public void reassignAnOmmitedFieldInSource() {
     Mapping.from(AReassign.class)
-           .to(AResourceReassign.class)
-           .omitInSource(AReassign::getFirstNumberInA)
-           .reassign(AReassign::getFirstNumberInA)
-           .to(AResourceReassign::getFirstNumberInAResource)
-           .reassign(AReassign::getSecondNumberInA)
-           .to(AResourceReassign::getSecondNumberInAResource)
-           .mapper();
+        .to(AResourceReassign.class)
+        .omitInSource(AReassign::getFirstNumberInA)
+        .reassign(AReassign::getFirstNumberInA)
+        .to(AResourceReassign::getFirstNumberInAResource)
+        .reassign(AReassign::getSecondNumberInA)
+        .to(AResourceReassign::getSecondNumberInAResource)
+        .mapper();
   }
 
   /**
@@ -223,13 +226,13 @@ public class MapperTest {
   @Test(expected = MappingException.class)
   public void reassignToAnOmmitedFieldInDestination() {
     Mapping.from(AReassign.class)
-           .to(AResourceReassign.class)
-           .omitInDestination(ar -> ar.getFirstNumberInAResource())
-           .reassign(AReassign::getFirstNumberInA)
-           .to(AResourceReassign::getFirstNumberInAResource)
-           .reassign(AReassign::getSecondNumberInA)
-           .to(AResourceReassign::getSecondNumberInAResource)
-           .mapper();
+        .to(AResourceReassign.class)
+        .omitInDestination(ar -> ar.getFirstNumberInAResource())
+        .reassign(AReassign::getFirstNumberInA)
+        .to(AResourceReassign::getFirstNumberInAResource)
+        .reassign(AReassign::getSecondNumberInA)
+        .to(AResourceReassign::getSecondNumberInAResource)
+        .mapper();
   }
 
   /**
@@ -238,26 +241,26 @@ public class MapperTest {
   @Test(expected = MappingException.class)
   public void reassignAndOneDestinationFieldIsUnmapped() {
     Mapping.from(AReassign.class)
-           .to(AResourceReassign.class)
-           .reassign(AReassign::getFirstNumberInA)
-           .to(AResourceReassign::getSecondNumberInAResource)
-           .omitInSource(AReassign::getSecondNumberInA)
-           .mapper();
+        .to(AResourceReassign.class)
+        .reassign(AReassign::getFirstNumberInA)
+        .to(AResourceReassign::getSecondNumberInAResource)
+        .omitInSource(AReassign::getSecondNumberInA)
+        .mapper();
   }
 
   @SuppressWarnings("rawtypes")
   @Test
   public void shouldMapToNewList() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
-                                         .to(AResource.class)
-                                         .omitInSource(A::getMoreInA)
-                                         .omitInDestination(AResource::getMoreInAResource)
-                                         .reassign(A::getZahlInA)
-                                         .to(AResource::getZahlInAResource)
-                                         .useMapper(Mapping.from(B.class)
-                                                           .to(BResource.class)
-                                                           .mapper())
-                                         .mapper();
+        .to(AResource.class)
+        .omitInSource(A::getMoreInA)
+        .omitInDestination(AResource::getMoreInAResource)
+        .reassign(A::getZahlInA)
+        .to(AResource::getZahlInAResource)
+        .useMapper(Mapping.from(B.class)
+            .to(BResource.class)
+            .mapper())
+        .mapper();
 
     B b = new B(B_STRING, B_NUMBER, B_INTEGER);
     A a = new A(MORE_IN_A, STRING, NUMBER, INTEGER, ZAHL_IN_A, b);
@@ -302,15 +305,15 @@ public class MapperTest {
   @Test
   public void shouldMapToNewSet() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
-                                         .to(AResource.class)
-                                         .omitInSource(A::getMoreInA)
-                                         .omitInDestination(AResource::getMoreInAResource)
-                                         .reassign(A::getZahlInA)
-                                         .to(AResource::getZahlInAResource)
-                                         .useMapper(Mapping.from(B.class)
-                                                           .to(BResource.class)
-                                                           .mapper())
-                                         .mapper();
+        .to(AResource.class)
+        .omitInSource(A::getMoreInA)
+        .omitInDestination(AResource::getMoreInAResource)
+        .reassign(A::getZahlInA)
+        .to(AResource::getZahlInAResource)
+        .useMapper(Mapping.from(B.class)
+            .to(BResource.class)
+            .mapper())
+        .mapper();
 
     int max = 10;
     A[] aarr = new A[max];
@@ -357,4 +360,63 @@ public class MapperTest {
     }
   }
 
+  @Test
+  public void shouldDenyIllegalArguments() {
+
+    assertThatThrownBy(() -> {
+      Mapping.from(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      Mapping.from(A.class)
+          .to(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      Mapping.from(A.class)
+          .to(AResource.class)
+          .omitInSource(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      Mapping.from(A.class)
+          .to(AResource.class)
+          .omitInSource(A::getMoreInA)
+          .omitInDestination(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      Mapping.from(A.class)
+          .to(AResource.class)
+          .omitInSource(A::getMoreInA)
+          .omitInDestination(AResource::getMoreInAResource)
+          .reassign(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      Mapping.from(A.class)
+          .to(AResource.class)
+          .omitInSource(A::getMoreInA)
+          .omitInDestination(AResource::getMoreInAResource)
+          .reassign(A::getZahlInA)
+          .to(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      Mapping.from(A.class)
+          .to(AResource.class)
+          .omitInSource(A::getMoreInA)
+          .omitInDestination(AResource::getMoreInAResource)
+          .reassign(A::getZahlInA)
+          .to(AResource::getZahlInAResource)
+          .useMapper(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+  }
 }
