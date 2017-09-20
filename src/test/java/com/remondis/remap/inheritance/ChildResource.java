@@ -26,7 +26,7 @@ public class ChildResource extends ParentResource {
 
   /**
    * @param object
-   *          the object to set
+   *        the object to set
    */
   public void setObject(Object object) {
     this.object = object;
@@ -41,7 +41,7 @@ public class ChildResource extends ParentResource {
 
   /**
    * @param zahl
-   *          the zahl to set
+   *        the zahl to set
    */
   public void setZahl(int zahl) {
     this.zahl = zahl;

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fileset-config file-format-version="1.2.0" simple-config="false" sync-formatter="false">
+  <fileset name="Main Only0" enabled="true" check-config-name="ReMap Checkstyle" local="false">
+    <file-match-pattern match-pattern="src/main" include-pattern="true"/>
+  </fileset>
+</fileset-config>

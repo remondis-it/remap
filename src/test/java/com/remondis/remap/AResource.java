@@ -30,7 +30,7 @@ public class AResource {
 
   /**
    * @param string
-   *          the string to set
+   *        the string to set
    */
   public void setString(String string) {
     this.string = string;
@@ -45,7 +45,7 @@ public class AResource {
 
   /**
    * @param number
-   *          the number to set
+   *        the number to set
    */
   public void setNumber(int number) {
     this.number = number;
@@ -60,7 +60,7 @@ public class AResource {
 
   /**
    * @param integer
-   *          the integer to set
+   *        the integer to set
    */
   public void setInteger(Integer integer) {
     this.integer = integer;
@@ -75,7 +75,7 @@ public class AResource {
 
   /**
    * @param b
-   *          the b to set
+   *        the b to set
    */
   public void setB(BResource b) {
     this.b = b;
@@ -90,7 +90,7 @@ public class AResource {
 
   /**
    * @param moreInAResource
-   *          the moreInAResource to set
+   *        the moreInAResource to set
    */
   public void setMoreInAResource(String moreInAResource) {
     this.moreInAResource = moreInAResource;
@@ -105,7 +105,7 @@ public class AResource {
 
   /**
    * @param zahlInAResource
-   *          the zahlInAResource to set
+   *        the zahlInAResource to set
    */
   public void setZahlInAResource(Long zahlInAResource) {
     this.zahlInAResource = zahlInAResource;

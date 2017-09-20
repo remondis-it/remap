@@ -1,6 +1,10 @@
 package com.remondis.remap;
 
-import static com.remondis.remap.ReflectionUtil.*;
+import static com.remondis.remap.ReflectionUtil.defaultValue;
+import static com.remondis.remap.ReflectionUtil.hasReturnType;
+import static com.remondis.remap.ReflectionUtil.invokeMethodProxySafe;
+import static com.remondis.remap.ReflectionUtil.isGetter;
+import static com.remondis.remap.ReflectionUtil.toPropertyName;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -17,7 +21,6 @@ import net.sf.cglib.proxy.InvocationHandler;
  * available to the {@link Mapper}.
  *
  * @author schuettec
- *
  */
 class InvocationSensor<T> {
 
@@ -68,7 +71,6 @@ class InvocationSensor<T> {
   /**
    * @return Returns <code>true</code> if there were at least one interaction with a property. Otherwise
    *         <code>false</code> is returned.
-   *
    */
   boolean hasTrackedProperties() {
     return !propertyNames.isEmpty();
@@ -77,7 +79,7 @@ class InvocationSensor<T> {
   /**
    * Resets all tracked information.
    */
-  void reset() {
+  void reset() { 
     propertyNames.clear();
   }
 

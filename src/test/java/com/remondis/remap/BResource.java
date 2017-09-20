@@ -26,7 +26,7 @@ public class BResource {
 
   /**
    * @param string
-   *          the string to set
+   *        the string to set
    */
   public void setString(String string) {
     this.string = string;
@@ -41,7 +41,7 @@ public class BResource {
 
   /**
    * @param number
-   *          the number to set
+   *        the number to set
    */
   public void setNumber(int number) {
     this.number = number;
@@ -56,7 +56,7 @@ public class BResource {
 
   /**
    * @param integer
-   *          the integer to set
+   *        the integer to set
    */
   public void setInteger(Integer integer) {
     this.integer = integer;

@@ -42,7 +42,7 @@ public class A {
 
   /**
    * @param string
-   *          the string to set
+   *        the string to set
    */
   public void setString(String string) {
     this.string = string;
@@ -57,7 +57,7 @@ public class A {
 
   /**
    * @param number
-   *          the number to set
+   *        the number to set
    */
   public void setNumber(int number) {
     this.number = number;
@@ -72,7 +72,7 @@ public class A {
 
   /**
    * @param integer
-   *          the integer to set
+   *        the integer to set
    */
   public void setInteger(Integer integer) {
     this.integer = integer;
@@ -87,7 +87,7 @@ public class A {
 
   /**
    * @param b
-   *          the b to set
+   *        the b to set
    */
   public void setB(B b) {
     this.b = b;
@@ -102,7 +102,7 @@ public class A {
 
   /**
    * @param moreInA
-   *          the moreInA to set
+   *        the moreInA to set
    */
   public void setMoreInA(String moreInA) {
     this.moreInA = moreInA;
@@ -117,7 +117,7 @@ public class A {
 
   /**
    * @param zahlInA
-   *          the zahlInA to set
+   *        the zahlInA to set
    */
   public void setZahlInA(Long zahlInA) {
     this.zahlInA = zahlInA;

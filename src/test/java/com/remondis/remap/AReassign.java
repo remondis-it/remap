@@ -5,18 +5,18 @@ public class AReassign {
   private int zahl;
   private int firstNumberInA;
   private int secondNumberInA;
-  
+
   public AReassign() {
     super();
   }
-  
+
   public AReassign(int zahl, int firstNumberInA, int secondNumberInA) {
     super();
-    this.zahl= zahl;
+    this.zahl = zahl;
     this.firstNumberInA = firstNumberInA;
     this.secondNumberInA = secondNumberInA;
   }
-  
+
   public int getZahl() {
     return zahl;
   }
@@ -40,5 +40,5 @@ public class AReassign {
   public void setSecondNumberInA(int secondNumberInA) {
     this.secondNumberInA = secondNumberInA;
   }
-  
+
 }
