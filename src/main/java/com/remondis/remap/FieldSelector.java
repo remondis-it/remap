@@ -10,7 +10,7 @@ package com.remondis.remap;
  * @param <T> The object type selecting a field on.
  * @author schuettec
  */
-@FunctionalInterface
+@FunctionalInterface 
 public interface FieldSelector<T> {
 
   /**
