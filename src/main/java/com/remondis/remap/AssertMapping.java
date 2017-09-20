@@ -11,6 +11,7 @@ import static com.remondis.remap.ReassignBuilder.ASSIGN;
 import static com.remondis.remap.ReplaceBuilder.TRANSFORM;
 
 import java.beans.PropertyDescriptor;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -31,6 +32,9 @@ import java.util.stream.Collectors;
  * @author schuettec
  */
 public class AssertMapping<S, D> {
+
+  static final String DIFFERENT_NULL_STRATEGY = "The replace transformation specified by the mapper has a different "
+      + "null value strategy than the expected transformation:\n";
 
   static final String UNEXPECTED_EXCEPTION = "Function threw an unexpected exception for transformation:\n";
 
@@ -101,6 +105,29 @@ public class AssertMapping<S, D> {
         getMapping().getDestination(), destinationSelector);
 
     ReplaceAssertBuilder<S, D, RD, RS> builder = new ReplaceAssertBuilder<>(sourceProperty, destProperty, this);
+    return builder;
+  }
+
+  /**
+   * Specifies an assertion for a replace operation for collections.
+   *
+   * @param sourceSelector
+   *        The source field selector.
+   * @param destinationSelector
+   *        The destination field selector.
+   * @return Returns a {@link ReplaceCollectionAssertBuilder} for further configuration.
+   */
+  public <RD, RS> ReplaceCollectionAssertBuilder<S, D, RD, RS> expectReplaceCollection(
+      TypedSelector<Collection<RS>, S> sourceSelector, TypedSelector<Collection<RD>, D> destinationSelector) {
+    denyNull("sourceSelector", sourceSelector);
+    denyNull("destinationSelector", destinationSelector);
+    TypedPropertyDescriptor<Collection<RS>> sourceProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
+        getMapping().getSource(), sourceSelector);
+    TypedPropertyDescriptor<Collection<RD>> destProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
+        getMapping().getDestination(), destinationSelector);
+
+    ReplaceCollectionAssertBuilder<S, D, RD, RS> builder = new ReplaceCollectionAssertBuilder<>(sourceProperty,
+        destProperty, this);
     return builder;
   }
 
@@ -229,9 +256,8 @@ public class AssertMapping<S, D> {
             // Check if the configured replace transformation has the same skip-null configuration than the asserted
             // one and throw if not
             if (replace.isSkipWhenNull() != assertedReplaceTransformation.isSkipWhenNull()) {
-              throw new AssertionError("The replace transformation specified by the mapper has a different null value "
-                  + "strategy than the expected transformation:\n" + replace.toString() + "\n"
-                  + assertedTransformations.toString());
+              throw new AssertionError(
+                  DIFFERENT_NULL_STRATEGY + replace.toString() + "\n" + assertedTransformations.toString());
             }
           }
         });

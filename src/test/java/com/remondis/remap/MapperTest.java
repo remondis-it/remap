@@ -16,6 +16,8 @@ import org.junit.Test;
 
 import com.remondis.remap.inheritance.Child;
 import com.remondis.remap.inheritance.ChildResource;
+import com.remondis.remap.test.MapperTests.PersonWithAddress;
+import com.remondis.remap.test.MapperTests.PersonWithFoo;
 
 public class MapperTest {
 
@@ -418,5 +420,29 @@ public class MapperTest {
           .useMapper(null);
     }).isInstanceOf(IllegalArgumentException.class)
         .hasNoCause();
+
+    // Perform the API test on replace
+    assertThatThrownBy(() -> {
+      Mapping.from(PersonWithAddress.class)
+          .to(PersonWithFoo.class)
+          .replace(null, PersonWithFoo::getFoo);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      Mapping.from(PersonWithAddress.class)
+          .to(PersonWithFoo.class)
+          .replace(PersonWithAddress::getAddress, null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
+    assertThatThrownBy(() -> {
+      Mapping.from(PersonWithAddress.class)
+          .to(PersonWithFoo.class)
+          .replace(PersonWithAddress::getAddress, PersonWithFoo::getFoo)
+          .with(null);
+    }).isInstanceOf(IllegalArgumentException.class)
+        .hasNoCause();
+
   }
 }

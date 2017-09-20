@@ -9,6 +9,7 @@ import static com.remondis.remap.Properties.createUnmappedMessage;
 import static com.remondis.remap.ReflectionUtil.newInstance;
 
 import java.beans.PropertyDescriptor;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -148,7 +149,7 @@ public final class Mapping<S, D> {
    * @param sourceSelector
    *        The {@link FieldSelector}s selecting the source property with get-method
    *        invocation.
-   * @return Returns this object for method chaining.
+   * @return Returns a {@link ReassignBuilder} to specify the destination field.
    */
   public <RS> ReassignBuilder<S, D, RS> reassign(TypedSelector<RS, S> sourceSelector) {
     denyNull("sourceSelector", sourceSelector);
@@ -171,16 +172,46 @@ public final class Mapping<S, D> {
    * @param destinationSelector
    *        The {@link FieldSelector}s selecting the destination property with
    *        get-method invocation.
-   * @return Returns this object for method chaining.
+   * @return Returns {@link ReplaceBuilder} to specify the transform function and null-strategy.
    */
   public <RD, RS> ReplaceBuilder<S, D, RD, RS> replace(TypedSelector<RS, S> sourceSelector,
       TypedSelector<RD, D> destinationSelector) {
+    denyNull("sourceSelector", sourceSelector);
+    denyNull("destinationSelector", destinationSelector);
+
     TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
         this.source, sourceSelector);
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
         this.destination, destinationSelector);
 
     ReplaceBuilder<S, D, RD, RS> builder = new ReplaceBuilder<>(sourceProperty, destProperty, this);
+    return builder;
+  }
+
+  /**
+   * Maps a property holding a collection from the source to the specified property holding a collection of the
+   * destination object. The specified transform function will be applied on every item in the source value to convert
+   * to the specified destination type. <b>Note: The mapping
+   * library is designed to reduce the required client tests. Using this method requires the client
+   * to test the transformation function!</b>
+   *
+   * @param sourceSelector
+   *        The {@link FieldSelector}s selecting the source property holding a {@link Collection}.
+   * @param destinationSelector
+   *        The {@link FieldSelector}s selecting the destination property holding a {@link Collection}.
+   * @return Returns {@link ReplaceBuilder} to specify the transform function and null-strategy.
+   *
+   */
+  public <RD, RS> ReplaceCollectionBuilder<S, D, RD, RS> replaceCollection(
+      TypedSelector<Collection<RS>, S> sourceSelector, TypedSelector<Collection<RD>, D> destinationSelector) {
+    denyNull("sourceSelector", sourceSelector);
+    denyNull("destinationSelector", destinationSelector);
+    TypedPropertyDescriptor<Collection<RS>> sourceProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
+        this.source, sourceSelector);
+    TypedPropertyDescriptor<Collection<RD>> destProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
+        this.destination, destinationSelector);
+
+    ReplaceCollectionBuilder<S, D, RD, RS> builder = new ReplaceCollectionBuilder<>(sourceProperty, destProperty, this);
     return builder;
   }
 

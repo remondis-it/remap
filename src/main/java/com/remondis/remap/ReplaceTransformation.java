@@ -1,8 +1,11 @@
 package com.remondis.remap;
 
 import static com.remondis.remap.Properties.asString;
+import static com.remondis.remap.ReassignTransformation.isCollection;
+import static com.remondis.remap.ReflectionUtil.getCollector;
 
 import java.beans.PropertyDescriptor;
+import java.util.Collection;
 
 /**
  * A replace transformation converts a source object into a destination object by applying the specified {@link
@@ -29,18 +32,42 @@ class ReplaceTransformation<RD, RS> extends Transformation {
   }
 
   @Override
+  @SuppressWarnings({
+      "rawtypes", "unchecked"
+  })
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
 
-    if (sourceValue == null && skipWhenNull) {
-      // Skip if source value is null and the transformation was declared to skip on null input.
-      return;
-    }
+    if (isCollection(sourceProperty.getPropertyType())) {
+      if (sourceValue == null) {
+        // Skip if source value is null and the transformation was declared to skip on null input.
+        return;
+      } else {
+        Collection collection = (Collection) sourceValue;
+        Collection<RD> destinationValue = null;
 
-    @SuppressWarnings("unchecked")
-    RD destinationValue = transformation.transform((RS) sourceValue);
-    writeOrFail(destinationProperty, destination, destinationValue);
+        // Skip when null on collection means to skip null items.
+        if (skipWhenNull) {
+          destinationValue = (Collection<RD>) collection.stream()
+              .filter(i -> (i != null))
+              .map(sourceItem -> transformation.transform((RS) sourceItem))
+              .collect(getCollector(collection));
+        } else {
+          destinationValue = (Collection<RD>) collection.stream()
+              .map(sourceItem -> transformation.transform((RS) sourceItem))
+              .collect(getCollector(collection));
+        }
+        writeOrFail(destinationProperty, destination, destinationValue);
+      }
+    } else {
+      if (sourceValue == null && skipWhenNull) {
+        // Skip if source value is null and the transformation was declared to skip on null input.
+        return;
+      }
+      RD destinationValue = transformation.transform((RS) sourceValue);
+      writeOrFail(destinationProperty, destination, destinationValue);
+    }
   }
 
   @Override
