@@ -72,6 +72,31 @@ public class FlatCollectionMapping {
   }
 
   @Test
+  public void shouldNotSkipNullItems() {
+    Mapper<Source, Destination> mapper = Mapping.from(Source.class)
+        .to(Destination.class)
+        .replaceCollection(Source::getIds, Destination::getIds)
+        .with(idBuilder())
+        .mapper();
+
+    Source source = Source.builder()
+        .ids(Arrays.asList(1L, null, 2L, null, 3L))
+        .build();
+    Destination map = mapper.map(source);
+
+    List<Id> expected = Arrays.asList(idBuilder().transform(1L), idBuilder().transform(null), idBuilder().transform(2L),
+        idBuilder().transform(null), idBuilder().transform(3L));
+    List<Id> actual = map.getIds();
+    assertEquals(expected, actual);
+
+    // Assert the mapping
+    AssertMapping.of(mapper)
+        .expectReplaceCollection(Source::getIds, Destination::getIds)
+        .andTest(idBuilder())
+        .ensure();
+  }
+
+  @Test
   public void shouldSkipNullItems() {
     Mapper<Source, Destination> mapper = Mapping.from(Source.class)
         .to(Destination.class)
