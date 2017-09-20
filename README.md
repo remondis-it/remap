@@ -20,14 +20,16 @@ Mapper<A, AResource> mapper = Mapping
                                      .to(Person.class)
                                      // A customer has an address, a person might have no address
                                      .omitInSource(Customer::getAddress)
-                                     // A person has a body height that is not available for a customer 
+                                     // A person has a body height that is not available for a customer
                                      .omitInDestination(Person::getBodyHeight)
                                      // A customer has a titles aka. salutation that maps to a persons salutation.
                                      .reassign(Customer::getTitle).to(Person::getSalutation)
                                      // A customer has a gender as string, person uses a gender enumeration
-                                     .replace() 
+                                     .replace()
                                      .mapper();
 ```
+
+You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/demo/DemoTest.java)
 
 # Table of Contents
 1. [Example](#example)
