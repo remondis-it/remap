@@ -1,5 +1,43 @@
 # ReMap - A declarative object mapper
 
+## Long story short
+
+ReMap is a library that simplifies conversion of objects field by field. You can get this library via Maven Central using the following coordinates
+
+```
+<dependency>
+    <groupId>com.remondis</groupId>
+    <artifactId>remap</artifactId>
+    <version>0.0.5</version>
+</dependency>
+```
+
+The following code snippet shows how to map an source type to a destination type:
+
+```java
+Mapper<A, AResource> mapper = Mapping
+                                     .from(Customer.class)
+                                     .to(Person.class)
+                                     // A customer has an address, a person might have no address
+                                     .omitInSource(Customer::getAddress)
+                                     // A person has a body height that is not available for a customer 
+                                     .omitInDestination(Person::getBodyHeight)
+                                     // A customer has a titles aka. salutation that maps to a persons salutation.
+                                     .reassign(Customer::getTitle).to(Person::getSalutation)
+                                     // A customer has a gender as string, person uses a gender enumeration
+                                     .replace() 
+                                     .mapper();
+```
+
+# Table of Contents
+1. [Example](#example)
+2. [Example2](#example2)
+3. [Third Example](#third-example)
+
+## Example
+## Example2
+## Third Example
+
 ReMap is a library that simplifies conversion of objects field by field. It was developed to make conversion of database entities to DTOs (data transfer objects) easier. The use of ReMap makes converter classes and unit tests for converters obsolete: ReMap only needs a specification of what fields are to be mapped, but the amount of code that actually performs the assignments and transformations is minimized. Therefore the code that must be unit-tested is also minimized.
 
 ReMap maps a objects of a source to a destination type. As per default ReMap tries to map all fields from the source to the destination object if the fields have equal name and type. __Only differences must be specified when creating a mapper.__
@@ -84,7 +122,7 @@ Mapper<A, AResource> mapper = Mapping
 
 ReMap can be used to flatten object references. The following example shows how to map fields of `B` referenced by `A` to the type `AResource`.
 
-```
+```java
 Mapper<A, AResource> mapper = Mapping
                                      .from(A.class)
                                      .to(AResource.class)
@@ -106,7 +144,7 @@ As mentioned above ReMap does not directly support the mapping of `java.util.Map
 
 Use the following code snippet to map maps using the `replace` operation:
 
-```
+```java
 Mapper<B, BResource> bMapper = Mapping.from(B.class)
                                       .to(BResource.class)
                                       .mapper();
@@ -145,7 +183,7 @@ ReMap provides an easy way to assert the mapping specification for a mapper inst
 
 Given the following mapping...
 
-```
+```java
 Mapper<B, BResource> bMapper = Mapping.from(B.class)
                                       .to(BResource.class)
                                       .mapper();
@@ -163,7 +201,7 @@ Mapper<A, AResource> mapper = Mapping.from(A.class)
 
 ...the following assertion can be made to ensure regression validity for the mapping specification:
 
-```
+```java
 AssertMapping.of(mapper)
              .expectReassign(A::getString)
              .to(AResource::getAnotherString)
