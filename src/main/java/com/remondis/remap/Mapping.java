@@ -61,7 +61,7 @@ public final class Mapping<S, D> {
   private Map<Projection<?, ?>, Mapper<?, ?>> mappers;
 
   /**
-   * Holds the list of mapping operations
+   * Holds the list of mapping operations.
    */
   private Set<Transformation> mappings;
 
@@ -253,9 +253,9 @@ public final class Mapping<S, D> {
             .equals(propertyName))
         .collect(Collectors.toSet());
     if (matchedPropertiesByName.isEmpty() || matchedPropertiesByName.size() > 1) {
-      throw new MappingException(String.format(
-          "Cannot assign source property '%s' to destination, but this was determined to be possible - this is an implementation fault.",
-          propertyName));
+      throw new MappingException(
+          String.format("Cannot assign source property '%s' to destination, but this was determined "
+              + "to be possible - this is an implementation fault.", propertyName));
     } else {
       return matchedPropertiesByName.iterator()
           .next();

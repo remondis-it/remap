@@ -36,9 +36,11 @@ public class AssertMapping<S, D> {
 
   static final String NOT_NULL_SAFE = "The specified transformation function is not null-safe for operation:\n";
 
-  static final String UNEXPECTED_TRANSFORMATION = "The following unexpected transformation were specified on the mapping:\n";
+  static final String UNEXPECTED_TRANSFORMATION = "The following unexpected transformation "
+      + "were specified on the mapping:\n";
 
-  static final String EXPECTED_TRANSFORMATION = "The following expected transformation were not specified on the mapping:\n";
+  static final String EXPECTED_TRANSFORMATION = "The following expected transformation "
+      + "were not specified on the mapping:\n";
 
   static final String TRANSFORMATION_ALREADY_ADDED = "The specified transformation was already added as an assertion";
 
@@ -157,7 +159,7 @@ public class AssertMapping<S, D> {
   }
 
   /**
-   * This method checks the replace functions against the following scenarios:
+   * This method checks the replace functions. The following scenarios are checked:
    * <ol>
    * <li>The functions do not throw an exception when invoked using sample values
    * <li>
@@ -227,9 +229,9 @@ public class AssertMapping<S, D> {
             // Check if the configured replace transformation has the same skip-null configuration than the asserted
             // one and throw if not
             if (replace.isSkipWhenNull() != assertedReplaceTransformation.isSkipWhenNull()) {
-              throw new AssertionError(
-                  "The replace transformation specified by the mapper has a different null value strategy than the expected transformation:\n"
-                      + replace.toString() + "\n" + assertedTransformations.toString());
+              throw new AssertionError("The replace transformation specified by the mapper has a different null value "
+                  + "strategy than the expected transformation:\n" + replace.toString() + "\n"
+                  + assertedTransformations.toString());
             }
           }
         });
