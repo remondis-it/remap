@@ -21,9 +21,9 @@ public class ReplaceCollectionBuilder<S, D, RD, RS> {
   }
 
   /**
-   * Transforms the selected fields with applying the specified transform function on the source value. <b>Note: The
-   * transform function must check the source value for <code>null</code> itself. Use {@link
-   * #withSkipWhenNull(Transform)} to skip on <code>null</code> input values.</b>
+   * Transforms the items in the collection held by the selected field by applying the specified transform function on
+   * each item. <b>Note: The transform function must check the value for <code>null</code> itself. Use {@link
+   * #withSkipWhenNull(Transform)} to skip on <code>null</code> items.</b>
    *
    * @param transformation The transform function.
    * @return Returns the {@link Mapping} for further mapping configuration.
@@ -37,8 +37,9 @@ public class ReplaceCollectionBuilder<S, D, RD, RS> {
   }
 
   /**
-   * Transforms the selected fields with applying the specified transform function on the source value. <b>This method
-   * skips the execution of the transform function if the source value is null.</b>
+   * Transforms the items in the collection held by the selected field by applying the specified transform function on
+   * each item if the item is not <code>null</code>. <b>This method
+   * skips the execution of the transform function if the source value is <code>null</code>.</b>
    *
    * @param transformation The transform function.
    * @return Returns the {@link Mapping} for further mapping configuration.
