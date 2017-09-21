@@ -17,9 +17,9 @@
 
 ## Long story short
 
-ReMap is a library that simplifies conversion of objects field by field. You can get this library via Maven Central using the following coordinates
+ReMap is a library that simplifies conversion of objects field by field and greatly reduces the efforts for unit testing mapper classes. You can get this library via Maven Central using the following coordinates
 
-```
+```xml
 <dependency>
     <groupId>com.remondis</groupId>
     <artifactId>remap</artifactId>
@@ -31,19 +31,24 @@ The following code snippet shows how to map an source type to a destination type
 
 ```java
 Mapping.from(Customer.class)
-        .to(Person.class)
-        // A customer has an address, a person might have no address
-        .omitInSource(Customer::getAddress)
-        // A person has a body height that is not available for a customer
-        .omitInDestination(Person::getBodyHeight)
-        // A customer has a titles aka. salutation that maps to a persons salutation.
-        .reassign(Customer::getTitle)
+    .to(Person.class)
+    .omitInSource(Customer::getAddress)
+    .omitInDestination(Person::getBodyHeight)
+    .reassign(Customer::getTitle)
         .to(Person::getSalutation)
-        // A customer has a gender as string, person uses a gender enumeration
-        .replace(Customer::getGender, Person::getGender)
+    .replace(Customer::getGender, Person::getGender)
         .withSkipWhenNull(Gender::valueOf)
-        .mapper();
+    .mapper();
 ```
+
+The resulting mapper does the following:
+
+* maps `Customer` objects to `Person` objects
+* `Customer` has the field `address`, `Person` does not, hence it is omitted
+* `Person` has the field `bodyHeight` and `Customer` does not, hence it is omitted
+* the field `Customer.title` is mapped to the field `Person.salutation`
+* the field `Customer.gender` of type `String` is mapped to the Field `Customer.gender` of enum type `Gender`
+  using `Gender.valueOf()` as a transformation function
 
 You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/demo/DemoTest.java)
 
@@ -51,31 +56,44 @@ You can find this demo and the involved classes [here](src/test/java/com/remondi
 
 ReMap is a library that simplifies conversion of objects field by field. It was developed to make conversion of database entities to DTOs (data transfer objects) easier. The use of ReMap makes converter classes and unit tests for converters obsolete: ReMap only needs a specification of what fields are to be mapped, but the amount of code that actually performs the assignments and transformations is minimized. Therefore the code that must be unit-tested is also minimized.
 
-ReMap maps a objects of a source to a destination type. As per default ReMap tries to map all fields from the source to the destination object if the fields have equal name and type. __Only differences must be specified when creating a mapper.__
+ReMap maps a objects of a source to a destination type. As per default ReMap tries to map all fields from the source to the destination object if the fields have equal name and type. __Only differences between the source type and the target type must be specified when creating a mapper.__
 
 ## Mapping operations
 
 The following operations can be declared on a mapper:
 * `omitInSource`: omits a field in the source type and skips the mapping.
 * `omitInDestination`: omits a field in the destination type and skips the mapping.
-* `reassign`: converts a source field to the destination field of the same type while changing the field name.
+* `reassign`: maps a source field to the destination field of the same type while changing the field name.
 * `replace`: converts a source field to the destination field while changing the field name and the type. To transform the source object into the destination type a transformation function is to be specified.
-* `useMapper`: Registers a specific mapper instance that is used to convert referenced types.
+* `useMapper`: registers a specific mapper instance that is used to convert referenced types.
 
 ## Validation
 
-ReMap validates the mapping configuration und denies the following states:
+ReMap validates the mapping configuration of a mapper **at instantiation time** and denies the following states:
 * A source field was not mapped to a destination field
 * A destination field is not covered by a source field
 * Multiple mappings where defined for a destination field
 * `omit` is specified for a source field that already has a mapping configuration
 
-This validation rules make sure that all fields are covered by the mapping configuration when a mapper instance is created.
+These validation rules make sure that all fields are covered by the mapping configuration when a mapper instance is created.
+
+## Unit Testing
+
+Since ReMap relies on getter and setter references like `Address::getId` to specify a mapping,
+the compiler does not allow mappings between fields that are incompatible. When a mapper is
+instantiated, ReMap performs the above-mentioned validations.
+
+Thus, the only things you need to test in a unit test are:
+* that `Mapping.mapper()` does not throw a `MappingException` telling you that one of the validations failed
+* any transformation functions specified for `replace` operations
+
+Optionally, you may want to assert that your specification matches certain expectations to prevent regressions
+to creep into your codebase (see [Asserting the mapping](#asserting-the-mapping)).
 
 ## Features
 
 ReMap supports
-* mapping of primitives, build-in types, custom Java Beans and enumeration values
+* mapping of primitives, built-in types, custom Java Beans and enumeration values
 * type inheritance
 * mapping object references to fields
 * restrictive visibilities
@@ -98,23 +116,17 @@ The short mapping shown under [Long story short](#long-story-short) uses all com
 
 ### Object references
 
-ReMap can be used to flatten object references. The following example shows how to map fields of `B` referenced by `A` to the type `AResource`.
+ReMap can be used to flatten object references. The following example maps the field `OrderEntity.address`
+of type `Address` to the field `OrderDTO.addressId` of type `long`.
 
 ```java
-Mapper<A, AResource> mapper = Mapping
-                                     .from(A.class)
-                                     .to(AResource.class)
-                                     // Get B referenced by A and map it to field integer in AResource
-                                     .replace(A::getB, AResource::getInteger)
-                                     // use the value of field integer in B
-                                     .with(B::getInteger)
-                                     // same example, different fields
-                                     .replace(A::getB, AResource::getNumber)
-                                     .with(B::getNumber)
-                                     .mapper();
+Mapper<OrderEntity, OrderDTO> mapper = Mapping
+    .from(OrderEntity.class)
+    .to(OrderDTO.class)
+    .replace(OrderEntity::getAddress, OrderDTO::getAddressId)
+        .with(Addresss::getId)
+    .mapper();
 ```
-
-One advantage here is that the actual mapping must not be tested with unit tests.
 
 ### Mapping maps
 
@@ -124,81 +136,73 @@ Use the following code snippet to map maps using the `replace` operation:
 
 ```java
 Mapper<B, BResource> bMapper = Mapping.from(B.class)
-                                      .to(BResource.class)
-                                      .mapper();
+    .to(BResource.class)
+    .mapper();
+
  Mapper<A, AResource> mapper = Mapping.from(A.class)
-                                      .to(AResource.class)
-                                      // specify a replace operation involving the source and the destination field holding the map
-                                      .replace(A::getBmap, AResource::getBmap)
-                                      // specify a transformation function (Map<Integer, B>) -> Map<String, BResource>
-                                      .with(iToBMap -> {
-                                        return iToBMap.entrySet()
-                                          .stream()
-                                          .map(e -> {
-                                            // Perform the type conversion while iterating over the entry set
-                                            return new AbstractMap.SimpleEntry<String, BResource>(String.valueOf(e.getKey()),
-                                                bMapper.map(e.getValue()));
-                                          })
-                                          .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-                                      })
-                                      .useMapper(bMapper)
-                                      .mapper();
+    .to(AResource.class)
+    // specify a replace operation involving the source and the destination field holding the map
+    .replace(A::getBmap, AResource::getBmap)
+        // specify a transformation function (Map<Integer, B>) -> Map<String, BResource>
+        .with(iToBMap -> {
+          return iToBMap.entrySet()
+            .stream()
+            .map(e -> {
+              // Perform the type conversion while iterating over the entry set
+              return new AbstractMap.SimpleEntry<String, BResource>(String.valueOf(e.getKey()),
+                  bMapper.map(e.getValue()));
+            })
+            .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        })
+    .useMapper(bMapper)
+    .mapper();
 ```
-
-
-
-
-### Tests
-
-ReMap makes converter classes and corresponding unit tests obsolete because the actual get/set calls must not be tested. To ensure that the mapping configuration covers all fields ReMap validates the configuration when `mapper()` is invoked. The only things that must be tested in unit tests are
-* that the mapping configurations are valid. You only have to write a simple unit test that asserts that `mapper()` does not throw a `MappingException`.
-* the transformation functions specified for `replace` operations
-* that the mapping specification is correct. See "Asserting the mapping"
 
 ### Asserting the mapping
 
-ReMap provides an easy way to assert the mapping specification for a mapper instance. This assertions should be used in unit-tests to provide regression tests for your mapping configuration. The following example shows how to assert a mapping specification:
+ReMap provides an easy way to assert the mapping specification for a mapper instance. These assertions should be used in unit tests to provide regression tests for your mapping configuration. The following example shows how to assert a mapping specification:
 
 Given the following mapping...
 
 ```java
 Mapper<B, BResource> bMapper = Mapping.from(B.class)
-                                      .to(BResource.class)
-                                      .mapper();
+    .to(BResource.class)
+    .mapper();
+
 Mapper<A, AResource> mapper = Mapping.from(A.class)
-                                     .to(AResource.class)
-                                     .reassign(A::getString)
-                                     .to(AResource::getAnotherString)
-                                     .replace(A::getInteger, AResource::getIntegerAsString)
-                                     .with(String::valueOf)
-                                     .omitInSource(A::getOmitted)
-                                     .omitInDestination(AResource::getOmitted)
-                                     .useMapper(bMapper)
-                                     .mapper();
+    .to(AResource.class)
+    .reassign(A::getString)
+        .to(AResource::getAnotherString)
+    .replace(A::getInteger, AResource::getIntegerAsString)
+        .with(String::valueOf)
+    .omitInSource(A::getOmitted)
+    .omitInDestination(AResource::getOmitted)
+    .useMapper(bMapper)
+    .mapper();
 ```
 
 ...the following assertion can be made to ensure regression validity for the mapping specification:
 
 ```java
 AssertMapping.of(mapper)
-             .expectReassign(A::getString)
-             .to(AResource::getAnotherString)
-             .expectReplace(A::getInteger, AResource::getIntegerAsString)
-             .andTest(String::valueOf)
-             .expectOmitInSource(A::getOmitted)
-             .expectOmitInDestination(AResource::getOmitted)
-             .ensure();
+    .expectReassign(A::getString)
+        .to(AResource::getAnotherString)
+    .expectReplace(A::getInteger, AResource::getIntegerAsString)
+        .andTest(String::valueOf)
+    .expectOmitInSource(A::getOmitted)
+    .expectOmitInDestination(AResource::getOmitted)
+    .ensure();
 ```
 
-The asserts check that the expected mappings are also configured on the specified mapper. If there occur differences, the `ensure()` method will throw an assertion error.
+The asserts check that the expected mappings are also configured on the specified mapper. If there are differences, the `ensure()` method will throw an assertion error.
 
 Note: The `replace` operation supports two null-strategies and the mapper needs to specify the same strategy as the asserts! The transformation function in this example is checked against a `null` when `ensure()` is invoked. If the `replace` operation was added using `withSkipWhenNull()` the specified transformation function is not checked against `null`.
 
-## Spring-Integration
+## Spring Integration
 
 ReMap can be nicely integrated in Spring Applications so that mapper instances can be injected using `@Autowired`. Spring also checks the generic type of the mapper to autowire the correct mapping requested.
 
-The following bean configuration creates a mappers to convert a `Person` into `Human` and vice-versa:
+The following bean configuration creates mappers to convert a `Person` into `Human` and vice versa:
 
 ```java
 @Configuration
