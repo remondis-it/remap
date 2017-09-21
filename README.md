@@ -93,12 +93,14 @@ to creep into your codebase (see [Tests](#tests)).
 ## Features
 
 ReMap supports
-* mapping of primitives, built-in types, custom Java Beans and enumeration values
+* out-of-the-box mapping of primitives, built-in types, custom Java Beans and enumeration values
 * type inheritance
 * mapping object references to fields
 * restrictive visibilities
 * mapping of nested collections (Attention: maps are not collections!)
 * mapping of maps using `replace` and a transformation function that maps key and values
+* unit testing of mapping specifications
+* mapping without invasively changing code of involved objects
 
 ## Limitations
 
