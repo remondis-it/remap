@@ -10,6 +10,7 @@
 7. [How to use](#how-to-use)
    1. [Object references](#object-references)
    2. [Mapping maps](#mapping-maps)
+   2. [Transforming collections](#transforming-collections)
    3. [Tests](#tests)
 8. [Spring integration](#spring-integration)
 9. [How to contribute](#how-to-contribute)
