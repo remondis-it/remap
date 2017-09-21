@@ -16,23 +16,23 @@ public class MappingException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
 
-  MappingException() {
+  public MappingException() {
     super();
   }
 
-  MappingException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+  public MappingException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
   }
 
-  MappingException(String message, Throwable cause) {
+  public MappingException(String message, Throwable cause) {
     super(message, cause);
   }
 
-  MappingException(String message) {
+  public MappingException(String message) {
     super(message);
   }
 
-  MappingException(Throwable cause) {
+  public MappingException(Throwable cause) {
     super(cause);
   }
 
