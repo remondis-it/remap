@@ -10,8 +10,8 @@
 7. [How to use](#how-to-use)
    1. [Object references](#object-references)
    2. [Mapping maps](#mapping-maps)
+   2. [Transforming collections](#transforming-collections)
    3. [Tests](#tests)
-   4. [Asserting the mapping](#asserting-the-mapping)
 8. [Spring integration](#spring-integration)
 9. [How to contribute](#how-to-contribute)
 
@@ -88,7 +88,7 @@ Thus, the only things you need to test in a unit test are:
 * any transformation functions specified for `replace` operations
 
 Optionally, you may want to assert that your specification matches certain expectations to prevent regressions
-to creep into your codebase (see [Asserting the mapping](#asserting-the-mapping)).
+to creep into your codebase (see [Tests](#tests)).
 
 ## Features
 
@@ -158,7 +158,33 @@ Mapper<B, BResource> bMapper = Mapping.from(B.class)
     .mapper();
 ```
 
-### Asserting the mapping
+### Transforming collections
+
+When performing a `replace` operation on collections in earlier versions of ReMap you had to manually iterate over the collection to apply the conversion. Since ReMap version `1.0.0` you can use the operation `replaceCollection` to apply the transformation function automatically on the collection items.
+
+The following code snippet shows how to use `replaceCollection`:
+
+```java
+Mapper<Source, Destination> mapper = Mapping.from(Source.class)
+      .to(Destination.class)
+      .replaceCollection(Source::getIds, Destination::getIds)
+      .with(newId())
+      .mapper();
+```
+
+The following code asserts the above mapping:
+
+```
+AssertMapping.of(mapper)
+      .expectReplaceCollection(Source::getIds, Destination::getIds)
+      .andTest(newId())
+      .ensure();
+```
+
+You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/flatCollectionMapping/DemoTest.java)
+
+
+### Tests
 
 ReMap provides an easy way to assert the mapping specification for a mapper instance. These assertions should be used in unit tests to provide regression tests for your mapping configuration. The following example shows how to assert a mapping specification:
 
