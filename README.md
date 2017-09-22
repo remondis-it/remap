@@ -172,7 +172,9 @@ The following code snippet shows how to use `replaceCollection`:
 Mapper<Source, Destination> mapper = Mapping.from(Source.class)
       .to(Destination.class)
       .replaceCollection(Source::getIds, Destination::getIds)
-      .with(newId())
+      .with(id -> Id.builder()
+        .id(id)
+        .build())
       .mapper();
 ```
 
