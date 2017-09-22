@@ -183,7 +183,9 @@ The following code asserts the above mapping:
 ```
 AssertMapping.of(mapper)
       .expectReplaceCollection(Source::getIds, Destination::getIds)
-      .andTest(newId())
+      .andTest(id -> Id.builder()
+        .id(id)
+        .build())
       .ensure();
 ```
 
