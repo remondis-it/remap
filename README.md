@@ -112,6 +112,7 @@ ReMap supports
   * fields of type Boolean/boolean have public is/set methods
   * the declaring type has a public default constructor
   * keywords like `transient` do not have an effect on the mapping
+* circular references are currently not supported
 * multi-classloader environments are currently not supported. All types must be loaded by the same classloader.
 
 ## How to use
