@@ -5,6 +5,9 @@ import static com.remondis.remap.ReflectionUtil.getCollector;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * This class defines a reusable mapper object to perform multiple mappings for the configured object types.
@@ -27,7 +30,7 @@ public class Mapper<S, D> {
   }
 
   /**
-   * Performs the actual mapping recursively through the object hierarchy.
+   * Performs the actual mapping.
    *
    * @param source The source object to map to a new destination object.
    * @return Returns a newly created destination object.
@@ -57,13 +60,25 @@ public class Mapper<S, D> {
   }
 
   /**
-   * Performs the mapping for the specified {@link Set} by performing the map operations in parallel.
+   * Performs the mapping for the specified {@link Set}.
    *
    * @param source The source collection to map to a new collection of destination objects.
    * @return Returns a newly created destination object.
    */
   public Set<D> map(Set<S> source) {
     return (Set<D>) _mapCollection(source);
+  }
+
+  /**
+   * Performs the mapping for the elements provided by the specified {@link Iterable} .
+   *
+   * @param iterable The source iterable to be mapped to a new {@link List} of destination objects.
+   * @return Returns a newly created destination object.
+   */
+  public List<D> map(Iterable<S> iterable) {
+    Stream<S> stream = StreamSupport.stream(iterable.spliterator(), false);
+    return stream.map(this::map)
+        .collect(Collectors.toList());
   }
 
   @SuppressWarnings("unchecked")
