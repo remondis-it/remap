@@ -23,7 +23,7 @@ ReMap is a library that simplifies conversion of objects field by field and grea
 <dependency>
     <groupId>com.remondis</groupId>
     <artifactId>remap</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
