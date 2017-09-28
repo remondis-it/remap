@@ -113,6 +113,7 @@ ReMap supports
   * the declaring type has a public default constructor
   * keywords like `transient` do not have an effect on the mapping
 * circular references are currently not supported
+* mapping equal types does not copy object instances!
 * multi-classloader environments are currently not supported. All types must be loaded by the same classloader.
 
 ## How to use
