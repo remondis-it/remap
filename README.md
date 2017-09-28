@@ -11,7 +11,8 @@
    1. [Object references](#object-references)
    2. [Mapping maps](#mapping-maps)
    2. [Transforming collections](#transforming-collections)
-   3. [Tests](#tests)
+   3. [Bidirectional mapping](#bidirectional-mapping)
+   4. [Tests](#tests)
 8. [Spring integration](#spring-integration)
 9. [How to contribute](#how-to-contribute)
 
@@ -192,6 +193,27 @@ AssertMapping.of(mapper)
 ```
 
 You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/flatCollectionMapping/DemoTest.java)
+
+### Bidirectional mapping
+
+ReMap provides a class to combine two mapper instances to a bidirectional mapping. Given the following mappings:
+
+```
+Mapper<Person, Human> to = Mapping.from(Person.class)
+    .to(Human.class)
+    .mapper();
+Mapper<Human, Person> from = Mapping.from(Human.class)
+    .to(Person.class)
+    .mapper();
+```
+
+a bidirectional mapper can be created to map a `Person` to `Human` and vice-versa:
+
+```
+BidirectionalMapper<Person, Human> bidirectionalMapper = BidirectionalMapper.of(to, from);
+```
+
+You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/bidirectional/BidirectionalDemo.java)
 
 
 ### Tests
