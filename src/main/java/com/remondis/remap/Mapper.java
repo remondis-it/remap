@@ -30,7 +30,7 @@ public class Mapper<S, D> {
   }
 
   /**
-   * Performs the actual mapping.
+   * Performs the mapping from the source to destination type.
    *
    * @param source The source object to map to a new destination object.
    * @return Returns a newly created destination object.
@@ -43,7 +43,8 @@ public class Mapper<S, D> {
    * Performs the mapping for the specified {@link Collection}.
    *
    * @param source The source collection to map to a new collection of destination objects.
-   * @return Returns a newly created destination object.
+   * @return Returns a newly created collection of destination objects. The type of the resulting collection is either
+   *         {@link List} or {@link Set} depending on the specified type.
    */
   public Collection<D> map(Collection<S> source) {
     return _mapCollection(source);
@@ -53,7 +54,7 @@ public class Mapper<S, D> {
    * Performs the mapping for the specified {@link List}.
    *
    * @param source The source collection to map to a new collection of destination objects.
-   * @return Returns a newly created destination object.
+   * @return Returns a newly created list of destination objects.
    */
   public List<D> map(List<S> source) {
     return (List<D>) _mapCollection(source);
@@ -63,7 +64,7 @@ public class Mapper<S, D> {
    * Performs the mapping for the specified {@link Set}.
    *
    * @param source The source collection to map to a new collection of destination objects.
-   * @return Returns a newly created destination object.
+   * @return Returns a newly set list of destination objects.
    */
   public Set<D> map(Set<S> source) {
     return (Set<D>) _mapCollection(source);
@@ -73,7 +74,7 @@ public class Mapper<S, D> {
    * Performs the mapping for the elements provided by the specified {@link Iterable} .
    *
    * @param iterable The source iterable to be mapped to a new {@link List} of destination objects.
-   * @return Returns a newly created destination object.
+   * @return Returns a newly set list of destination objects.
    */
   public List<D> map(Iterable<S> iterable) {
     Stream<S> stream = StreamSupport.stream(iterable.spliterator(), false);
