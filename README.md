@@ -29,7 +29,7 @@ ReMap is a library that simplifies conversion of objects field by field and grea
 
 ...or in Gradle using `compile "com.remondis:remap:1.0.1"`.
 
-The following code snippet shows how to map an source type to a destination type:
+The following code snippet shows how to map a source type to a destination type:
 
 ```java
 Mapping.from(Customer.class)
