@@ -211,6 +211,10 @@ a bidirectional mapper can be created to map a `Person` to `Human` and vice-vers
 
 ```
 BidirectionalMapper<Person, Human> bidirectionalMapper = BidirectionalMapper.of(to, from);
+
+Person person = new Person("Peter");
+Human human = bidirectionalMapper.map(person);
+Person mappedBackToPerson = bidirectionalMapper.mapFrom(human);
 ```
 
 You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/bidirectional/BidirectionalDemo.java)
