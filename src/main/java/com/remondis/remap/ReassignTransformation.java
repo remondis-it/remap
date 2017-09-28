@@ -74,20 +74,12 @@ public class ReassignTransformation extends Transformation {
       "unchecked", "rawtypes"
   })
   Object convertValue(Object sourceValue, Class<?> sourceType, Class<?> destinationType) {
-    if (isReferenceMapping(sourceType, destinationType)) {
+    if (isReferenceMapping(sourceType, destinationType) || isEqualTypes(sourceType, destinationType)) {
       return sourceValue;
     } else {
-      if (isEqualTypes(sourceType, destinationType)) {
-        // If the types are equal we can perform an identity mapping.
-        Mapper<Object, Object> mapper = (Mapper<Object, Object>) Mapping.from(sourceType)
-            .to(destinationType)
-            .mapper();
-        return mapper.map(sourceValue);
-      } else {
-        // Object types must be mapped by a registered mapper before setting the value.
-        Mapper delegateMapper = getMapperFor(sourceType, destinationType);
-        return delegateMapper.map(sourceValue);
-      }
+      // Object types must be mapped by a registered mapper before setting the value.
+      Mapper delegateMapper = getMapperFor(sourceType, destinationType);
+      return delegateMapper.map(sourceValue);
     }
   }
 
