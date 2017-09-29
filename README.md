@@ -270,6 +270,12 @@ The following bean configuration creates mappers to convert a `Person` into `Hum
 @Configuration
 static class TestConfiguration {
   @Bean
+  BidirectionalMapper<Person, Human> bidiPersonHumanMapper(Mapper<Person, Human> personHumanMapper, 
+                                                           Mapper<Human, Person> humanPersonMapper) {
+    return BidirectionalMapper.of(personHumanMapper, humanPersonMapper);
+  }
+
+  @Bean
   Mapper<Person, Human> personHumanMapper(){
     return Mapping.from(Person.class)
         .to(Human.class)
