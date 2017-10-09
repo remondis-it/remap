@@ -54,7 +54,7 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
    * @return Returns the {@link AssertMapping} for further configuration.
    *
    * @deprecated This method should not be used. Use {@link #andSkipWhenNull()} instead. This method will be deleted in
-   *             a future release since the expected transform function cannot be verfied.
+   *             a future release since the expected transform function cannot be verified.
    */
   @Deprecated
   public AssertMapping<S, D> andTestButSkipWhenNull(Transform<RD, RS> transformation) {
