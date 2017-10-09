@@ -26,7 +26,14 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
   }
 
   /**
-   * Specifies the transformation function that will be checked against null input.
+   * Expects the mapping to <b>not</b> skip the transform function on <code>null</code> input. The specified transform
+   * function will be checked against <code>null</code> input.
+   *
+   * <p>
+   * Note: This method cannot reliably check that the specified function is actually the function that was configured on
+   * the mapping. This method only verifies the skip-on-null behaviour and performs a <code>null</code> check on the
+   * specified function.
+   * </p>
    *
    * @param transformation The transformation to test.
    * @return Returns the {@link AssertMapping} for further configuration.
@@ -41,15 +48,27 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
 
   /**
    * Specifies the transform operation to be skipped when null. In this case the transformation function will not be
-   * tested. In a future release this method may allow to test the transformation function.
+   * tested.
    *
    * @param transformation The transformation function
    * @return Returns the {@link AssertMapping} for further configuration.
+   *
+   * @deprecated This method should not be used. Use {@link #andSkipWhenNull()} instead. This method will be deleted in
+   *             a future release since the expected transform function cannot be verfied.
    */
+  @Deprecated
   public AssertMapping<S, D> andTestButSkipWhenNull(Transform<RD, RS> transformation) {
-    denyNull("tranfromation", transformation);
+    return andSkipWhenNull();
+  }
+
+  /**
+   * Expects the mapping to skip the transform function on <code>null</code> input.
+   *
+   * @return Returns the {@link AssertMapping} for further configuration.
+   */
+  public AssertMapping<S, D> andSkipWhenNull() {
     ReplaceTransformation<RD, RS> replace = new ReplaceTransformation<RD, RS>(asserts.getMapping(),
-        sourceProperty.property, destProperty.property, transformation, true);
+        sourceProperty.property, destProperty.property, null, true);
     asserts.addAssertion(replace);
     return asserts;
   }

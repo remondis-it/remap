@@ -33,7 +33,7 @@ public class DemoTest {
         .to(Person::getSalutation)
         // A customer has a gender as string, person uses a gender enumeration
         .expectReplace(Customer::getGender, Person::getGender)
-        .andTestButSkipWhenNull(Gender::valueOf)
+        .andSkipWhenNull()
         .ensure();
   }
 }

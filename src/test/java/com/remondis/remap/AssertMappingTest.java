@@ -295,13 +295,13 @@ public class AssertMappingTest {
     assertThatThrownBy(() -> {
       AssertMapping.of(mapper)
           .expectReplace(A::getInteger, AResource::getIntegerAsString)
-          .andTestButSkipWhenNull(String::valueOf)
+          .andSkipWhenNull()
           .expectReassign(A::getString)
           .to(AResource::getAnotherString)
           .expectOmitInSource(A::getOmitted)
           .expectOmitInDestination(AResource::getOmitted)
           .expectReplace(A::getInteger, AResource::getIntegerAsString)
-          .andTestButSkipWhenNull(String::valueOf)
+          .andSkipWhenNull()
           .ensure();
     }).isInstanceOf(AssertionError.class)
         .hasMessage(TRANSFORMATION_ALREADY_ADDED)
@@ -317,7 +317,7 @@ public class AssertMappingTest {
           .expectOmitInSource(A::getOmitted)
           .expectOmitInDestination(AResource::getOmitted)
           .expectReplace(A::getInteger, AResource::getIntegerAsString)
-          .andTestButSkipWhenNull(String::valueOf)
+          .andSkipWhenNull()
           .ensure();
     }).isInstanceOf(AssertionError.class)
         .hasMessage(TRANSFORMATION_ALREADY_ADDED)
@@ -327,7 +327,7 @@ public class AssertMappingTest {
     assertThatThrownBy(() -> {
       AssertMapping.of(mapper)
           .expectReplace(A::getInteger, AResource::getIntegerAsString)
-          .andTestButSkipWhenNull(String::valueOf)
+          .andSkipWhenNull()
           .expectReassign(A::getString)
           .to(AResource::getAnotherString)
           .expectOmitInSource(A::getOmitted)
@@ -389,7 +389,7 @@ public class AssertMappingTest {
         .expectReassign(A::getString)
         .to(AResource::getAnotherString)
         .expectReplace(A::getInteger, AResource::getIntegerAsString)
-        .andTestButSkipWhenNull(String::valueOf)
+        .andSkipWhenNull()
         .expectOmitInSource(A::getOmitted)
         .expectOmitInDestination(AResource::getOmitted);
     asserts.ensure();
