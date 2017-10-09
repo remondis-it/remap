@@ -45,7 +45,7 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
     asserts.addAssertion(replace);
     return asserts;
   }
-
+ 
   /**
    * Expects the mapping to skip the transform function on <code>null</code> input.
    *

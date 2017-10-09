@@ -14,7 +14,8 @@
    3. [Bidirectional mapping](#bidirectional-mapping)
    4. [Tests](#tests)
 8. [Spring integration](#spring-integration)
-9. [How to contribute](#how-to-contribute)
+9. [Migration guide](#migration-guide)
+10. [How to contribute](#how-to-contribute)
 
 ## Long story short
 
@@ -270,7 +271,7 @@ The following bean configuration creates mappers to convert a `Person` into `Hum
 @Configuration
 static class TestConfiguration {
   @Bean
-  BidirectionalMapper<Person, Human> bidiPersonHumanMapper(Mapper<Person, Human> personHumanMapper, 
+  BidirectionalMapper<Person, Human> bidiPersonHumanMapper(Mapper<Person, Human> personHumanMapper,
                                                            Mapper<Human, Person> humanPersonMapper) {
     return BidirectionalMapper.of(personHumanMapper, humanPersonMapper);
   }
@@ -302,6 +303,21 @@ Use the following code snippet in components to inject the mapper instances:
 `````
 
 
-# How to contribute
+# Migration guide
 
+## Migration from 1.x.x to 2.x.x
+
+There were API changes that break backward compatibility:
+
+* The method `com.remondis.remap.ReplaceAssertBuilder.andTestButSkipWhenNull(Transform<RD, RS> transformation)` changed  to `com.remondis.remap.ReplaceAssertBuilder.andSkipWhenNull()`. Specifying transform function is not longer required. Please check your mapping assertions to match the new API.
+* The generic type in `com.remondis.remap.Transform<D, S>` changed to `com.remondis.remap.Transform<S, D>`
+* According to the above change please check your mapping configuration and assertions for the `replace` operation to match the new API. The affected classes are:
+    * `com.remondis.remap.ReplaceBuilder`
+    * `com.remondis.remap.ReplaceAssertBuilder`
+    * `com.remondis.remap.ReplaceCollectionBuilder`
+    * `com.remondis.remap.ReplaceCollectionAssertBuilder`
+    * `com.remondis.remap.ReplaceTransformation`
+    * `com.remondis.remap.Transformation`
+
+# How to contribute
 Please refer to the project's [contribution guide](CONTRIBUTE.md)

@@ -153,7 +153,7 @@ public class FlatCollectionMapping {
         .hasNoCause();
   }
 
-  public static Transform<Id, Long> idBuilder() {
+  public static Transform<Long, Id> idBuilder() {
     return id -> Id.builder()
         .id(id)
         .build();

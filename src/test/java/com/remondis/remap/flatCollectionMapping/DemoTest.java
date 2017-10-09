@@ -23,7 +23,7 @@ public class DemoTest {
         .ensure();
   }
 
-  public Transform<Id, Long> newId() {
+  public Transform<Long, Id> newId() {
     return id -> Id.builder()
         .id(id)
         .build();
