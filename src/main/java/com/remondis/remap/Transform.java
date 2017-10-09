@@ -8,7 +8,7 @@ package com.remondis.remap;
  * @author schuettec
  */
 @FunctionalInterface
-public interface Transform<D, S> {
+public interface Transform<S, D> {
 
   /**
    * Transforms the source into a destination object.
