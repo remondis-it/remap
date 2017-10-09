@@ -309,6 +309,7 @@ Use the following code snippet in components to inject the mapper instances:
 
 There were API changes that break backward compatibility:
 
+* The method `com.remondis.remap.ReplaceAssertBuilder.andTestButSkipWhenNull(Transform<RD, RS> transformation)` changed  to `com.remondis.remap.ReplaceAssertBuilder.andSkipWhenNull()`. Specifying transform function is not longer required. Please check your mapping assertions to match the new API.
 * The generic type in `com.remondis.remap.Transform<D, S>` changed to `com.remondis.remap.Transform<S, D>`
 * According to the above change please check your mapping configuration and assertions for the `replace` operation to match the new API. The affected classes are:
     * `com.remondis.remap.ReplaceBuilder`
