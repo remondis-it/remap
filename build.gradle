@@ -74,6 +74,14 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
+jar {
+    manifest {
+         attributes("Bundle-Vendor": "REMONDIS IT Services GmbH & Co. KG",
+                    "Bundle-DocURL": "https://github.com/remondis-it/remap",
+                    "Automatic-Module-Name": "com.remondis.remap")
+    }
+}
+
 
 if (project.hasProperty('release')) {
 
