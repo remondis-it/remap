@@ -30,8 +30,8 @@ public class ReplaceCollectionBuilder<S, D, RD, RS> {
    */
   public Mapping<S, D> with(Transform<RS, RD> transformation) {
     denyNull("tranformation", transformation);
-    ReplaceTransformation<RS, RD> replace = new ReplaceTransformation<>(mapping, sourceProperty.property,
-        destProperty.property, transformation, false);
+    ReplaceCollectionTransformation<RS, RD> replace = new ReplaceCollectionTransformation<>(mapping,
+        sourceProperty.property, destProperty.property, transformation, false);
     mapping.addMapping(sourceProperty.property, destProperty.property, replace);
     return mapping;
   }
@@ -46,8 +46,8 @@ public class ReplaceCollectionBuilder<S, D, RD, RS> {
    */
   public Mapping<S, D> withSkipWhenNull(Transform<RS, RD> transformation) {
     denyNull("tranformation", transformation);
-    ReplaceTransformation<RS, RD> replace = new ReplaceTransformation<>(mapping, sourceProperty.property,
-        destProperty.property, transformation, true);
+    ReplaceCollectionTransformation<RS, RD> replace = new ReplaceCollectionTransformation<>(mapping,
+        sourceProperty.property, destProperty.property, transformation, true);
     mapping.addMapping(sourceProperty.property, destProperty.property, replace);
     return mapping;
   }

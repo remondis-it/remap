@@ -14,13 +14,6 @@ import com.remondis.remap.flatCollectionMapping.Destination;
 import com.remondis.remap.flatCollectionMapping.Id;
 import com.remondis.remap.flatCollectionMapping.Source;
 
-/**
- * This class documents a currently impossible mapping from a build-in/primitive type to a Java Bean. It would be nice
- * to support this kinds of mappings in a future release.
- *
- * @author schuettec
- *
- */
 public class FlatCollectionMapping {
 
   @Test
@@ -116,7 +109,7 @@ public class FlatCollectionMapping {
     // Assert the mapping
     AssertMapping.of(mapper)
         .expectReplaceCollection(Source::getIds, Destination::getIds)
-        .andTestButSkipWhenNull(idBuilder())
+        .andSkipWhenNull()
         .ensure();
   }
 
@@ -146,7 +139,7 @@ public class FlatCollectionMapping {
     assertThatThrownBy(() -> {
       AssertMapping.of(mapper)
           .expectReplaceCollection(Source::getIds, Destination::getIds)
-          .andTestButSkipWhenNull(idBuilder())
+          .andSkipWhenNull()
           .ensure();
     }).isInstanceOf(AssertionError.class)
         .hasMessageContaining(DIFFERENT_NULL_STRATEGY)
