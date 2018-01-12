@@ -6,6 +6,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This class can be used to manage bidirectional mappings. The configuration of mappers for both directions is required
+ * to build a bidirectional mapping.
+ *
+ * @param <S>
+ * @param <D>
+ */
 public class BidirectionalMapper<S, D> {
 
   Mapper<S, D> to;
