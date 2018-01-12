@@ -30,6 +30,15 @@ repositories {
     }
 }
 
+// Doclint enforces generic parameter documentations that are redundant.
+if (JavaVersion.current().isJava8Compatible()) {
+   allprojects {
+     tasks.withType(Javadoc) {
+       options.addStringOption('Xdoclint:none', '-quiet')
+     }
+   }
+}
+
 dependencies {
     compile "cglib:cglib:3.2.5"
 

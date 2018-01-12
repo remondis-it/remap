@@ -45,7 +45,6 @@ public class ReplaceCollectionAssertBuilder<S, D, RD, RS> {
    * Specifies the transform operation to be skipped when null. In this case the transformation function will not be
    * tested. In a future release this method may allow to test the transformation function.
    *
-   * @param transformation The transformation function
    * @return Returns the {@link AssertMapping} for further configuration.
    */
   public AssertMapping<S, D> andSkipWhenNull() {
