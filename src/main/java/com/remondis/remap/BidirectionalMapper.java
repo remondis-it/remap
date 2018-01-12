@@ -10,8 +10,8 @@ import java.util.Set;
  * This class can be used to manage bidirectional mappings. The configuration of mappers for both directions is required
  * to build a bidirectional mapping.
  *
- * @param <S>
- * @param <D>
+ * @param <S> Source type
+ * @param <D> Destination type
  */
 public class BidirectionalMapper<S, D> {
 
