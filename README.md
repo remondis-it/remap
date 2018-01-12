@@ -25,11 +25,11 @@ ReMap is a library that simplifies conversion of objects field by field and grea
 <dependency>
     <groupId>com.remondis</groupId>
     <artifactId>remap</artifactId>
-    <version>2.0.1</version>
+    <version>2.1.0</version>
 </dependency>
 ```
 
-...or in Gradle using `compile "com.remondis:remap:2.0.1"`.
+...or in Gradle using `compile "com.remondis:remap:2.1.0"`.
 
 The following code snippet shows how to map a source type to a destination type:
 
@@ -304,6 +304,12 @@ Use the following code snippet in components to inject the mapper instances:
 
 
 # Migration guide
+
+## Migration from 2.x.x to 3.x.x
+
+There were API changes that break backward compatibility:
+
+* The method `com.remondis.remap.ReplaceCollectionAssertBuilder.andTestButSkipWhenNull(Transform<RD, RS> transformation)` changed  to `com.remondis.remap.ReplaceCollectionAssertBuilder.andSkipWhenNull()`. Specifying transform function is not longer required. Please check your mapping assertions to match the new API.
 
 ## Migration from 1.x.x to 2.x.x
 
