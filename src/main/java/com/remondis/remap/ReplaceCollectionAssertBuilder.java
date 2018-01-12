@@ -35,8 +35,8 @@ public class ReplaceCollectionAssertBuilder<S, D, RD, RS> {
    */
   public AssertMapping<S, D> andTest(Transform<RS, RD> transformation) {
     denyNull("tranfromation", transformation);
-    ReplaceTransformation<RS, RD> replace = new ReplaceTransformation<>(asserts.getMapping(), sourceProperty.property,
-        destProperty.property, transformation, false);
+    ReplaceCollectionTransformation<RS, RD> replace = new ReplaceCollectionTransformation<>(asserts.getMapping(),
+        sourceProperty.property, destProperty.property, transformation, false);
     asserts.addAssertion(replace);
     return asserts;
   }
@@ -48,10 +48,9 @@ public class ReplaceCollectionAssertBuilder<S, D, RD, RS> {
    * @param transformation The transformation function
    * @return Returns the {@link AssertMapping} for further configuration.
    */
-  public AssertMapping<S, D> andTestButSkipWhenNull(Transform<RS, RD> transformation) {
-    denyNull("tranfromation", transformation);
-    ReplaceTransformation<RS, RD> replace = new ReplaceTransformation<>(asserts.getMapping(),
-        sourceProperty.property, destProperty.property, transformation, true);
+  public AssertMapping<S, D> andSkipWhenNull() {
+    ReplaceCollectionTransformation<RS, RD> replace = new ReplaceCollectionTransformation<>(asserts.getMapping(),
+        sourceProperty.property, destProperty.property, null, true);
     asserts.addAssertion(replace);
     return asserts;
   }

@@ -199,10 +199,10 @@ public class AssertMapping<S, D> {
         .getMappings();
     mappings.stream()
         .filter(t -> {
-          return (t instanceof ReplaceTransformation);
+          return (t instanceof SkipWhenNullTransformation);
         })
         .map(t -> {
-          return (ReplaceTransformation) t;
+          return (SkipWhenNullTransformation) t;
         })
         .forEach(r -> {
           Transform<?, ?> transformation = r.getTransformation();
@@ -229,18 +229,18 @@ public class AssertMapping<S, D> {
 
     mappings.stream()
         .filter(t -> {
-          return (t instanceof ReplaceTransformation);
+          return (t instanceof SkipWhenNullTransformation);
         })
         .map(t -> {
-          return (ReplaceTransformation) t;
+          return (SkipWhenNullTransformation) t;
         })
         .forEach(replace -> {
-          Optional<ReplaceTransformation> sameTransformation = assertedTransformations().stream()
+          Optional<SkipWhenNullTransformation> sameTransformation = assertedTransformations().stream()
               .filter(t -> {
-                return (t instanceof ReplaceTransformation);
+                return (t instanceof SkipWhenNullTransformation);
               })
               .map(t -> {
-                return (ReplaceTransformation) t;
+                return (SkipWhenNullTransformation) t;
               })
               .filter(r -> {
                 return r.getSourceProperty()
@@ -252,7 +252,7 @@ public class AssertMapping<S, D> {
               })
               .findFirst();
           if (sameTransformation.isPresent()) {
-            ReplaceTransformation assertedReplaceTransformation = sameTransformation.get();
+            SkipWhenNullTransformation assertedReplaceTransformation = sameTransformation.get();
             // Check if the configured replace transformation has the same skip-null configuration than the asserted
             // one and throw if not
             if (replace.isSkipWhenNull() != assertedReplaceTransformation.isSkipWhenNull()) {
