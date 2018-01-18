@@ -25,11 +25,11 @@ ReMap is a library that simplifies conversion of objects field by field and grea
 <dependency>
     <groupId>com.remondis</groupId>
     <artifactId>remap</artifactId>
-    <version>3.0.1</version>
+    <version>3.0.0</version>
 </dependency>
 ```
 
-...or in Gradle using `compile "com.remondis:remap:3.0.1"`.
+...or in Gradle using `compile "com.remondis:remap:3.0.0"`.
 
 The following code snippet shows how to map a source type to a destination type:
 
