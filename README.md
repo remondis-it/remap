@@ -25,11 +25,11 @@ ReMap is a library that simplifies conversion of objects field by field and grea
 <dependency>
     <groupId>com.remondis</groupId>
     <artifactId>remap</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.2</version>
 </dependency>
 ```
 
-...or in Gradle using `compile "com.remondis:remap:3.0.0"`.
+...or in Gradle using `compile "com.remondis:remap:3.0.2"`.
 
 The following code snippet shows how to map a source type to a destination type:
 
@@ -101,6 +101,7 @@ ReMap supports
 * type inheritance
 * mapping object references to fields
 * restrictive visibilities
+* mapping from interface to Java Bean type
 * mapping of nested collections (Attention: maps are not collections!)
 * mapping of maps using `replace` and a transformation function that maps key and values
 * unit testing of mapping specifications
@@ -112,11 +113,12 @@ ReMap supports
   * fields can have any visibility
   * fields have properly named public get/set methods
   * fields of type Boolean/boolean have public is/set methods
-  * the declaring type has a public default constructor
+  * the declaring type has a public default constructor (this is only necessary for the destination object)
   * keywords like `transient` do not have an effect on the mapping
 * circular references are currently not supported
 * mapping equal types does not copy object instances!
 * multi-classloader environments are currently not supported. All types must be loaded by the same classloader.
+* Generics cannot be used without limitations: It is possible to build a mapper for generic types, but due to the class literals used when declaring the mapping, the generic type informations gets lost.
 
 ## How to use
 
