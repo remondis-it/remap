@@ -35,7 +35,7 @@ public class Mapper<S, D> {
    * @param source The source object to map to a new destination object.
    * @return Returns a newly created destination object.
    */
-  public D map(S source) {
+  public <Source extends S> D map(Source source) {
     return mapping.map(source);
   }
 
@@ -46,7 +46,7 @@ public class Mapper<S, D> {
    * @return Returns a newly created collection of destination objects. The type of the resulting collection is either
    *         {@link List} or {@link Set} depending on the specified type.
    */
-  public Collection<D> map(Collection<S> source) {
+  public Collection<D> map(Collection<? extends S> source) {
     return _mapCollection(source);
   }
 
@@ -56,7 +56,7 @@ public class Mapper<S, D> {
    * @param source The source collection to map to a new collection of destination objects.
    * @return Returns a newly created list of destination objects.
    */
-  public List<D> map(List<S> source) {
+  public List<D> map(List<? extends S> source) {
     return (List<D>) _mapCollection(source);
   }
 
@@ -66,7 +66,7 @@ public class Mapper<S, D> {
    * @param source The source collection to map to a new collection of destination objects.
    * @return Returns a newly set list of destination objects.
    */
-  public Set<D> map(Set<S> source) {
+  public Set<D> map(Set<? extends S> source) {
     return (Set<D>) _mapCollection(source);
   }
 
@@ -76,14 +76,14 @@ public class Mapper<S, D> {
    * @param iterable The source iterable to be mapped to a new {@link List} of destination objects.
    * @return Returns a newly set list of destination objects.
    */
-  public List<D> map(Iterable<S> iterable) {
-    Stream<S> stream = StreamSupport.stream(iterable.spliterator(), false);
+  public List<D> map(Iterable<? extends S> iterable) {
+    Stream<? extends S> stream = StreamSupport.stream(iterable.spliterator(), false);
     return stream.map(this::map)
         .collect(Collectors.toList());
   }
 
   @SuppressWarnings("unchecked")
-  private Collection<D> _mapCollection(Collection<S> source) {
+  private Collection<D> _mapCollection(Collection<? extends S> source) {
     return (Collection<D>) source.stream()
         .map(this::map)
         .collect(getCollector(source));
