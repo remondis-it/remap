@@ -44,7 +44,7 @@ public class BidirectionalMapper<S, D> {
    * @param source The source object to map to a new destination object.
    * @return Returns a newly created destination object.
    */
-  public D map(S source) {
+  public <Source extends S> D map(Source source) {
     return to.map(source);
   }
 
@@ -55,7 +55,7 @@ public class BidirectionalMapper<S, D> {
    * @return Returns a newly created collection of destination objects. The type of the resulting collection is either
    *         {@link List} or {@link Set} depending on the specified type.
    */
-  public Collection<D> map(Collection<S> source) {
+  public Collection<D> map(Collection<? extends S> source) {
     return to.map(source);
   }
 
@@ -65,7 +65,7 @@ public class BidirectionalMapper<S, D> {
    * @param source The source collection to map to a new collection of destination objects.
    * @return Returns a newly created list of destination objects.
    */
-  public List<D> map(List<S> source) {
+  public List<D> map(List<? extends S> source) {
     return to.map(source);
   }
 
@@ -75,7 +75,7 @@ public class BidirectionalMapper<S, D> {
    * @param source The source collection to map to a new collection of destination objects.
    * @return Returns a newly created set of destination objects.
    */
-  public Set<D> map(Set<S> source) {
+  public Set<D> map(Set<? extends S> source) {
     return to.map(source);
   }
 
@@ -86,7 +86,7 @@ public class BidirectionalMapper<S, D> {
    * @param iterable The source iterable to be mapped to a new {@link List} of destination objects.
    * @return Returns a newly created list of destination objects.
    */
-  public List<D> map(Iterable<S> iterable) {
+  public List<D> map(Iterable<? extends S> iterable) {
     return to.map(iterable);
   }
 
@@ -96,7 +96,7 @@ public class BidirectionalMapper<S, D> {
    * @param destination The destination object to map to a new source object.
    * @return Returns a newly created source object.
    */
-  public S mapFrom(D destination) {
+  public <Dest extends D> S mapFrom(Dest destination) {
     return from.map(destination);
   }
 
@@ -107,7 +107,7 @@ public class BidirectionalMapper<S, D> {
    * @return Returns a newly created collection of source objects. The type of the resulting collection is either
    *         {@link List} or {@link Set} depending on the specified type.
    */
-  public Collection<S> mapFrom(Collection<D> destination) {
+  public Collection<S> mapFrom(Collection<? extends D> destination) {
     return from.map(destination);
   }
 
@@ -117,7 +117,7 @@ public class BidirectionalMapper<S, D> {
    * @param destination The destination collection to map to a new collection of source objects.
    * @return Returns a newly created list of source objects.
    */
-  public List<S> mapFrom(List<D> destination) {
+  public List<S> mapFrom(List<? extends D> destination) {
     return from.map(destination);
   }
 
@@ -127,7 +127,7 @@ public class BidirectionalMapper<S, D> {
    * @param destination The destination collection to map to a new collection of source objects.
    * @return Returns a newly created set of source objects.
    */
-  public Set<S> mapFrom(Set<D> destination) {
+  public Set<S> mapFrom(Set<? extends D> destination) {
     return from.map(destination);
   }
 
@@ -138,19 +138,23 @@ public class BidirectionalMapper<S, D> {
    * @param iterable The destination iterable to be mapped to a new {@link List} of source objects.
    * @return Returns a newly created list of source objects.
    */
-  public List<S> mapFrom(Iterable<D> iterable) {
+  public List<S> mapFrom(Iterable<? extends D> iterable) {
     return from.map(iterable);
   }
 
   /**
-   * @return Returns the {@link Mapper} object for mapping source to destination type.
+   * Returns the {@link Mapper} object for mapping source to destination type.
+   *
+   * @return {@link Mapper}
    */
   public Mapper<S, D> getMapper() {
     return to;
   }
 
   /**
-   * @return Returns the {@link Mapper} object for mapping destination to source type.
+   * Returns the {@link Mapper} object for mapping destination to source type.
+   *
+   * @return {@link Mapper}
    */
   public Mapper<D, S> getFromMapper() {
     return from;

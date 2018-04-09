@@ -11,7 +11,6 @@ public final class Types<S> {
   Types(Class<S> source) {
     denyNull("source", source);
     this.source = source;
-    denyNoDefaultConstructor(source);
   }
 
   private void denyNoDefaultConstructor(Class<?> type) {
@@ -28,7 +27,7 @@ public final class Types<S> {
 
   /**
    * Specifies the destination type of the specified mapping.
-   * 
+   *
    * @param destination The destination type to map to.
    * @return Returns {@link Mapping} for further mapping configurations.
    */
