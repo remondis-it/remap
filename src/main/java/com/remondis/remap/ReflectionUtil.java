@@ -149,7 +149,8 @@ class ReflectionUtil {
   }
 
   static boolean isBool(Class<?> type) {
-    return type == Boolean.TYPE || type == Boolean.class;
+    // isBool is used to determine if "is"-method should be used. This is only the case for primitive type.
+    return type == Boolean.TYPE;
   }
 
   static boolean hasArguments(Method method) {
