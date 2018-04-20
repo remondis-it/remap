@@ -112,7 +112,7 @@ ReMap supports
 * objects that are part of the mapping process must meet the Java Bean convention
   * fields can have any visibility
   * fields have properly named public get/set methods
-  * fields of type Boolean/boolean have public is/set methods
+  * fields of primitive type boolean have public is/set methods
   * the declaring type has a public default constructor (this is only necessary for the destination object)
   * keywords like `transient` do not have an effect on the mapping
 * circular references are currently not supported
