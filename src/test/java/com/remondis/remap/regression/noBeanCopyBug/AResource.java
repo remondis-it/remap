@@ -1,16 +1,16 @@
-package com.remondis.remap.noBeanCopyBug;
+package com.remondis.remap.regression.noBeanCopyBug;
 
 import java.math.BigDecimal;
 
-public class A {
+public class AResource {
 
   private BigDecimal bigDecimal;
 
-  public A() {
+  public AResource() {
     super();
   }
 
-  public A(BigDecimal bigDecimal) {
+  public AResource(BigDecimal bigDecimal) {
     super();
     this.bigDecimal = bigDecimal;
   }
@@ -39,7 +39,7 @@ public class A {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    A other = (A) obj;
+    AResource other = (AResource) obj;
     if (bigDecimal == null) {
       if (other.bigDecimal != null)
         return false;

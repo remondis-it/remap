@@ -142,4 +142,8 @@ public class MappingException extends RuntimeException {
     return new MappingException("Mapper cannot map null object.");
   }
 
+  static MappingException denyMappingToNull() {
+    return new MappingException("Mapper cannot map into object.");
+  }
+
 }
