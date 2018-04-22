@@ -40,6 +40,21 @@ public class Mapper<S, D> {
   }
 
   /**
+   * Performs the mapping from the source into a specified destination object while overwriting fields in the
+   * destination object if affected by the mapping configuration. <b>Note: The overwrite mechanism only applies to the
+   * parent object. Transitive references in the destination object hierarchy may be replaced by new instances during
+   * the mapping.</b>
+   *
+   * @param source The source object to map to a new destination object.
+   * @param destination The destination object to map into. Field affected by the mapping will be overwritten.
+   * @return Returns the specified destination object.
+   */
+  public <Source extends S, Destination extends D> Destination map(Source source, Destination destination) {
+    mapping.map(source, destination);
+    return destination;
+  }
+
+  /**
    * Performs the mapping for the specified {@link Collection}.
    *
    * @param source The source collection to map to a new collection of destination objects.

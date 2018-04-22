@@ -106,6 +106,7 @@ ReMap supports
 * mapping of maps using `replace` and a transformation function that maps key and values
 * unit testing of mapping specifications
 * mapping without invasively changing code of involved objects
+* mapping into a specified destination object. Useful to overwrite existing objects.
 
 ## Limitations
 
