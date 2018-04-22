@@ -508,9 +508,9 @@ public final class Mapping<S, D> {
   /**
    * Performs the actual mapping by iterating recursively through the object hierarchy.
    *
-   * @param destination The destination object to map to.
    * @param source
    *        The source object to map to a new destination object.
+   * @param destination The destination object to map to.
    */
   void map(S source, D destination) {
     if (source == null) {
