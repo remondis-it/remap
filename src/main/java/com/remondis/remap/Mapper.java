@@ -1,13 +1,13 @@
 package com.remondis.remap;
 
-import static com.remondis.remap.ReflectionUtil.getCollector;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import static com.remondis.remap.ReflectionUtil.getCollector;
 
 /**
  * This class defines a reusable mapper object to perform multiple mappings for the configured object types.
@@ -37,6 +37,18 @@ public class Mapper<S, D> {
    */
   public <Source extends S> D map(Source source) {
     return mapping.map(source);
+  }
+
+  /**
+   * Performs the mapping from the source into a specified destination object while overwriting fields in the
+   * destination object if affected by the mapping configuration.
+   *
+   * @param source The source object to map to a new destination object.
+   * @param destination The destination object to map into. Field affected by the mapping will be overwritten.
+   * @return Returns the specified destination object.
+   */
+  public <Source extends S> D map(Source source, D destination) {
+    return mapping.map(source, destination);
   }
 
   /**
