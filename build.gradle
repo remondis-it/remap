@@ -40,15 +40,15 @@ if (JavaVersion.current().isJava8Compatible()) {
 }
 
 dependencies {
-    compile "cglib:cglib:3.2.5"
+    compile "cglib:cglib:3.2.6"
 
-	testCompile "org.projectlombok:lombok:1.16.16"
+    testCompile "org.projectlombok:lombok:1.16.20"
     testCompile "junit:junit:4.12"
-    testCompile "org.mockito:mockito-core:2.7.17"
-    testCompile "org.assertj:assertj-core:3.5.1"
+    testCompile "org.mockito:mockito-core:2.18.0"
+    testCompile "org.assertj:assertj-core:3.9.1"
 
-    testCompile "org.springframework:spring-test:4.3.10.RELEASE"
-    testCompile "org.springframework:spring-context:4.3.10.RELEASE"
+    testCompile "org.springframework:spring-test:4.3.16.RELEASE"
+    testCompile "org.springframework:spring-context:4.3.16.RELEASE"
 }
 
 sourceSets {
@@ -146,4 +146,3 @@ if (project.hasProperty('release')) {
         }
     }
 }
-
