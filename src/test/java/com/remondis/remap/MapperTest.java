@@ -128,53 +128,6 @@ public class MapperTest {
   }
 
   /**
-   * Ensures that the {@link Mapper} use the instance and the nested instance
-   */
-  @Test
-  public void shouldMapInstantiatedObject() {
-    Mapper<A, AResource> mapper = Mapping.from(A.class)
-            .to(AResource.class)
-            .reassign(A::getMoreInA)
-            .to(AResource::getMoreInAResource)
-            .reassign(A::getZahlInA)
-            .to(AResource::getZahlInAResource)
-            .useMapper(Mapping.from(B.class)
-                    .to(BResource.class)
-                    .mapper())
-            .mapper();
-
-    int bNumberNew = 123;
-    String aStringNew = "abc";
-    int aNumberNew = 456;
-    B b = new B(null, bNumberNew, null);
-    A a = new A(null, aStringNew, aNumberNew, null, null, b);
-
-    BResource bResource = new BResource(B_STRING, B_NUMBER, B_INTEGER);
-    AResource aResource = new AResource(MORE_IN_A, STRING, NUMBER, INTEGER, ZAHL_IN_A, bResource);
-
-    AResource ar = mapper.map(a, aResource);
-
-    assertEquals(null, a.getMoreInA());
-    assertEquals(MORE_IN_A, ar.getMoreInAResource());
-    assertEquals(aStringNew, a.getString());
-    assertEquals(aStringNew, ar.getString());
-    assertEquals(aNumberNew, a.getNumber());
-    assertEquals(aNumberNew, ar.getNumber());
-    assertEquals(null, a.getInteger());
-    assertEquals(INTEGER, ar.getInteger());
-    assertEquals(null, a.getZahlInA());
-    assertEquals(ZAHL_IN_A, ar.getZahlInAResource());
-
-    BResource br = ar.getB();
-    assertEquals(null, b.getString());
-    assertEquals(B_STRING, br.getString());
-    assertEquals(bNumberNew, b.getNumber());
-    assertEquals(bNumberNew, br.getNumber());
-    assertEquals(null, b.getInteger());
-    assertEquals(B_INTEGER, br.getInteger());
-  }
-
-  /**
    * Ensures that the {@link Mapper} detects one more property in the source object that is not omitted by the mapping
    * configuration. The {@link Mapper} is expected to throw a {@link MappingException}.
    */
