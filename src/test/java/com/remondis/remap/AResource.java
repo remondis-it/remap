@@ -3,6 +3,7 @@ package com.remondis.remap;
 public class AResource {
 
   private String moreInAResource;
+
   private String string;
   private int number;
   private Integer integer;
@@ -17,15 +18,6 @@ public class AResource {
     super();
     this.string = string;
     this.integer = integer;
-    this.b = b;
-  }
-
-  public AResource(String moreInAResource, String string, int number, Integer integer, Long zahlInAResource, BResource b) {
-    this.moreInAResource = moreInAResource;
-    this.string = string;
-    this.number = number;
-    this.integer = integer;
-    this.zahlInAResource = zahlInAResource;
     this.b = b;
   }
 

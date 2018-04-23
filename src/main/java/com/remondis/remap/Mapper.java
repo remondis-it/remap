@@ -40,18 +40,6 @@ public class Mapper<S, D> {
   }
 
   /**
-   * Performs the mapping from the source into a specified destination object while overwriting fields in the
-   * destination object if affected by the mapping configuration.
-   *
-   * @param source The source object to map to a new destination object.
-   * @param destination The destination object to map into. Field affected by the mapping will be overwritten.
-   * @return Returns the specified destination object.
-   */
-  public <Source extends S> D map(Source source, D destination) {
-    return mapping.map(source, destination);
-  }
-
-  /**
    * Performs the mapping for the specified {@link Collection}.
    *
    * @param source The source collection to map to a new collection of destination objects.
