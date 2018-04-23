@@ -495,26 +495,10 @@ public final class Mapping<S, D> {
    * @return Returns a newly created destination object.
    */
   D map(S source) {
-    return map(source, null);
-  }
-
-  /**
-   * Performs the actual mapping with iteration recursively through the object hierarchy.
-   *
-   * @param source
-   *        The source object to map to a new destination object.
-   * @param destination
-   *        The destination object to populate
-   * @return Returns a newly created destination object.
-   */
-  D map(S source, D destination) {
-    D destinationObject = destination;
     if (source == null) {
       throw MappingException.denyMappingOfNull();
     }
-    if (destination == null) {
-      destinationObject = createDestination();
-    }
+    D destinationObject = createDestination();
     for (Transformation t : mappings) {
       t.performTransformation(source, destinationObject);
     }
