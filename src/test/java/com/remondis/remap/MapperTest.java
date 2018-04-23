@@ -127,6 +127,9 @@ public class MapperTest {
     assertEquals(B_INTEGER, br.getInteger());
   }
 
+  /**
+   * Ensures that the {@link Mapper} use the instance and the nested instance
+   */
   @Test
   public void shouldMapInstantiatedObject() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
