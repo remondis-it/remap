@@ -1,13 +1,22 @@
 package com.remondis.remap;
 
-import java.beans.PropertyDescriptor;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import static com.remondis.remap.Lang.denyNull;
-import static com.remondis.remap.MappingException.*;
+import static com.remondis.remap.MappingException.alreadyMappedProperty;
+import static com.remondis.remap.MappingException.multipleInteractions;
+import static com.remondis.remap.MappingException.notAProperty;
+import static com.remondis.remap.MappingException.zeroInteractions;
 import static com.remondis.remap.Properties.createUnmappedMessage;
 import static com.remondis.remap.ReflectionUtil.newInstance;
+
+import java.beans.PropertyDescriptor;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The {@link Mapping} object is used to specify the mapping of the fields from a source object/type
@@ -489,28 +498,28 @@ public final class Mapping<S, D> {
     return map(source, null);
   }
 
-    /**
-     * Performs the actual mapping with iteration recursively through the object hierarchy.
-     *
-     * @param source
-     *        The source object to map to a new destination object.
-     * @param destination
-     *        The destination object to populate
-     * @return Returns a newly created destination object.
-     */
-    D map(S source, D destination) {
-        D destinationObject = destination;
-        if (source == null) {
-            throw MappingException.denyMappingOfNull();
-        }
-        if (destination == null) {
-          destinationObject = createDestination();
-        }
-        for (Transformation t : mappings) {
-            t.performTransformation(source, destinationObject);
-        }
-        return destinationObject;
+  /**
+   * Performs the actual mapping with iteration recursively through the object hierarchy.
+   *
+   * @param source
+   *        The source object to map to a new destination object.
+   * @param destination
+   *        The destination object to populate
+   * @return Returns a newly created destination object.
+   */
+  D map(S source, D destination) {
+    D destinationObject = destination;
+    if (source == null) {
+      throw MappingException.denyMappingOfNull();
     }
+    if (destination == null) {
+      destinationObject = createDestination();
+    }
+    for (Transformation t : mappings) {
+      t.performTransformation(source, destinationObject);
+    }
+    return destinationObject;
+  }
 
   private D createDestination() {
     return newInstance(destination);

@@ -1,13 +1,13 @@
 package com.remondis.remap;
 
+import static com.remondis.remap.ReflectionUtil.getCollector;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import static com.remondis.remap.ReflectionUtil.getCollector;
 
 /**
  * This class defines a reusable mapper object to perform multiple mappings for the configured object types.
