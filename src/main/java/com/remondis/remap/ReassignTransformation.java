@@ -43,7 +43,7 @@ public class ReassignTransformation extends Transformation {
       if (isCollection(sourceType)) {
         Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
         Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
-        destinationValue = convertCollection(sourceValue, sourceCollectionType, destination, destinationCollectionType);
+        destinationValue = convertCollection(sourceValue, sourceCollectionType, destinationCollectionType);
       } else {
         destinationValue = convertValue(sourceValue, sourceType, destination, destinationType);
       }
@@ -56,18 +56,31 @@ public class ReassignTransformation extends Transformation {
       "unchecked", "rawtypes"
   })
   private Object convertCollection(Object sourceValue, Class<?> sourceCollectionType,
-                                   Object destinationValue, Class<?> destinationCollectionType) {
+                                   Class<?> destinationCollectionType) {
     Collection collection = Collection.class.cast(sourceValue);
     Collector collector = getCollector(collection);
     return collection.stream()
         .map(o -> {
           if (isCollection(o)) {
-            return convertCollection(o, sourceCollectionType, destinationValue, destinationCollectionType);
+            return convertCollection(o, sourceCollectionType, destinationCollectionType);
           } else {
-            return convertValue(o, sourceCollectionType, destinationValue, destinationCollectionType);
+            return convertValue(o, sourceCollectionType, destinationCollectionType);
           }
         })
         .collect(collector);
+  }
+
+  @SuppressWarnings({
+      "unchecked", "rawtypes"
+  })
+  Object convertValue(Object sourceValue, Class<?> sourceType, Class<?> destinationType) {
+    if (isReferenceMapping(sourceType, destinationType) || isEqualTypes(sourceType, destinationType)) {
+      return sourceValue;
+    } else {
+      // Object types must be mapped by a registered mapper before setting the value.
+      Mapper delegateMapper = getMapperFor(sourceType, destinationType);
+      return delegateMapper.map(sourceValue);
+    }
   }
 
   @SuppressWarnings({

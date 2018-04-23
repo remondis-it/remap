@@ -500,6 +500,7 @@ public final class Mapping<S, D> {
 
   /**
    * Performs the actual mapping with iteration recursively through the object hierarchy.
+   * Warning, this feature is not provided for nested Collections instances, only for instances and nested instances
    *
    * @param source
    *        The source object to map to a new destination object.
