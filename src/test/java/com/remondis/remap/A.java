@@ -6,7 +6,6 @@ public class A {
   private String string;
   private int number;
   private Integer integer;
-
   private Long zahlInA;
   private B b;
 
