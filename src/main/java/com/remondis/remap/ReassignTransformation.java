@@ -45,7 +45,7 @@ public class ReassignTransformation extends Transformation {
         Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
         destinationValue = convertCollection(sourceValue, sourceCollectionType, destinationCollectionType);
       } else {
-        destinationValue = convertValue(sourceValue, sourceType, destinationType);
+        destinationValue = convertValue(sourceValue, sourceType, destination, destinationType);
       }
 
       writeOrFail(destinationProperty, destination, destinationValue);
@@ -56,7 +56,7 @@ public class ReassignTransformation extends Transformation {
       "unchecked", "rawtypes"
   })
   private Object convertCollection(Object sourceValue, Class<?> sourceCollectionType,
-      Class<?> destinationCollectionType) {
+                                   Class<?> destinationCollectionType) {
     Collection collection = Collection.class.cast(sourceValue);
     Collector collector = getCollector(collection);
     return collection.stream()
@@ -80,6 +80,20 @@ public class ReassignTransformation extends Transformation {
       // Object types must be mapped by a registered mapper before setting the value.
       Mapper delegateMapper = getMapperFor(sourceType, destinationType);
       return delegateMapper.map(sourceValue);
+    }
+  }
+
+  @SuppressWarnings({
+      "unchecked", "rawtypes"
+  })
+  Object convertValue(Object sourceValue, Class<?> sourceType, Object destinationValue, Class<?> destinationType) {
+    if (isReferenceMapping(sourceType, destinationType) || isEqualTypes(sourceType, destinationType)) {
+      return sourceValue;
+    } else {
+      // Object types must be mapped by a registered mapper before setting the value.
+      Mapper delegateMapper = getMapperFor(sourceType, destinationType);
+      Object destinationValueMapped = readOrFail(destinationProperty, destinationValue);
+      return delegateMapper.map(sourceValue, destinationValueMapped);
     }
   }
 
