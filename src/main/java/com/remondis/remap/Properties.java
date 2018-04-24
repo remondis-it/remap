@@ -79,17 +79,26 @@ class Properties {
    * Returns a {@link Set} of properties with read and write access.
    *
    * @param inspectType The type to inspect.
+   * @param targetType The type of mapping target.
    * @return Returns the list of {@link PropertyDescriptor}s that grant read and write access.
    * @throws MappingException Thrown on any introspection error.
    */
-  static Set<PropertyDescriptor> getProperties(Class<?> inspectType) {
+  static Set<PropertyDescriptor> getProperties(Class<?> inspectType, Target targetType) {
     try {
       BeanInfo beanInfo = Introspector.getBeanInfo(inspectType);
       PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
       return new HashSet<>(Arrays.asList(propertyDescriptors)
           .stream()
+          .filter(pd -> !pd.getName()
+              .equals("class"))
           .filter(Properties::hasGetter)
-          .filter(Properties::hasSetter)
+          .filter(pd -> {
+            if (Target.SOURCE.equals(targetType)) {
+              return true;
+            } else {
+              return hasSetter(pd);
+            }
+          })
           .collect(Collectors.toList()));
     } catch (IntrospectionException e) {
       throw new MappingException(String.format("Cannot introspect the type %s.", inspectType.getName()));

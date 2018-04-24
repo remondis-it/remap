@@ -257,13 +257,13 @@ public final class Mapping<S, D> {
     // Get all unmapped properties from destination because this will be the only properties that can be mapped from
     // source.
     Set<PropertyDescriptor> unmappedDestinationProperties = getUnmappedProperties(destination,
-        mappedDestinationProperties);
+        mappedDestinationProperties, Target.DESTINATION);
     // Get the set of property names
     Set<String> unmappedDestinationPropertyNames = unmappedDestinationProperties.stream()
         .map(PropertyDescriptor::getName)
         .collect(Collectors.toSet());
     // Add a reassign for all properties of source that are unmapped properties in the destination
-    getUnmappedProperties(source, mappedSourceProperties).stream()
+    getUnmappedProperties(source, mappedSourceProperties, Target.SOURCE).stream()
         .filter(pd -> unmappedDestinationPropertyNames.contains(pd.getName()))
         .forEach(pd -> {
           // find the corresponding PropertyDescriptor in the unmapped
@@ -309,9 +309,9 @@ public final class Mapping<S, D> {
   private Set<PropertyDescriptor> getUnmappedProperties() {
     Set<PropertyDescriptor> unmapped = new HashSet<>();
     // Check that there are no unmapped source fields
-    unmapped.addAll(getUnmappedProperties(source, mappedSourceProperties));
+    unmapped.addAll(getUnmappedProperties(source, mappedSourceProperties, Target.SOURCE));
     // Check that there are no unmapped destination fields
-    unmapped.addAll(getUnmappedProperties(destination, mappedDestinationProperties));
+    unmapped.addAll(getUnmappedProperties(destination, mappedDestinationProperties, Target.DESTINATION));
     return unmapped;
   }
 
@@ -323,11 +323,12 @@ public final class Mapping<S, D> {
    *        The type to check for unmapped properties.
    * @param mappedSourceProperties
    *        The set of mapped properties.
+   * @param target The type of mapping target.
    * @return Returns the {@link Set} of unmapped properties.
    */
   private <T> Set<PropertyDescriptor> getUnmappedProperties(Class<T> type,
-      Set<PropertyDescriptor> mappedSourceProperties) {
-    Set<PropertyDescriptor> allSourceProperties = Properties.getProperties(type);
+      Set<PropertyDescriptor> mappedSourceProperties, Target targetType) {
+    Set<PropertyDescriptor> allSourceProperties = Properties.getProperties(type, targetType);
     allSourceProperties.removeAll(mappedSourceProperties);
     return allSourceProperties;
   }
@@ -416,7 +417,7 @@ public final class Mapping<S, D> {
    */
   static PropertyDescriptor getPropertyDescriptorOrFail(Class<?> type, String propertyName) {
     Optional<PropertyDescriptor> property;
-    property = Properties.getProperties(type)
+    property = Properties.getProperties(type, Target.DESTINATION)
         .stream()
         .filter(pd -> pd.getName()
             .equals(propertyName))
