@@ -78,7 +78,7 @@ public class AssertMapping<S, D> {
    */
   public <RS> ReassignAssertBuilder<S, D, RS> expectReassign(TypedSelector<RS, S> sourceSelector) {
     denyNull("sourceSelector", sourceSelector);
-    TypedPropertyDescriptor<RS> typedSourceProperty = getTypedPropertyFromFieldSelector(ASSIGN,
+    TypedPropertyDescriptor<RS> typedSourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE, ASSIGN,
         getMapping().getSource(), sourceSelector);
     ReassignAssertBuilder<S, D, RS> reassignBuilder = new ReassignAssertBuilder<S, D, RS>(typedSourceProperty,
         getMapping().getDestination(), this);
@@ -99,9 +99,9 @@ public class AssertMapping<S, D> {
     denyNull("sourceSelector", sourceSelector);
     denyNull("destinationSelector", destinationSelector);
 
-    TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(TRANSFORM, getMapping().getSource(),
-        sourceSelector);
-    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(TRANSFORM,
+    TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE, TRANSFORM,
+        getMapping().getSource(), sourceSelector);
+    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION, TRANSFORM,
         getMapping().getDestination(), destinationSelector);
 
     ReplaceAssertBuilder<S, D, RD, RS> builder = new ReplaceAssertBuilder<>(sourceProperty, destProperty, this);
@@ -121,10 +121,10 @@ public class AssertMapping<S, D> {
       TypedSelector<Collection<RS>, S> sourceSelector, TypedSelector<Collection<RD>, D> destinationSelector) {
     denyNull("sourceSelector", sourceSelector);
     denyNull("destinationSelector", destinationSelector);
-    TypedPropertyDescriptor<Collection<RS>> sourceProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
-        getMapping().getSource(), sourceSelector);
-    TypedPropertyDescriptor<Collection<RD>> destProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
-        getMapping().getDestination(), destinationSelector);
+    TypedPropertyDescriptor<Collection<RS>> sourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE,
+        ReplaceBuilder.TRANSFORM, getMapping().getSource(), sourceSelector);
+    TypedPropertyDescriptor<Collection<RD>> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
+        ReplaceBuilder.TRANSFORM, getMapping().getDestination(), destinationSelector);
 
     ReplaceCollectionAssertBuilder<S, D, RD, RS> builder = new ReplaceCollectionAssertBuilder<>(sourceProperty,
         destProperty, this);
@@ -148,8 +148,8 @@ public class AssertMapping<S, D> {
   public AssertMapping<S, D> expectOmitInSource(FieldSelector<S> sourceSelector) {
     denyNull("sourceSelector", sourceSelector);
     // Omit in destination
-    PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(OMIT_FIELD_SOURCE, getMapping().getSource(),
-        sourceSelector);
+    PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(Target.SOURCE, OMIT_FIELD_SOURCE,
+        getMapping().getSource(), sourceSelector);
     OmitTransformation omitSource = omitSource(getMapping(), propertyDescriptor);
     _add(omitSource);
     return this;
@@ -164,8 +164,8 @@ public class AssertMapping<S, D> {
    */
   public AssertMapping<S, D> expectOmitInDestination(FieldSelector<D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
-    PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(OMIT_FIELD_DEST, getMapping().getDestination(),
-        destinationSelector);
+    PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(Target.DESTINATION, OMIT_FIELD_DEST,
+        getMapping().getDestination(), destinationSelector);
     OmitTransformation omitDestination = omitDestination(getMapping(), propertyDescriptor);
     _add(omitDestination);
     return this;

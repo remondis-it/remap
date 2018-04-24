@@ -1,4 +1,4 @@
-package com.remondis.remap.possibleBug;
+package com.remondis.remap.regression.booleanObjectBug;
 
 public class B {
   private String email;

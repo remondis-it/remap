@@ -1,9 +1,12 @@
 package com.remondis.remap;
 
+import static java.util.Objects.isNull;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,8 +65,8 @@ class Properties {
     for (PropertyDescriptor pd : unmapped) {
       String getter = pd.getReadMethod()
           .getName();
-      String setter = pd.getWriteMethod()
-          .getName();
+      Method writeMethod = pd.getWriteMethod();
+      String setter = isNull(writeMethod) ? "none" : writeMethod.getName();
       msg.append("- ")
           .append(asString(pd))
           .append("\n\taccess methods: ")

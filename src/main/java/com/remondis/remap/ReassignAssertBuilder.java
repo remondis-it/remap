@@ -43,8 +43,8 @@ public class ReassignAssertBuilder<S, D, RS> {
    */
   public AssertMapping<S, D> to(TypedSelector<RS, D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
-    TypedPropertyDescriptor<RS> typedDestProperty = getTypedPropertyFromFieldSelector(ReassignBuilder.ASSIGN,
-        this.destination, destinationSelector);
+    TypedPropertyDescriptor<RS> typedDestProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
+        ReassignBuilder.ASSIGN, this.destination, destinationSelector);
     PropertyDescriptor sourceProperty = typedSourceProperty.property;
     PropertyDescriptor destinationProperty = typedDestProperty.property;
     ReassignTransformation transformation = new ReassignTransformation(asserts.getMapping(), sourceProperty,
