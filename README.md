@@ -106,13 +106,16 @@ ReMap supports
 * mapping of maps using `replace` and a transformation function that maps key and values
 * unit testing of mapping specifications
 * mapping without invasively changing code of involved objects
+* overwrite fields in an instance by specifying the target instance for the mapping
 
 ## Limitations
 
 * objects that are part of the mapping process must meet the Java Bean convention
   * fields can have any visibility
   * fields have properly named public get/set methods
-  * fields of primitive type boolean have public is/set methods
+    * getter methods are mandatory for source and destination properties
+    * setter methods are only mandatory for destination properties
+  * fields of primitive type boolean comply with is-method convention as getter.
   * the declaring type has a public default constructor (this is only necessary for the destination object)
   * keywords like `transient` do not have an effect on the mapping
 * circular references are currently not supported
@@ -306,6 +309,10 @@ Use the following code snippet in components to inject the mapper instances:
 
 
 # Migration guide
+
+## Migration from 3.x.x to 4.x.x
+
+Since the source property rules relaxed a little bit, no setter methods are required for the source type of the mapping. This was done to support mapping from read-only properties. This has one drawback: In earlier version read-only properties were not recognized as properties used for the mapping. This changed now and mappings that used an earlier version of ReMap in combination with read-only properties now need an `omitInSource` specification.
 
 ## Migration from 2.x.x to 3.x.x
 
