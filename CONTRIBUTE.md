@@ -8,6 +8,18 @@ This project provides a checkstyle rule configuration as well as formatter confi
 
 The formatter configurations of both supported IDEs were created to produce similar outputs. Although there are slightly different formattings, the outputs should be compliant to the Checkstyle rule set.
 
+## Contributing Features
+
+When contributing features, any suggestions to extend the README of this project are welcome :-)
+
+### Testing features
+
+When writing test for this project, please make sure to create a new package for your test. This avoids unnecessary dependencies to other test classes.
+
+## Contributing bug fixes
+
+When contributing bug fixes, please first write a test that provokes the bug. Please use the package `com.remondis.remap.regression` for that.
+
 ## Contribution resources
 
 You can find the IDE formatter and the Checkstyle rule set in `shared/config`.
