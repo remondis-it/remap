@@ -108,8 +108,8 @@ public final class Mapping<S, D> {
   public Mapping<S, D> omitInDestination(FieldSelector<D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
 
-    PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(OMIT_FIELD_DEST, destination,
-        destinationSelector);
+    PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(Target.DESTINATION, OMIT_FIELD_DEST,
+        destination, destinationSelector);
     OmitTransformation omitDestination = OmitTransformation.omitDestination(this, propertyDescriptor);
     omitMapping(mappedDestinationProperties, propertyDescriptor, omitDestination);
     return this;
@@ -136,7 +136,7 @@ public final class Mapping<S, D> {
   public Mapping<S, D> omitInSource(FieldSelector<S> sourceSelector) {
     denyNull("sourceSelector", sourceSelector);
     // Omit in destination
-    PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(OMIT_FIELD_SOURCE, this.source,
+    PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(Target.SOURCE, OMIT_FIELD_SOURCE, this.source,
         sourceSelector);
     OmitTransformation omitSource = OmitTransformation.omitSource(this, propertyDescriptor);
     omitMapping(mappedSourceProperties, propertyDescriptor, omitSource);
@@ -154,8 +154,8 @@ public final class Mapping<S, D> {
   public <RS> ReassignBuilder<S, D, RS> reassign(TypedSelector<RS, S> sourceSelector) {
     denyNull("sourceSelector", sourceSelector);
 
-    TypedPropertyDescriptor<RS> typedSourceProperty = getTypedPropertyFromFieldSelector(ReassignBuilder.ASSIGN,
-        this.source, sourceSelector);
+    TypedPropertyDescriptor<RS> typedSourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE,
+        ReassignBuilder.ASSIGN, this.source, sourceSelector);
     ReassignBuilder<S, D, RS> reassignBuilder = new ReassignBuilder<>(typedSourceProperty, destination, this);
     return reassignBuilder;
   }
@@ -179,10 +179,10 @@ public final class Mapping<S, D> {
     denyNull("sourceSelector", sourceSelector);
     denyNull("destinationSelector", destinationSelector);
 
-    TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
-        this.source, sourceSelector);
-    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
-        this.destination, destinationSelector);
+    TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE,
+        ReplaceBuilder.TRANSFORM, this.source, sourceSelector);
+    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
+        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector);
 
     ReplaceBuilder<S, D, RD, RS> builder = new ReplaceBuilder<>(sourceProperty, destProperty, this);
     return builder;
@@ -206,10 +206,10 @@ public final class Mapping<S, D> {
       TypedSelector<Collection<RS>, S> sourceSelector, TypedSelector<Collection<RD>, D> destinationSelector) {
     denyNull("sourceSelector", sourceSelector);
     denyNull("destinationSelector", destinationSelector);
-    TypedPropertyDescriptor<Collection<RS>> sourceProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
-        this.source, sourceSelector);
-    TypedPropertyDescriptor<Collection<RD>> destProperty = getTypedPropertyFromFieldSelector(ReplaceBuilder.TRANSFORM,
-        this.destination, destinationSelector);
+    TypedPropertyDescriptor<Collection<RS>> sourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE,
+        ReplaceBuilder.TRANSFORM, this.source, sourceSelector);
+    TypedPropertyDescriptor<Collection<RD>> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
+        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector);
 
     ReplaceCollectionBuilder<S, D, RD, RS> builder = new ReplaceCollectionBuilder<>(sourceProperty, destProperty, this);
     return builder;
@@ -337,6 +337,7 @@ public final class Mapping<S, D> {
    * Executes a {@link FieldSelector} lambda on a proxy object of the specified type and returns the
    * {@link PropertyDescriptor} of the property selected.
    *
+   * @param target Defines if the properties are validated against source or target rules.
    * @param configurationMethod
    *        The configuration method this {@link PropertyDescriptor} is used for. Only needed for exception messages.
    * @param sensorType
@@ -347,7 +348,7 @@ public final class Mapping<S, D> {
    * @throws MappingException
    *         if a property was specified for mapping but not invoked.
    */
-  static <R, T> TypedPropertyDescriptor<R> getTypedPropertyFromFieldSelector(String configurationMethod,
+  static <R, T> TypedPropertyDescriptor<R> getTypedPropertyFromFieldSelector(Target target, String configurationMethod,
       Class<T> sensorType, TypedSelector<R, T> selector) {
     InvocationSensor<T> invocationSensor = new InvocationSensor<T>(sensorType);
     T sensor = invocationSensor.getSensor();
@@ -361,7 +362,7 @@ public final class Mapping<S, D> {
       // get the property name
       String propertyName = trackedPropertyNames.get(0);
       // find the property descriptor or fail with an exception
-      PropertyDescriptor property = getPropertyDescriptorOrFail(sensorType, propertyName);
+      PropertyDescriptor property = getPropertyDescriptorOrFail(target, sensorType, propertyName);
       TypedPropertyDescriptor<R> tpd = new TypedPropertyDescriptor<R>();
       tpd.returnValue = returnValue;
       tpd.property = property;
@@ -375,6 +376,7 @@ public final class Mapping<S, D> {
    * Executes a {@link FieldSelector} lambda on a proxy object of the specified type and returns the
    * {@link PropertyDescriptor} of the property selected.
    *
+   * @param target Defines if the properties are validated against source or target rules.
    * @param configurationMethod
    *        The configuration method this {@link PropertyDescriptor} is used
    *        for. Only needed for exception messages.
@@ -386,8 +388,8 @@ public final class Mapping<S, D> {
    * @throws MappingException
    *         if a property was specified for mapping but not invoked.
    */
-  static <T> PropertyDescriptor getPropertyFromFieldSelector(String configurationMethod, Class<T> sensorType,
-      FieldSelector<T> selector) {
+  static <T> PropertyDescriptor getPropertyFromFieldSelector(Target target, String configurationMethod,
+      Class<T> sensorType, FieldSelector<T> selector) {
     InvocationSensor<T> invocationSensor = new InvocationSensor<T>(sensorType);
     T sensor = invocationSensor.getSensor();
     // perform the selector lambda on the sensor
@@ -400,7 +402,7 @@ public final class Mapping<S, D> {
       // get the property name
       String propertyName = trackedPropertyNames.get(0);
       // find the property descriptor or fail with an exception
-      return getPropertyDescriptorOrFail(sensorType, propertyName);
+      return getPropertyDescriptorOrFail(target, sensorType, propertyName);
     } else {
       throw zeroInteractions(configurationMethod);
     }
@@ -410,14 +412,15 @@ public final class Mapping<S, D> {
    * Ensures that the specified property name is a property in the specified {@link Set} of {@link
    * PropertyDescriptor}s.
    *
+   * @param target Defines if the properties are validated against source or target rules.
    * @param type
    *        The inspected type.
    * @param propertyName
    *        The property name
    */
-  static PropertyDescriptor getPropertyDescriptorOrFail(Class<?> type, String propertyName) {
+  static PropertyDescriptor getPropertyDescriptorOrFail(Target target, Class<?> type, String propertyName) {
     Optional<PropertyDescriptor> property;
-    property = Properties.getProperties(type, Target.DESTINATION)
+    property = Properties.getProperties(type, target)
         .stream()
         .filter(pd -> pd.getName()
             .equals(propertyName))
