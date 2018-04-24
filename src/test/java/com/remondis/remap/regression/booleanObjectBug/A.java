@@ -1,4 +1,4 @@
-package com.remondis.remap.possibleBug;
+package com.remondis.remap.regression.booleanObjectBug;
 
 public class A {
   private Boolean newsletterSubscribed;

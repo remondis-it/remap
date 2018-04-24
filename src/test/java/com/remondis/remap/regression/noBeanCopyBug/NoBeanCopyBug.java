@@ -1,4 +1,4 @@
-package com.remondis.remap.noBeanCopyBug;
+package com.remondis.remap.regression.noBeanCopyBug;
 
 import static org.junit.Assert.assertEquals;
 
