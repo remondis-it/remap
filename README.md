@@ -118,6 +118,7 @@ ReMap supports
   * fields of primitive type boolean comply with is-method convention as getter.
   * the declaring type has a public default constructor (this is only necessary for the destination object)
   * keywords like `transient` do not have an effect on the mapping
+* non-static inner classes are not supported (they do not have a parameterless default constructor!)
 * circular references are currently not supported
 * mapping equal types does not copy object instances!
 * multi-classloader environments are currently not supported. All types must be loaded by the same classloader.
