@@ -95,6 +95,10 @@ public final class Mapping<S, D> {
   public static <S> Types<S> from(Class<S> source) {
     return new Types<>(source);
   }
+  
+  public static <S> Types<S> from(GenericTypeReference<S> reference) {
+    return new Types<>(reference.getGenericClass());
+  }
 
   /**
    * Marks a destination field as omitted. The mapping will not touch this field in the destination
@@ -125,7 +129,7 @@ public final class Mapping<S, D> {
     mappings.add(omitDestination);
   }
 
-  /**
+  /** 
    * Marks a source field as omitted. The mapping will not touch this field in the source object.
    *
    * @param sourceSelector

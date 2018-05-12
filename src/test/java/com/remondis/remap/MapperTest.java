@@ -323,7 +323,7 @@ public class MapperTest {
   public void shouldDenyIllegalArguments() {
 
     assertThatThrownBy(() -> {
-      Mapping.from(null);
+      Mapping.from((Class<?>)null);
     }).isInstanceOf(IllegalArgumentException.class)
         .hasNoCause();
 
