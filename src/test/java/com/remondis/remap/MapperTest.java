@@ -3,7 +3,6 @@ package com.remondis.remap;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
@@ -14,8 +13,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import com.remondis.remap.inheritance.Child;
-import com.remondis.remap.inheritance.ChildResource;
 import com.remondis.remap.test.MapperTests.PersonWithAddress;
 import com.remondis.remap.test.MapperTests.PersonWithFoo;
 
@@ -43,46 +40,6 @@ public class MapperTest {
             .mapper())
         .mapper();
     mapper.map((A) null);
-  }
-
-  /**
-   * Ensures that the mapper maps inherited field correctly.
-   */
-  @Test
-  public void shouldMapInheritedFields() {
-    Mapper<Child, ChildResource> map = Mapping.from(Child.class)
-        .to(ChildResource.class)
-        .omitInSource(Child::getMoreInParent)
-        .omitInDestination(ChildResource::getMoreInParentResource)
-        .useMapper(Mapping.from(B.class)
-            .to(BResource.class)
-            .mapper())
-        .mapper();
-
-    B b = new B(B_STRING, B_NUMBER, B_INTEGER);
-    Object shouldNotMap = new Object();
-    Object object = new Object();
-    int zahl = 11;
-    Child child = new Child(shouldNotMap, STRING, b, object, zahl);
-    ChildResource cr = map.map(child);
-
-    assertNull(cr.getMoreInParentResource());
-    assertEquals(STRING, child.getString());
-    assertEquals(STRING, cr.getString());
-    assertEquals(object, child.getObject());
-    // We cannot assertEquals here, because it's object they will not be equal.
-    assertNotNull(cr.getObject());
-    assertEquals(zahl, child.getZahl());
-    assertEquals(zahl, cr.getZahl());
-
-    BResource br = cr.getB();
-    assertEquals(B_STRING, b.getString());
-    assertEquals(B_STRING, br.getString());
-    assertEquals(B_NUMBER, b.getNumber());
-    assertEquals(B_NUMBER, br.getNumber());
-    assertEquals(B_INTEGER, b.getInteger());
-    assertEquals(B_INTEGER, br.getInteger());
-
   }
 
   /**
