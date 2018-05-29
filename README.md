@@ -14,6 +14,7 @@
    3. [Bidirectional mapping](#bidirectional-mapping)
    4. [Tests](#tests)
 8. [Spring integration](#spring-integration)
+   1. [Spring Boot Issue](#spring-boot-issue)
 9. [Migration guide](#migration-guide)
 10. [How to contribute](#how-to-contribute)
 
@@ -308,6 +309,53 @@ Use the following code snippet in components to inject the mapper instances:
 
 `````
 
+### Spring Boot Issue
+
+When using the Spring Boot Framework in version <= 1.5.13.RELEASE in combination with ReMap 4.0.0 a known issue can occur:
+
+If you get the following exception...
+```
+        Caused by:
+        java.lang.IllegalArgumentException
+            at org.objectweb.asm.ClassVisitor.<init>(Unknown Source)
+            at net.sf.cglib.core.DebuggingClassWriter.<init>(DebuggingClassWriter.java:49)
+            at net.sf.cglib.core.DefaultGeneratorStrategy.getClassVisitor(DefaultGeneratorStrategy.java:30)
+            at net.sf.cglib.core.DefaultGeneratorStrategy.generate(DefaultGeneratorStrategy.java:24)
+            at net.sf.cglib.core.AbstractClassGenerator.generate(AbstractClassGenerator.java:329)
+            at net.sf.cglib.core.AbstractClassGenerator$ClassLoaderData$3.apply(AbstractClassGenerator.java:93)
+            at net.sf.cglib.core.AbstractClassGenerator$ClassLoaderData$3.apply(AbstractClassGenerator.java:91)
+            at net.sf.cglib.core.internal.LoadingCache$2.call(LoadingCache.java:54)
+            at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+            at net.sf.cglib.core.internal.LoadingCache.createEntry(LoadingCache.java:61)
+            at net.sf.cglib.core.internal.LoadingCache.get(LoadingCache.java:34)
+            at net.sf.cglib.core.AbstractClassGenerator$ClassLoaderData.get(AbstractClassGenerator.java:116)
+            at net.sf.cglib.core.AbstractClassGenerator.create(AbstractClassGenerator.java:291)
+            at net.sf.cglib.core.KeyFactory$Generator.create(KeyFactory.java:221)
+            at net.sf.cglib.core.KeyFactory.create(KeyFactory.java:174)
+            at net.sf.cglib.core.KeyFactory.create(KeyFactory.java:153)
+            at net.sf.cglib.proxy.Enhancer.<clinit>(Enhancer.java:73)
+            ... 1 more
+```
+...you can workaround this by adding the dependency `compile 'com.jayway.jsonpath:json-path:2.4.0` to your project. This error is caused by a library that ships classes of a dependency in an incompatible version.
+
+#### Why does this happen?
+
+The library `net.minidev:accessors-smart:1.1` which is used as a transitive dependency requires `org.ow2.asm:asm:5.0.3`. ReMap declares `org.ow2.asm` in version 6.0 as dependecy so this newer version is chosen by dependency management of Maven or Gradle.
+
+The problem is that this library does not only declare this dependency but ships it's own copy of the package `org.objectweb.asm` in this older version. Even if your dependecy management seems to choose `org.ow2.asm:asm:6.0`, the classes of `5.0.3` stay in the classpath.
+
+
+```
++--- org.springframework.boot:spring-boot-starter-test:1.5.13.RELEAS
+|    +--- com.jayway.jsonpath:json-path:2.2.
+|    |    +--- net.minidev:json-smart:2.2.
+|    |    |    \--- net.minidev:accessors-smart:1.
+|    |    |         \--- org.ow2.asm:asm:5.0.3 -> 6.0 // Looks like 6.0 is chosen, but the classes of 5.0.3 stay in the classpath.
+```
+
+This bug was fixed in `net.minidev:accessors-smart:1.2` but is still present in Spring Boot Framework in version <= 1.5.13.RELEASE. Since `com.jayway.jsonpath:json-path:2.4.0` depends on this newer version it seems to be the safest way to overwrite the version of this library.
+
+This workaround was tested and should work for most cases. Please file an issue if you are experiencing problems.
 
 # Migration guide
 
