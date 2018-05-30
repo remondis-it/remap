@@ -189,6 +189,25 @@ public final class Mapping<S, D> {
   }
 
   /**
+   * Defines a custom source of a value that should be mapped to the specified property of the destination object.
+   * The custom source value is provided by a supplier lambda function. <b>Note: The mapping
+   * library is designed to reduce the required client tests. Using this method requires the client
+   * to test the supplier lambda function!</b>
+   *
+   * @param destinationSelector
+   *        The {@link FieldSelector}s selecting the destination property with
+   *        get-method invocation.
+   * @return Returns {@link ReplaceBuilder} to specify the transform function and null-strategy.
+   */
+  public <RD> SetBuilder<S, D, RD> set(TypedSelector<RD, D> destinationSelector) {
+    denyNull("destinationSelector", destinationSelector);
+    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
+        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector);
+    SetBuilder<S, D, RD> builder = new SetBuilder<>(destProperty, this);
+    return builder;
+  }
+
+  /**
    * Maps a property holding a collection from the source to the specified property holding a collection of the
    * destination object. The specified transform function will be applied on every item in the source value to convert
    * to the specified destination type. <b>Note: The mapping
@@ -225,6 +244,14 @@ public final class Mapping<S, D> {
     mappedDestinationProperties.add(destProperty);
     // create omit transformation object
     mappings.add(transformation);
+  }
+
+  protected void addDestinationMapping(PropertyDescriptor destProperty, Transformation setTransformation) {
+    denyAlreadyMappedProperty(mappedDestinationProperties, destProperty);
+    // mark the property as mapped in destination
+    mappedDestinationProperties.add(destProperty);
+    // create omit transformation object
+    mappings.add(setTransformation);
   }
 
   private void denyAlreadyOmittedProperty(PropertyDescriptor sourceProperty) {

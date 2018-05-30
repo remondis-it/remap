@@ -109,6 +109,25 @@ public class AssertMapping<S, D> {
   }
 
   /**
+   * Specifies an assertion for a set operation.
+   *
+   * @param destinationSelector
+   *        The destination field selector.
+   * @return Returns a {@link ReplaceAssertBuilder} for further configuration.
+   */
+  public <RD> AssertMapping<S, D> expectSet(TypedSelector<RD, D> destinationSelector) {
+    denyNull("destinationSelector", destinationSelector);
+
+    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION, TRANSFORM,
+        getMapping().getDestination(), destinationSelector);
+
+    SetTransformation<S, D, RD> replace = new SetTransformation<S, D, RD>(this.getMapping(), destProperty.property,
+        null);
+    this.addAssertion(replace);
+    return this;
+  }
+
+  /**
    * Specifies an assertion for a replace operation for collections.
    *
    * @param sourceSelector
@@ -186,12 +205,7 @@ public class AssertMapping<S, D> {
   }
 
   /**
-   * This method checks the replace functions. The following scenarios are checked:
-   * <ol>
-   * <li>The functions do not throw an exception when invoked using sample values
-   * <li>
-   * <li>The function is null-safe if null strategy is not skip-when-null</li>
-   * </ol>
+   * This method checks the replace functions is null-safe if null strategy is not skip-when-null.
    */
   @SuppressWarnings("rawtypes")
   private void checkReplaceFunctions() {
