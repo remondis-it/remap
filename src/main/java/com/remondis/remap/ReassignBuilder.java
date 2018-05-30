@@ -5,6 +5,13 @@ import static com.remondis.remap.Mapping.getTypedPropertyFromFieldSelector;
 
 import java.beans.PropertyDescriptor;
 
+/**
+ * Builds a reassing operation.
+ *
+ * @param <S> The source type.
+ * @param <D> The destination type.
+ * @param <RS> The source field type.
+ */
 public class ReassignBuilder<S, D, RS> {
 
   static final String ASSIGN = "assign";

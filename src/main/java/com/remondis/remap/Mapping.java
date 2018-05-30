@@ -241,7 +241,9 @@ public final class Mapping<S, D> {
   }
 
   /**
-   * @return Returns the mapper configured with this builder.
+   * Returns the mapper configured with this builder.
+   *
+   * @return The mapper instance.
    */
   public Mapper<S, D> mapper() {
     addStrictMapping();

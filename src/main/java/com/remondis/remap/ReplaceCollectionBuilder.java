@@ -4,6 +4,14 @@ import static com.remondis.remap.Lang.denyNull;
 
 import java.util.Collection;
 
+/**
+ * Builds a replace collection operation.
+ *
+ * @param <S> The source type.
+ * @param <D> The destination type.
+ * @param <RS> The source field type.
+ * @param <RD> The destination field type.
+ */
 public class ReplaceCollectionBuilder<S, D, RD, RS> {
 
   static final String TRANSFORM = "transform";

@@ -2,6 +2,15 @@ package com.remondis.remap;
 
 import static com.remondis.remap.Lang.denyNull;
 
+/**
+ * Builds a replace operation.
+ *
+ * @param <S> The source type.
+ * @param <D> The destination type.
+ * @param <RS> The source field type.
+ * @param <RD> The destination field type.
+ *
+ */
 public class ReplaceBuilder<S, D, RD, RS> {
 
   static final String TRANSFORM = "transform";

@@ -4,6 +4,13 @@ import static com.remondis.remap.Properties.asString;
 
 import java.beans.PropertyDescriptor;
 
+/**
+ * The map transformation is the simplest mapping operation. It just reassings a field from the source object to a
+ * destination object while the property name and type are expected to be equal. Therefore the mapping transformation is
+ * a special case of {@link ReassignTransformation}. This mapping transformation is only used
+ * internally to distinguish from mappings configured by the user and implicit field mappings created by the mapper
+ * itself.
+ */
 public class MapTransformation extends ReassignTransformation {
 
   private static final String MAP_MSG = "Map %s\n   to %s";
