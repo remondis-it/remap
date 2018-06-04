@@ -70,6 +70,8 @@ The following operations can be declared on a mapper:
 * `omitInDestination`: omits a field in the destination type and skips the mapping.
 * `reassign`: maps a source field to the destination field of the same type while changing the field name.
 * `replace`: converts a source field to the destination field while changing the field name and the type. To transform the source object into the destination type a transformation function is to be specified.
+* `replaceCollection`: converts a source collection to the destination collection by applying a transform function elementwise.
+* `set`: Sets a value provided either by a function or by a value supplier in the destination.
 * `useMapper`: registers a specific mapper instance that is used to convert referenced types.
 
 ## Validation
