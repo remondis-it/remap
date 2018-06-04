@@ -3,6 +3,7 @@ package com.remondis.remap;
 import static com.remondis.remap.Lang.denyNull;
 
 import java.util.Collection;
+import java.util.function.Function;
 
 /**
  * Builds a replace collection operation.
@@ -31,12 +32,12 @@ public class ReplaceCollectionBuilder<S, D, RD, RS> {
   /**
    * Transforms the items in the collection held by the selected field by applying the specified transform function on
    * each item. <b>Note: The transform function must check the value for <code>null</code> itself. Use {@link
-   * #withSkipWhenNull(Transform)} to skip on <code>null</code> items.</b>
+   * #withSkipWhenNull(Function)} to skip on <code>null</code> items.</b>
    *
    * @param transformation The transform function.
    * @return Returns the {@link Mapping} for further mapping configuration.
    */
-  public Mapping<S, D> with(Transform<RS, RD> transformation) {
+  public Mapping<S, D> with(Function<RS, RD> transformation) {
     denyNull("tranformation", transformation);
     ReplaceCollectionTransformation<RS, RD> replace = new ReplaceCollectionTransformation<>(mapping,
         sourceProperty.property, destProperty.property, transformation, false);
@@ -52,7 +53,7 @@ public class ReplaceCollectionBuilder<S, D, RD, RS> {
    * @param transformation The transform function.
    * @return Returns the {@link Mapping} for further mapping configuration.
    */
-  public Mapping<S, D> withSkipWhenNull(Transform<RS, RD> transformation) {
+  public Mapping<S, D> withSkipWhenNull(Function<RS, RD> transformation) {
     denyNull("tranformation", transformation);
     ReplaceCollectionTransformation<RS, RD> replace = new ReplaceCollectionTransformation<>(mapping,
         sourceProperty.property, destProperty.property, transformation, true);

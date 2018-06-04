@@ -1,11 +1,12 @@
 package com.remondis.remap.flatCollectionMapping;
 
+import java.util.function.Function;
+
 import org.junit.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
-import com.remondis.remap.Transform;
 
 public class DemoTest {
 
@@ -23,7 +24,7 @@ public class DemoTest {
         .ensure();
   }
 
-  public Transform<Long, Id> newId() {
+  public Function<Long, Id> newId() {
     return id -> Id.builder()
         .id(id)
         .build();

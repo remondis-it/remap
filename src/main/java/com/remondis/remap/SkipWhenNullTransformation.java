@@ -1,6 +1,7 @@
 package com.remondis.remap;
 
 import java.beans.PropertyDescriptor;
+import java.util.function.Function;
 
 /**
  * Interface for transformations that can be skipped on <code>null</code> input.
@@ -23,5 +24,5 @@ abstract class SkipWhenNullTransformation<RS, RD> extends Transformation {
    */
   abstract boolean isSkipWhenNull();
 
-  abstract Transform<RS, RD> getTransformation();
+  abstract Function<RS, RD> getTransformation();
 }

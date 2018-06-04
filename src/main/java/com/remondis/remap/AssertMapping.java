@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -115,16 +116,13 @@ public class AssertMapping<S, D> {
    *        The destination field selector.
    * @return Returns a {@link ReplaceAssertBuilder} for further configuration.
    */
-  public <RD> AssertMapping<S, D> expectSet(TypedSelector<RD, D> destinationSelector) {
+  public <RD> SetAssertBuilder<S, D, RD> expectSet(TypedSelector<RD, D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
 
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION, TRANSFORM,
         getMapping().getDestination(), destinationSelector);
-
-    SetTransformation<S, D, RD> replace = new SetTransformation<S, D, RD>(this.getMapping(), destProperty.property,
-        null);
-    this.addAssertion(replace);
-    return this;
+    SetAssertBuilder<S, D, RD> builder = new SetAssertBuilder<>(destProperty, this);
+    return builder;
   }
 
   /**
@@ -219,17 +217,29 @@ public class AssertMapping<S, D> {
           return (SkipWhenNullTransformation) t;
         })
         .forEach(r -> {
-          Transform<?, ?> transformation = r.getTransformation();
+          Function<?, ?> transformation = r.getTransformation();
           if (!r.isSkipWhenNull()) {
-            try {
-              transformation.transform(null);
-            } catch (NullPointerException t) {
-              throw new AssertionError(NOT_NULL_SAFE + r.toString(), t);
-            } catch (Throwable t) {
-              throw new AssertionError(UNEXPECTED_EXCEPTION + r.toString(), t);
-            }
+            assertionErrorIfNullCheckFails(r, transformation);
           }
         });
+  }
+
+  /**
+   * Throws an {@link AssertionError} if the specified {@link Function} is not null safe.
+   *
+   * @param r The {@link Transformation} that is validated.
+   * @param transformation The {@link Function} that is null checked.
+   * @throws AssertionError Thrown if the null check fails.
+   */
+  public static <S, D> void assertionErrorIfNullCheckFails(Transformation r, Function<S, D> transformation)
+      throws AssertionError {
+    try {
+      transformation.apply(null);
+    } catch (NullPointerException t) {
+      throw new AssertionError(NOT_NULL_SAFE + r.toString(), t);
+    } catch (Throwable t) {
+      throw new AssertionError(UNEXPECTED_EXCEPTION + r.toString(), t);
+    }
   }
 
   /**

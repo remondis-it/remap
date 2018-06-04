@@ -15,12 +15,11 @@ import java.util.function.Function;
  */
 class SetTransformation<S, D, RD> extends Transformation {
 
-  private static final String REPLACE_MSG = "Set %s\n           with a custom value supplier.";
+  private static final String MSG = "Set %s with a custom value supplier.";
 
   private Function<S, RD> transformation;
 
   SetTransformation(Mapping<S, D> mapping, PropertyDescriptor destProperty, Function<S, RD> transformation) {
-    // TODO: The null argument can be a big problem.
     super(mapping, null, destProperty);
     this.transformation = transformation;
   }
@@ -41,7 +40,7 @@ class SetTransformation<S, D, RD> extends Transformation {
 
   @Override
   public String toString() {
-    return String.format(REPLACE_MSG, asString(destinationProperty));
+    return String.format(MSG, asString(destinationProperty));
   }
 
 }

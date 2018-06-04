@@ -27,7 +27,9 @@ public class SetBuilder<S, D, RD> {
   }
 
   /**
-   * Sets a value to the specified destination field supplied by a custom value supplier.
+   * Sets a value to the specified destination field supplied by a custom value supplier. <b>Note:</b> It is not
+   * necessary to implement a null-safe function. The specified function will never be called with a <code>null</code>
+   * parameter.
    *
    * @param valueSupplier The value supplier that requires a reference to the whole source object.
    * @return Returns the {@link Mapping} for further mapping configuration.
