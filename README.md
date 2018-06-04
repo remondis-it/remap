@@ -336,7 +336,7 @@ If you get the following exception...
             at net.sf.cglib.proxy.Enhancer.<clinit>(Enhancer.java:73)
             ... 1 more
 ```
-...you can workaround this by adding the dependency `compile 'com.jayway.jsonpath:json-path:2.4.0` to your project. This error is caused by a library that ships classes of a dependency in an incompatible version.
+...you can workaround this by adding the dependency `compile "com.jayway.jsonpath:json-path:2.4.0"` to your project. This error is caused by a library that ships classes of a dependency in an incompatible version.
 
 #### Why does this happen?
 
