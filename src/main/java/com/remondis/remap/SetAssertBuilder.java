@@ -1,9 +1,5 @@
 package com.remondis.remap;
 
-import static com.remondis.remap.Lang.denyNull;
-
-import java.util.function.Function;
-
 /**
  * Builder to assert a replace operation on a {@link Mapper} object using {@link AssertMapping}.
  *
@@ -26,13 +22,10 @@ public class SetAssertBuilder<S, D, RD> {
   /**
    * Expects a set-mapping with a function providing a value.
    *
-   * @param valueFunction The transformation to test.
    * @return Returns the {@link AssertMapping} for further configuration.
    */
-  public AssertMapping<S, D> withFunction(Function<S, RD> valueFunction) {
-    denyNull("valueSupplier", valueFunction);
-    SetTransformation<S, D, RD> replace = new SetTransformation<>(asserts.getMapping(), destProperty.property,
-        valueFunction);
+  public AssertMapping<S, D> withFunction() {
+    SetTransformation<S, D, RD> replace = new SetTransformation<>(asserts.getMapping(), destProperty.property, null);
     asserts.addAssertion(replace);
     return asserts;
   }

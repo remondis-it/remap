@@ -13,8 +13,32 @@ import com.remondis.remap.Mapping;
 
 public class SetOperationTest {
 
+  private static final RuntimeException RUNTIME_EXCEPTION = new RuntimeException("Thrown for test purposes.");
   private static final String STRING = "string";
   private static final String ANOTHER_STRING = "anotherString";
+
+  @Test
+  public void shouldHandleFunctionExceptionInAsserts() {
+    A a = a();
+    Mapper<A, B> aToBmapper = Mapping.from(A.class)
+        .to(B.class)
+        .omitInSource(A::getAnotherString)
+        .set(B::getInteger)
+        .with(throwingFunction())
+        .set(B::getIntegerRef)
+        .with(() -> 100)
+        .mapper();
+    AssertMapping.of(aToBmapper)
+        .expectOmitInSource(A::getAnotherString)
+        .expectSet(B::getInteger)
+        .withFunction()
+        .expectSet(B::getIntegerRef)
+        .withSupplier()
+        .ensure();
+    assertThatThrownBy(() -> {
+      B b = aToBmapper.map(a);
+    }).isSameAs(RUNTIME_EXCEPTION);
+  }
 
   @Test
   public void shouldDetectMissingSetWithSupplierAssert() {
@@ -26,7 +50,7 @@ public class SetOperationTest {
       AssertMapping.of(aToBmapper)
           .expectOmitInSource(A::getAnotherString)
           .expectSet(B::getInteger)
-          .withFunction(valueFunction())
+          .withFunction()
           .ensure();
     }).isInstanceOf(AssertionError.class)
         .hasMessage("The following unexpected transformation were specified on the mapping:\n"
@@ -59,7 +83,7 @@ public class SetOperationTest {
     AssertMapping.of(aToBmapper)
         .expectOmitInSource(A::getAnotherString)
         .expectSet(B::getInteger)
-        .withFunction(valueFunction())
+        .withFunction()
         .expectSet(B::getIntegerRef)
         .withSupplier()
         .ensure();
@@ -93,5 +117,11 @@ public class SetOperationTest {
   private Function<A, Integer> valueFunction() {
     return a -> a.getAnotherString()
         .length();
+  }
+
+  private Function<A, Integer> throwingFunction() {
+    return a -> {
+      throw RUNTIME_EXCEPTION;
+    };
   }
 }
