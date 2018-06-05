@@ -36,7 +36,7 @@ public class SetOperationTest {
         .withSupplier()
         .ensure();
     assertThatThrownBy(() -> {
-      B b = aToBmapper.map(a);
+      aToBmapper.map(a);
     }).isSameAs(RUNTIME_EXCEPTION);
   }
 
