@@ -41,4 +41,16 @@ public class SetAssertBuilder<S, D, RD> {
     asserts.addAssertion(replace);
     return asserts;
   }
+
+  /**
+   * Expects a set-mapping with a value.
+   *
+   * @return Returns the {@link AssertMapping} for further configuration.
+   */
+  public AssertMapping<S, D> withValue() {
+    SetValueTransformation<S, D, RD> replace = new SetValueTransformation<>(asserts.getMapping(), destProperty.property,
+        null);
+    asserts.addAssertion(replace);
+    return asserts;
+  }
 }

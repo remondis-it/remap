@@ -15,4 +15,6 @@ public class B {
   private Integer integerRef;
   private int integer;
 
+  private String valueSet;
+
 }

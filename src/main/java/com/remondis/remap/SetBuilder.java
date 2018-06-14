@@ -37,7 +37,7 @@ public class SetBuilder<S, D, RD> {
    * @return Returns the {@link Mapping} for further mapping configuration.
    */
   public Mapping<S, D> with(Function<S, RD> valueSupplier) {
-    denyNull("tranformation", valueSupplier);
+    denyNull("valueSupplier", valueSupplier);
     SetTransformation<S, D, RD> setTransformation = new SetTransformation<>(mapping, destProperty.property,
         valueSupplier);
     mapping.addDestinationMapping(destProperty.property, setTransformation);
@@ -51,11 +51,24 @@ public class SetBuilder<S, D, RD> {
    * @return Returns the {@link Mapping} for further mapping configuration.
    */
   public Mapping<S, D> with(Supplier<RD> valueSupplier) {
-    denyNull("tranformation", valueSupplier);
+    denyNull("valueSupplier", valueSupplier);
     SetSupplierTransformation<S, D, RD> setTransformation = new SetSupplierTransformation<>(mapping,
         destProperty.property, valueSupplier);
     mapping.addDestinationMapping(destProperty.property, setTransformation);
     return mapping;
   }
 
+  /**
+   * Sets the specified value to the specified destination field.
+   *
+   * @param value The value to set.
+   * @return Returns the {@link Mapping} for further mapping configuration.
+   */
+  public Mapping<S, D> with(RD value) {
+    denyNull("value", value);
+    SetValueTransformation<S, D, RD> setTransformation = new SetValueTransformation<>(mapping, destProperty.property,
+        value);
+    mapping.addDestinationMapping(destProperty.property, setTransformation);
+    return mapping;
+  }
 }

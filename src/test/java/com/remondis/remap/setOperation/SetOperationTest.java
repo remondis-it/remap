@@ -13,6 +13,7 @@ import com.remondis.remap.Mapping;
 
 public class SetOperationTest {
 
+  private static final String STATIC_STRING_VALUE = "static-string-value";
   private static final RuntimeException RUNTIME_EXCEPTION = new RuntimeException("Thrown for test purposes.");
   private static final String STRING = "string";
   private static final String ANOTHER_STRING = "anotherString";
@@ -27,6 +28,8 @@ public class SetOperationTest {
         .with(throwingFunction())
         .set(B::getIntegerRef)
         .with(() -> 100)
+        .set(B::getValueSet)
+        .with(STATIC_STRING_VALUE)
         .mapper();
     AssertMapping.of(aToBmapper)
         .expectOmitInSource(A::getAnotherString)
@@ -34,10 +37,31 @@ public class SetOperationTest {
         .withFunction()
         .expectSet(B::getIntegerRef)
         .withSupplier()
+        .expectSet(B::getValueSet)
+        .withValue()
         .ensure();
     assertThatThrownBy(() -> {
       aToBmapper.map(a);
     }).isSameAs(RUNTIME_EXCEPTION);
+  }
+
+  @Test
+  public void shouldDetectMissingSetValueAssert() {
+    A a = a();
+    Mapper<A, B> aToBmapper = aToBmapper();
+    B b = aToBmapper.map(a);
+    assertMappingResult(a, b);
+    assertThatThrownBy(() -> {
+      AssertMapping.of(aToBmapper)
+          .expectOmitInSource(A::getAnotherString)
+          .expectSet(B::getInteger)
+          .withFunction()
+          .expectSet(B::getIntegerRef)
+          .withSupplier()
+          .ensure();
+    }).isInstanceOf(AssertionError.class)
+        .hasMessage("The following unexpected transformation were specified on the mapping:\n"
+            + "- Set Property 'valueSet' in com.remondis.remap.setOperation.B with a custom value supplier.\n");
   }
 
   @Test
@@ -51,6 +75,8 @@ public class SetOperationTest {
           .expectOmitInSource(A::getAnotherString)
           .expectSet(B::getInteger)
           .withFunction()
+          .expectSet(B::getValueSet)
+          .withValue()
           .ensure();
     }).isInstanceOf(AssertionError.class)
         .hasMessage("The following unexpected transformation were specified on the mapping:\n"
@@ -68,6 +94,8 @@ public class SetOperationTest {
           .expectOmitInSource(A::getAnotherString)
           .expectSet(B::getIntegerRef)
           .withSupplier()
+          .expectSet(B::getValueSet)
+          .withValue()
           .ensure();
     }).isInstanceOf(AssertionError.class)
         .hasMessage("The following unexpected transformation were specified on the mapping:\n"
@@ -86,6 +114,8 @@ public class SetOperationTest {
         .withFunction()
         .expectSet(B::getIntegerRef)
         .withSupplier()
+        .expectSet(B::getValueSet)
+        .withValue()
         .ensure();
   }
 
@@ -94,6 +124,7 @@ public class SetOperationTest {
     assertEquals(aSrc.getAnotherString()
         .length(), bDest.getInteger());
     assertEquals((Object) 100, bDest.getIntegerRef());
+    assertEquals(STATIC_STRING_VALUE, bDest.getValueSet());
   }
 
   private Mapper<A, B> aToBmapper() {
@@ -104,6 +135,8 @@ public class SetOperationTest {
         .with(valueFunction())
         .set(B::getIntegerRef)
         .with(() -> 100)
+        .set(B::getValueSet)
+        .with(STATIC_STRING_VALUE)
         .mapper();
   }
 
