@@ -27,6 +27,7 @@ version PROJECT_VERSION
 description 'A declarative mapping library for converting objects field by field. '
 
 repositories {
+    mavenCentral()
     mavenLocal()
     maven {
         url "https://plugins.gradle.org/m2/"
