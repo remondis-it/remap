@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-    	mavenCentral()
+        mavenCentral()
         mavenLocal()
         maven {
             url "https://plugins.gradle.org/m2/"
@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0"
+        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0"
     }
 }
 
@@ -18,6 +18,9 @@ apply plugin: 'signing'
 apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'io.codearte.nexus-staging'
+
+sourceCompatibility = 10.0
+targetCompatibility = 10.0
 
 group 'com.remondis'
 version PROJECT_VERSION
@@ -32,17 +35,17 @@ repositories {
 
 // Doclint enforces generic parameter documentations that are redundant.
 if (JavaVersion.current().isJava8Compatible()) {
-   allprojects {
-     tasks.withType(Javadoc) {
-       options.addStringOption('Xdoclint:none', '-quiet')
-     }
-   }
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
 }
 
 dependencies {
     compile "cglib:cglib:3.2.6"
+    compile "org.ow2.asm:asm:6.2"
 
-    testCompile "org.projectlombok:lombok:1.16.20"
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-core:2.18.0"
     testCompile "org.assertj:assertj-core:3.9.1"
@@ -85,9 +88,9 @@ artifacts {
 
 jar {
     manifest {
-         attributes("Bundle-Vendor": "REMONDIS IT Services GmbH & Co. KG",
-                    "Bundle-DocURL": "https://github.com/remondis-it/remap",
-                    "Automatic-Module-Name": "com.remondis.remap")
+        attributes("Bundle-Vendor": "REMONDIS IT Services GmbH & Co. KG",
+                "Bundle-DocURL": "https://github.com/remondis-it/remap",
+                "Automatic-Module-Name": "com.remondis.remap")
     }
 }
 
@@ -100,9 +103,9 @@ if (project.hasProperty('release')) {
     }
 
     nexusStaging {
-    username = ossrhUser
-    password = ossrhPassword
-	}
+        username = ossrhUser
+        password = ossrhPassword
+    }
 
     // OSSRH publication
     uploadArchives {
@@ -111,11 +114,11 @@ if (project.hasProperty('release')) {
                 // POM signature
                 beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            	repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
                     authentication(userName: ossrhUser, password: ossrhPassword)
-    		    }
-             	pom.project {
-            		name project.name
+                }
+                pom.project {
+                    name project.name
                     description project.description
                     packaging 'jar'
                     url = 'https://github.com/remondis-it/remap'
@@ -126,22 +129,22 @@ if (project.hasProperty('release')) {
                         url 'https://github.com/remondis-it/remap.git'
                     }
 
-			        licenses {
-			            license {
-			                name = 'The Apache Software License, Version 2.0'
-			                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-			                distribution = 'repo'
-			            }
-			        }
+                    licenses {
+                        license {
+                            name = 'The Apache Software License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution = 'repo'
+                        }
+                    }
 
                     developers {
-			        	developer {
-			        		name = 'Christopher Schütte'
-			        		email = 'christopher.schuette@remondis.de'
-			        		organization = 'REMONDIS IT Services GmbH & Co. KG'
-			        	}
-		        	}
-				}
+                        developer {
+                            name = 'Christopher Schütte'
+                            email = 'christopher.schuette@remondis.de'
+                            organization = 'REMONDIS IT Services GmbH & Co. KG'
+                        }
+                    }
+                }
             }
         }
     }
