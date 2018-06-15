@@ -2,6 +2,8 @@ package com.remondis.remap;
 
 import static com.remondis.remap.Lang.denyNull;
 
+import java.util.function.Function;
+
 /**
  * Builder to assert a replace operation on a {@link Mapper} object using {@link AssertMapping}.
  *
@@ -38,7 +40,7 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
    * @param transformation The transformation to test.
    * @return Returns the {@link AssertMapping} for further configuration.
    */
-  public AssertMapping<S, D> andTest(Transform<RS, RD> transformation) {
+  public AssertMapping<S, D> andTest(Function<RS, RD> transformation) {
     denyNull("tranfromation", transformation);
     ReplaceTransformation<RS, RD> replace = new ReplaceTransformation<>(asserts.getMapping(), sourceProperty.property,
         destProperty.property, transformation, false);

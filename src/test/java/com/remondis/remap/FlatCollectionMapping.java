@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import org.junit.Test;
 
@@ -28,7 +29,7 @@ public class FlatCollectionMapping {
         .ids(Arrays.asList(1L, 2L, 3L))
         .build();
     Destination map = mapper.map(source);
-    List<Id> expected = Arrays.asList(idBuilder().transform(1L), idBuilder().transform(2L), idBuilder().transform(3L));
+    List<Id> expected = Arrays.asList(idBuilder().apply(1L), idBuilder().apply(2L), idBuilder().apply(3L));
     List<Id> actual = map.getIds();
     assertEquals(expected, actual);
 
@@ -77,8 +78,8 @@ public class FlatCollectionMapping {
         .build();
     Destination map = mapper.map(source);
 
-    List<Id> expected = Arrays.asList(idBuilder().transform(1L), idBuilder().transform(null), idBuilder().transform(2L),
-        idBuilder().transform(null), idBuilder().transform(3L));
+    List<Id> expected = Arrays.asList(idBuilder().apply(1L), idBuilder().apply(null), idBuilder().apply(2L),
+        idBuilder().apply(null), idBuilder().apply(3L));
     List<Id> actual = map.getIds();
     assertEquals(expected, actual);
 
@@ -102,7 +103,7 @@ public class FlatCollectionMapping {
         .build();
     Destination map = mapper.map(source);
 
-    List<Id> expected = Arrays.asList(idBuilder().transform(1L), idBuilder().transform(2L), idBuilder().transform(3L));
+    List<Id> expected = Arrays.asList(idBuilder().apply(1L), idBuilder().apply(2L), idBuilder().apply(3L));
     List<Id> actual = map.getIds();
     assertEquals(expected, actual);
 
@@ -146,7 +147,7 @@ public class FlatCollectionMapping {
         .hasNoCause();
   }
 
-  public static Transform<Long, Id> idBuilder() {
+  public static Function<Long, Id> idBuilder() {
     return id -> Id.builder()
         .id(id)
         .build();

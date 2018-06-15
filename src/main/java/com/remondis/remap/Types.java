@@ -4,6 +4,11 @@ import static com.remondis.remap.Lang.denyNull;
 
 import java.lang.reflect.Constructor;
 
+/**
+ * Builder step implementation for the to-method of {@link Mapping}.
+ *
+ * @param <S> The source type.
+ */
 public final class Types<S> {
 
   private Class<S> source;

@@ -5,6 +5,7 @@ import static com.remondis.remap.ReflectionUtil.getCollector;
 
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
+import java.util.function.Function;
 
 /**
  * A replace transformation converts a source object into a destination object by applying the specified {@link
@@ -20,11 +21,11 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
   private static final String REPLACE_SKIPPED_MSG = "Replacing but skipping when null %s\n"
       + "           with %s using transformation";
 
-  private Transform<RS, RD> transformation;
+  private Function<RS, RD> transformation;
   private boolean skipWhenNull;
 
   ReplaceCollectionTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
-      PropertyDescriptor destProperty, Transform<RS, RD> transformation, boolean skipWhenNull) {
+      PropertyDescriptor destProperty, Function<RS, RD> transformation, boolean skipWhenNull) {
     super(mapping, sourceProperty, destProperty);
     this.transformation = transformation;
     this.skipWhenNull = skipWhenNull;
@@ -49,7 +50,7 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
       if (skipWhenNull) {
         destinationValue = (Collection<RD>) collection.stream()
             .filter(i -> (i != null))
-            .map(sourceItem -> transformation.transform((RS) sourceItem))
+            .map(sourceItem -> transformation.apply((RS) sourceItem))
             .collect(getCollector(collection));
       } else {
         destinationValue = (Collection<RD>) collection.stream()
@@ -57,7 +58,7 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
 
               RS sourceItem2 = null;
               sourceItem2 = (RS) sourceItem;
-              return transformation.transform(sourceItem2);
+              return transformation.apply(sourceItem2);
             })
             .collect(getCollector(collection));
       }
@@ -80,7 +81,7 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
   }
 
   @Override
-  Transform<RS, RD> getTransformation() {
+  Function<RS, RD> getTransformation() {
     return transformation;
   }
 
