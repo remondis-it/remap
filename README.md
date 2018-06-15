@@ -338,7 +338,7 @@ If you get the following exception...
             at net.sf.cglib.proxy.Enhancer.<clinit>(Enhancer.java:73)
             ... 1 more
 ```
-...you can workaround this by adding the dependency `compile 'com.jayway.jsonpath:json-path:2.4.0` to your project. This error is caused by a library that ships classes of a dependency in an incompatible version.
+...you can workaround this by adding the dependency `compile "com.jayway.jsonpath:json-path:2.4.0"` to your project. This error is caused by a library that ships classes of a dependency in an incompatible version.
 
 #### Why does this happen?
 
@@ -348,7 +348,7 @@ The problem is that this library does not only declare this dependency but ships
 
 
 ```
-+--- org.springframework.boot:spring-boot-starter-test:1.5.13.RELEAS
++--- org.springframework.boot:spring-boot-starter-test:1.5.13.RELEASE
 |    +--- com.jayway.jsonpath:json-path:2.2.
 |    |    +--- net.minidev:json-smart:2.2.
 |    |    |    \--- net.minidev:accessors-smart:1.
