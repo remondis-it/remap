@@ -19,9 +19,6 @@ apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'io.codearte.nexus-staging'
 
-sourceCompatibility = 10.0
-targetCompatibility = 10.0
-
 group 'com.remondis'
 version PROJECT_VERSION
 description 'A declarative mapping library for converting objects field by field. '
@@ -107,6 +104,93 @@ if (project.hasProperty('release')) {
         username = ossrhUser
         password = ossrhPassword
     }
+
+    /*---------------  Modulepath for Jigsaw  ------------------*/
+//"Copied" from: https://guides.gradle.org/building-java-9-modules/
+    ext.moduleName = 'com.remondis.azubi.test.jigsaw.otherHead'
+
+// 	Clears the classpath property by creating an empty file collection
+    compileJava {
+        inputs.property("moduleName", moduleName)
+        doFirst {
+            options.compilerArgs = [
+                    '--module-path', classpath.asPath,
+            ]
+            classpath = files()
+        }
+    }
+
+//Redifines the classpath/modulepath
+    compileTestJava {
+        inputs.property("moduleName", moduleName)
+        doFirst {
+            options.compilerArgs = [
+                    '--module-path', classpath.asPath,
+                    '--add-modules', 'junit',
+                    '--add-reads', "$moduleName=junit",
+                    '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
+            ]
+            classpath = files()
+        }
+    }
+
+    test {
+        inputs.property("moduleName", moduleName)
+        doFirst {
+            jvmArgs = [
+                    '--module-path', classpath.asPath,
+                    '--add-modules', 'ALL-MODULE-PATH',
+                    '--add-reads', "$moduleName=junit",
+                    '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,
+            ]
+            classpath = files()
+        }
+    }
+
+    subprojects {
+        afterEvaluate {
+            repositories {
+                jcenter()
+            }
+
+            compileJava {
+                inputs.property("moduleName", moduleName)
+                doFirst {
+                    options.compilerArgs = [
+                            '--module-path', classpath.asPath,
+                    ]
+                    classpath = files()
+                }
+            }
+
+            compileTestJava {
+                inputs.property("moduleName", moduleName)
+                doFirst {
+                    options.compilerArgs = [
+                            '--module-path', classpath.asPath,
+                            '--add-modules', 'junit',
+                            '--add-reads', "$moduleName=junit",
+                            '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
+                    ]
+                    classpath = files()
+                }
+            }
+
+            test {
+                inputs.property("moduleName", moduleName)
+                doFirst {
+                    jvmArgs = [
+                            '--module-path', classpath.asPath,
+                            '--add-modules', 'ALL-MODULE-PATH',
+                            '--add-reads', "$moduleName=junit",
+                            '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,
+                    ]
+                    classpath = files()
+                }
+            }
+        }
+    }
+/*----------------------------------------------*/
 
     // OSSRH publication
     uploadArchives {
