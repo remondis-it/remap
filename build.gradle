@@ -1,44 +1,38 @@
-buildscript {
-    repositories {
-        mavenCentral()
-        mavenLocal()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-
-    dependencies {
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0"
-    }
+//buildscript {
+//    repositories {
+//        mavenCentral()
+//        mavenLocal()
+//        maven {
+//            url "https://plugins.gradle.org/m2/"
+//        }
+//    }
+//
+//    dependencies {
+//        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0"
+//    }
+//}
+plugins {
+    id 'java'
 }
-
-apply plugin: 'java'
-apply plugin: 'checkstyle'
-apply plugin: 'signing'
-apply plugin: 'maven'
-apply plugin: 'idea'
-apply plugin: 'io.codearte.nexus-staging'
 
 group 'com.remondis'
 version PROJECT_VERSION
 description 'A declarative mapping library for converting objects field by field. '
 
 repositories {
-    mavenCentral()
     mavenLocal()
+    mavenCentral()
     maven {
         url "https://plugins.gradle.org/m2/"
     }
 }
 
-// Doclint enforces generic parameter documentations that are redundant.
-if (JavaVersion.current().isJava8Compatible()) {
-    allprojects {
-        tasks.withType(Javadoc) {
-            options.addStringOption('Xdoclint:none', '-quiet')
-        }
-    }
-}
+apply plugin: 'java'
+//apply plugin: 'checkstyle'
+apply plugin: 'signing'
+apply plugin: 'maven'
+apply plugin: 'idea'
+//apply plugin: 'io.codearte.nexus-staging'
 
 dependencies {
     compile "cglib:cglib:3.2.6"
@@ -52,6 +46,33 @@ dependencies {
     testCompile "org.springframework:spring-context:4.3.16.RELEASE"
 }
 
+/*---------------  Modulepath for Jigsaw  ------------------*/
+ext.moduleName = 'com.remondis.remap'
+//"Copied" from: https://guides.gradle.org/building-java-9-modules/
+
+sourceCompatibility = 10
+targetCompatibility = 10
+
+compileJava {
+    inputs.property("moduleName", moduleName)
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath,
+        ]
+        classpath = files()
+    }
+}
+/*----------------------------------------------*/
+
+//Doclint enforces generic parameter documentations that are redundant.
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+}
+
 sourceSets {
     main {
         java {
@@ -60,38 +81,37 @@ sourceSets {
     }
 }
 
+//checkstyle {
+//    configFile = rootProject.file("shared/config/checkstyle/checkstyle.xml")
+//    toolVersion = "7.7"
+//    maxErrors = 0
+//    maxWarnings = 0
+//    sourceSets = [project.sourceSets.main]
+//}
+//
+//
+//task javadocJar(type: Jar) {
+//    classifier = 'javadoc'
+//    from javadoc
+//}
 
-checkstyle {
-    configFile = rootProject.file("shared/config/checkstyle/checkstyle.xml")
-    toolVersion = "7.7"
-    maxErrors = 0
-    maxWarnings = 0
-    sourceSets = [project.sourceSets.main]
-}
+//task sourcesJar(type: Jar) {
+//    classifier = 'sources'
+//    from sourceSets.main.allSource
+//}
 
+//artifacts {
+//    archives javadocJar, sourcesJar
+//}
 
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
-}
-
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-artifacts {
-    archives javadocJar, sourcesJar
-}
-
-jar {
-    manifest {
-        attributes("Bundle-Vendor": "REMONDIS IT Services GmbH & Co. KG",
-                "Bundle-DocURL": "https://github.com/remondis-it/remap",
-                "Automatic-Module-Name": "com.remondis.remap")
-    }
-}
-
+//jar {
+//    manifest {
+//        attributes("Bundle-Vendor": "REMONDIS IT Services GmbH & Co. KG",
+//                "Bundle-DocURL": "https://github.com/remondis-it/remap",
+//                "Automatic-Module-Name": 'com.remondis.remap')
+//    }
+//
+//}
 
 if (project.hasProperty('release')) {
 
@@ -104,93 +124,6 @@ if (project.hasProperty('release')) {
         username = ossrhUser
         password = ossrhPassword
     }
-
-    /*---------------  Modulepath for Jigsaw  ------------------*/
-//"Copied" from: https://guides.gradle.org/building-java-9-modules/
-    ext.moduleName = 'com.remondis.azubi.test.jigsaw.otherHead'
-
-// 	Clears the classpath property by creating an empty file collection
-    compileJava {
-        inputs.property("moduleName", moduleName)
-        doFirst {
-            options.compilerArgs = [
-                    '--module-path', classpath.asPath,
-            ]
-            classpath = files()
-        }
-    }
-
-//Redifines the classpath/modulepath
-    compileTestJava {
-        inputs.property("moduleName", moduleName)
-        doFirst {
-            options.compilerArgs = [
-                    '--module-path', classpath.asPath,
-                    '--add-modules', 'junit',
-                    '--add-reads', "$moduleName=junit",
-                    '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
-            ]
-            classpath = files()
-        }
-    }
-
-    test {
-        inputs.property("moduleName", moduleName)
-        doFirst {
-            jvmArgs = [
-                    '--module-path', classpath.asPath,
-                    '--add-modules', 'ALL-MODULE-PATH',
-                    '--add-reads', "$moduleName=junit",
-                    '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,
-            ]
-            classpath = files()
-        }
-    }
-
-    subprojects {
-        afterEvaluate {
-            repositories {
-                jcenter()
-            }
-
-            compileJava {
-                inputs.property("moduleName", moduleName)
-                doFirst {
-                    options.compilerArgs = [
-                            '--module-path', classpath.asPath,
-                    ]
-                    classpath = files()
-                }
-            }
-
-            compileTestJava {
-                inputs.property("moduleName", moduleName)
-                doFirst {
-                    options.compilerArgs = [
-                            '--module-path', classpath.asPath,
-                            '--add-modules', 'junit',
-                            '--add-reads', "$moduleName=junit",
-                            '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
-                    ]
-                    classpath = files()
-                }
-            }
-
-            test {
-                inputs.property("moduleName", moduleName)
-                doFirst {
-                    jvmArgs = [
-                            '--module-path', classpath.asPath,
-                            '--add-modules', 'ALL-MODULE-PATH',
-                            '--add-reads', "$moduleName=junit",
-                            '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,
-                    ]
-                    classpath = files()
-                }
-            }
-        }
-    }
-/*----------------------------------------------*/
 
     // OSSRH publication
     uploadArchives {
