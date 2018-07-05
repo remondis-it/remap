@@ -55,13 +55,17 @@ class InvocationSensor<T> {
   }
 
   /**
-   * @return Returns the proxy object get-method calls can be performed on.
+   * Returns the proxy object get-method calls can be performed on.
+   *
+   * @return The proxy.
    */
   T getSensor() {
     return proxyObject;
   }
 
   /**
+   * Returns the list of property names that were tracked by get calls.
+   *
    * @return Returns the tracked property names.
    */
   List<String> getTrackedPropertyNames() {
@@ -69,6 +73,8 @@ class InvocationSensor<T> {
   }
 
   /**
+   * Checks if there were any properties accessed by get calls.
+   *
    * @return Returns <code>true</code> if there were at least one interaction with a property. Otherwise
    *         <code>false</code> is returned.
    */
@@ -79,7 +85,7 @@ class InvocationSensor<T> {
   /**
    * Resets all tracked information.
    */
-  void reset() { 
+  void reset() {
     propertyNames.clear();
   }
 

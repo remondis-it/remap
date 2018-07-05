@@ -3,6 +3,7 @@ package com.remondis.remap;
 import static com.remondis.remap.Properties.asString;
 
 import java.beans.PropertyDescriptor;
+import java.util.function.Function;
 
 /**
  * A replace transformation converts a source object into a destination object by applying the specified {@link
@@ -18,11 +19,11 @@ class ReplaceTransformation<RS, RD> extends SkipWhenNullTransformation<RS, RD> {
   private static final String REPLACE_SKIPPED_MSG = "Replacing but skipping when null %s\n"
       + "           with %s using transformation";
 
-  private Transform<RS, RD> transformation;
+  private Function<RS, RD> transformation;
   private boolean skipWhenNull;
 
   ReplaceTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty, PropertyDescriptor destProperty,
-      Transform<RS, RD> transformation, boolean skipWhenNull) {
+      Function<RS, RD> transformation, boolean skipWhenNull) {
     super(mapping, sourceProperty, destProperty);
     this.transformation = transformation;
     this.skipWhenNull = skipWhenNull;
@@ -40,7 +41,7 @@ class ReplaceTransformation<RS, RD> extends SkipWhenNullTransformation<RS, RD> {
       // Skip if source value is null and the transformation was declared to skip on null input.
       return;
     }
-    RD destinationValue = transformation.transform((RS) sourceValue);
+    RD destinationValue = transformation.apply((RS) sourceValue);
     writeOrFail(destinationProperty, destination, destinationValue);
   }
 
@@ -58,7 +59,7 @@ class ReplaceTransformation<RS, RD> extends SkipWhenNullTransformation<RS, RD> {
   }
 
   @Override
-  Transform<RS, RD> getTransformation() {
+  Function<RS, RD> getTransformation() {
     return transformation;
   }
 
