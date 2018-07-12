@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * This is the default implementation for a {@link Mapper}.
+ * This class defines a reusable mapper object to perform multiple mappings for the configured object types.
  *
  * @param <S> The source type
  * @param <D> The destination type
