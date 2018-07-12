@@ -9,6 +9,7 @@ import static com.remondis.remap.Properties.createUnmappedMessage;
 import static com.remondis.remap.ReflectionUtil.newInstance;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -276,6 +277,19 @@ public final class Mapping<S, D> {
     addStrictMapping();
     validateMapping();
     return new Mapper<>(this);
+  }
+
+  public final <W extends Mapper<S, D>> W mapper(Class<W> wrapperType) {
+    addStrictMapping();
+    validateMapping();
+    try {
+      return wrapperType.getConstructor(Mapping.class)
+          .newInstance(this);
+    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+        | NoSuchMethodException | SecurityException e) {
+      throw new MappingException(
+          "Cannot wrap mapper - please make sure the specified wrapper class extends com.remondis.remap.Mapper.");
+    }
   }
 
   /**
