@@ -279,6 +279,14 @@ public final class Mapping<S, D> {
     return new Mapper<>(this);
   }
 
+  /**
+   * Wraps the mapper instance using the specified wrapper type. Valid wrapper types are classes that extend
+   * {@link Mapper}. Wrapper classes can be used to reference custom types instead of referencing the generic
+   * parameterized {@link Mapper}.
+   * 
+   * @param wrapperType The wrapper type. <b>Note: Wrapper types are custom types that extend {@link Mapper}.</b>
+   * @return Returns the mapper instance as the specified wrapper type.
+   */
   public final <W extends Mapper<S, D>> W mapper(Class<W> wrapperType) {
     addStrictMapping();
     validateMapping();
