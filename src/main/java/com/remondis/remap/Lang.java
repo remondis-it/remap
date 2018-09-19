@@ -19,9 +19,9 @@ class Lang {
   static <T> T denyNull(String fieldName, T argument) throws IllegalArgumentException {
     if (argument == null) {
       if (fieldName == null) {
-        throw new IllegalArgumentException("Argument may not be null.");
+        throw new IllegalArgumentException("Argument must not be null.");
       } else {
-        throw new IllegalArgumentException(String.format("Argument %s may not be null.", fieldName));
+        throw new IllegalArgumentException(String.format("Argument %s must not be null.", fieldName));
       }
     }
     return argument;
