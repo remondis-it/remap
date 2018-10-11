@@ -7,6 +7,7 @@ import static com.remondis.remap.MappingException.notAProperty;
 import static com.remondis.remap.MappingException.zeroInteractions;
 import static com.remondis.remap.Properties.createUnmappedMessage;
 import static com.remondis.remap.ReflectionUtil.newInstance;
+import static java.util.Objects.nonNull;
 
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
@@ -259,8 +260,10 @@ public final class Mapping<S, D> {
       // Search for omit-Operations
       mappings.stream()
           .forEach(t -> {
-            if (t instanceof OmitTransformation && t.getSourceProperty()
-                .equals(sourceProperty)) {
+            PropertyDescriptor omitSourceProperty = t.getSourceProperty();
+            // If omitSourceProperty is null, then the mapping is an OmitInDestination-Operation.
+            if (t instanceof OmitTransformation && nonNull(omitSourceProperty)
+                && omitSourceProperty.equals(sourceProperty)) {
               throw alreadyMappedProperty(sourceProperty);
             }
           });
