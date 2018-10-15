@@ -92,26 +92,27 @@ jar {
     }
 }
 
+
 def pomConfig = {
-			        licenses {
-			            license {
-			                name = 'The Apache Software License, Version 2.0'
-			                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-			                distribution = 'repo'
-			            }
-			        }
-                    developers {
-			        	developer {
-			        		name = 'Christopher Schütte'
-			        		email = 'christopher.schuette@remondis.de'
-			        		organization = 'REMONDIS IT Services GmbH & Co. KG'
-			        	}
+       			licenses {
+		            license {
+		                name = 'The Apache Software License, Version 2.0'
+		                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+		            }
+		        }
+		        
+            	developers {
+		        	developer {
+		        		name = 'Christopher Schütte'
+		        		email = 'christopher.schuette@remondis.de'
+		        		organization = 'REMONDIS IT Services GmbH & Co. KG'
 		        	}
-                    scm {
-                        connection 'scm:git:https://github.com/remondis-it/remap.git'
-                        developerConnection 'scm:git:git@github.com:remondis-it/remap.git'
-                        url 'https://github.com/remondis-it/remap.git'
-                    }
+	        	}
+                scm {
+                    connection 'scm:git:https://github.com/remondis-it/remap.git'
+                    developerConnection 'scm:git:git@github.com:remondis-it/remap.git'
+                    url 'https://github.com/remondis-it/remap.git'
+                }
 }
 
 publishing {
@@ -127,16 +128,30 @@ publishing {
             groupId 'com.remondis'
             artifactId 'remap'
             version PROJECT_VERSION
+        }
+    }
+}
+
+publishing {
+    publications {
+        MyPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId 'com.remondis'
+            artifactId 'remap'
+            version PROJECT_VERSION
             pom.withXml {
                 def root = asNode()
-                root.appendNode('description', project.description)
-                root.appendNode('name', project.name)
+                root.appendNode('description', 'TODO DESC')
+                root.appendNode('name', 'ReMap')
                 root.appendNode('url', 'https://github.com/remondis-it/remap.git')
                 root.children().last() + pomConfig
             }
         }
     }
 }
+
 
 
 bintray {
