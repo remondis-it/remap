@@ -162,7 +162,6 @@ bintray {
 	pkg {
 		repo = 'maven'
 		name = 'remap'
-		userOrg = 'REMONDIS IT Services GmbH & Co. KG'
 		licenses = ['Apache-2.0']
 		vcsUrl = 'https://github.com/remondis-it/remap.git'
 		version {
