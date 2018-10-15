@@ -161,7 +161,7 @@ bintray {
 
 	pkg {
 		repo = 'maven'
-		name = 'remap'
+		name = 'com.remondis:remap'
 		licenses = ['Apache-2.0']
 		vcsUrl = 'https://github.com/remondis-it/remap.git'
 		version {
