@@ -164,11 +164,6 @@ bintray {
 		name = 'com.remondis:remap'
 		licenses = ['Apache-2.0']
 		vcsUrl = 'https://github.com/remondis-it/remap.git'
-		version {
-			name = '1.0.0'
-			desc = '1.0.0'
-			released  = new Date()
-		}
 	}
 }
 
