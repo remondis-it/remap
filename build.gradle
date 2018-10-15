@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.11.0"
+    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
     }
 }
 
@@ -16,8 +16,10 @@ apply plugin: 'java'
 apply plugin: 'checkstyle'
 apply plugin: 'signing'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'idea'
 apply plugin: 'io.codearte.nexus-staging'
+apply plugin: 'com.jfrog.bintray'
 
 group 'com.remondis'
 version PROJECT_VERSION
@@ -91,41 +93,7 @@ jar {
     }
 }
 
-
-if (project.hasProperty('release')) {
-
-    // Signature of artifacts
-    signing {
-        sign configurations.archives
-    }
-
-    nexusStaging {
-    username = ossrhUser
-    password = ossrhPassword
-	}
-
-    // OSSRH publication
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                // POM signature
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            	repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                    authentication(userName: ossrhUser, password: ossrhPassword)
-    		    }
-             	pom.project {
-            		name project.name
-                    description project.description
-                    packaging 'jar'
-                    url = 'https://github.com/remondis-it/remap'
-
-                    scm {
-                        connection 'scm:git:https://github.com/remondis-it/remap.git'
-                        developerConnection 'scm:git:git@github.com:remondis-it/remap.git'
-                        url 'https://github.com/remondis-it/remap.git'
-                    }
-
+def pomConfig = {
 			        licenses {
 			            license {
 			                name = 'The Apache Software License, Version 2.0'
@@ -133,7 +101,6 @@ if (project.hasProperty('release')) {
 			                distribution = 'repo'
 			            }
 			        }
-
                     developers {
 			        	developer {
 			        		name = 'Christopher Schütte'
@@ -141,8 +108,55 @@ if (project.hasProperty('release')) {
 			        		organization = 'REMONDIS IT Services GmbH & Co. KG'
 			        	}
 		        	}
-				}
+                    scm {
+                        connection 'scm:git:https://github.com/remondis-it/remap.git'
+                        developerConnection 'scm:git:git@github.com:remondis-it/remap.git'
+                        url 'https://github.com/remondis-it/remap.git'
+                    }
+}
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+            groupId 'com.remondis'
+            artifactId 'remap'
+            version PROJECT_VERSION
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', project.description)
+                root.appendNode('name', project.name)
+                root.appendNode('url', 'https://github.com/remondis-it/remap.git')
+                root.children().last() + pomConfig
             }
         }
     }
+}
+
+
+bintray {
+	user = System.getProperty('bintray.user')
+	key = System.getProperty('bintray.key')
+	publications = ['mavenPublication']
+
+	pkg {
+		repo = 'maven'
+		name = 'remap'
+		userOrg = 'REMONDIS IT Services GmbH & Co. KG'
+		licenses = ['Apache-2.0']
+		vcsUrl = 'https://github.com/remondis-it/remap.git'
+		version {
+			name = '1.0.0'
+			desc = '1.0.0'
+			released  = new Date()
+		}
+	}
+}
+
 }
