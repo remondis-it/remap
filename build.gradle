@@ -93,28 +93,6 @@ jar {
 }
 
 
-def pomConfig = {
-       			licenses {
-		            license {
-		                name = 'The Apache Software License, Version 2.0'
-		                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-		            }
-		        }
-		        
-            	developers {
-		        	developer {
-		        		name = 'Christopher Schütte'
-		        		email = 'christopher.schuette@remondis.de'
-		        		organization = 'REMONDIS IT Services GmbH & Co. KG'
-		        	}
-	        	}
-                scm {
-                    connection 'scm:git:https://github.com/remondis-it/remap.git'
-                    developerConnection 'scm:git:git@github.com:remondis-it/remap.git'
-                    url 'https://github.com/remondis-it/remap.git'
-                }
-}
-
 publishing {
     publications {
         mavenPublication(MavenPublication) {
@@ -124,13 +102,18 @@ publishing {
             groupId 'com.remondis'
             artifactId 'remap'
             version PROJECT_VERSION
-            pom.withXml {
-                def root = asNode()
-                root.appendNode('description', 'TODO DESC')
-                root.appendNode('name', 'ReMap')
-                root.appendNode('url', 'https://github.com/remondis-it/remap.git')
-                root.children().last() + pomConfig
+			pom.withXml {
+            // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
+            configurations.implementation.allDependencies.each {
+               // Ensure dependencies such as fileTree are not included.
+               if (it.name != 'unspecified') {
+                  def dependencyNode = dependenciesNode.appendNode('dependency')
+                  dependencyNode.appendNode('groupId', it.group)
+                  dependencyNode.appendNode('artifactId', it.name)
+                  dependencyNode.appendNode('version', it.version)
+               }
             }
+          }
         }
     }
 }
