@@ -119,23 +119,6 @@ publishing {
     publications {
         mavenPublication(MavenPublication) {
             from components.java
-            artifact sourcesJar {
-                classifier "sources"
-            }
-            artifact javadocJar {
-                classifier "javadoc"
-            }
-            groupId 'com.remondis'
-            artifactId 'remap'
-            version PROJECT_VERSION
-        }
-    }
-}
-
-publishing {
-    publications {
-        MyPublication(MavenPublication) {
-            from components.java
             artifact sourcesJar
             artifact javadocJar
             groupId 'com.remondis'
