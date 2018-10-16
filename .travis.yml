@@ -9,4 +9,4 @@ deploy:
   provider: script
   script: mvn deploy
   on:
-    branch: feat-move-to-bintray
+    branch: master
