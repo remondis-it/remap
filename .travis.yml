@@ -1,8 +1,12 @@
 language: java
+script: mvn install
+
+before_install:
+- ./etc/before.sh
 
 deploy:
   skip_cleanup: true
   provider: script
-  script: ./etc/deploy.sh
+  script: mvn deploy
   on:
     branch: feat-move-to-bintray
