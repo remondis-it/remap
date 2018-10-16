@@ -70,12 +70,24 @@ public class MapperTest {
     assertThat(mappedPerson.getForename()).isEqualTo(EXPECTED_FORENAME);
     assertThat(mappedPerson.getLastname()).isEqualTo(EXPECTED_LASTNAME);
     assertThat(mappedPerson.getAddresses()).hasSize(2);
-    assertThat(mappedPerson.getAddresses().get(0).getCity()).isEqualTo(EXPECTED_CITY);
-    assertThat(mappedPerson.getAddresses().get(0).getHouseNumber()).isNull();
-    assertThat(mappedPerson.getAddresses().get(0).getStreet()).isEqualTo(EXPECTED_STREET);
-    assertThat(mappedPerson.getAddresses().get(1).getCity()).isEqualTo(EXPECTED_CITY);
-    assertThat(mappedPerson.getAddresses().get(1).getHouseNumber()).isNull();
-    assertThat(mappedPerson.getAddresses().get(1).getStreet()).isEqualTo(EXPECTED_STREET);
+    assertThat(mappedPerson.getAddresses()
+        .get(0)
+        .getCity()).isEqualTo(EXPECTED_CITY);
+    assertThat(mappedPerson.getAddresses()
+        .get(0)
+        .getHouseNumber()).isNull();
+    assertThat(mappedPerson.getAddresses()
+        .get(0)
+        .getStreet()).isEqualTo(EXPECTED_STREET);
+    assertThat(mappedPerson.getAddresses()
+        .get(1)
+        .getCity()).isEqualTo(EXPECTED_CITY);
+    assertThat(mappedPerson.getAddresses()
+        .get(1)
+        .getHouseNumber()).isNull();
+    assertThat(mappedPerson.getAddresses()
+        .get(1)
+        .getStreet()).isEqualTo(EXPECTED_STREET);
   }
 
 }
