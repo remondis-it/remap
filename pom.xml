@@ -11,6 +11,12 @@
 	<prerequisites>
 		<maven>3.0</maven>
 	</prerequisites>
+	<url>https://github.com/remondis-it/remap</url>
+	<scm>
+		<connection>scm:git:https://github.com/remondis-it/remap.git</connection>
+		<developerConnection>scm:git:git@github.com:remondis-it/remap.git</developerConnection>
+		<url>https://github.com/remondis-it/remap.git</url>
+	</scm>
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
