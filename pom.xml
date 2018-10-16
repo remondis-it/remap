@@ -83,12 +83,12 @@
 							<manifest>
 								<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 								<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-								<manifestEntries>
-									<Bundle-Vendor>REMONDIS IT Services GmbH &amp; Co. KG</Bundle-Vendor>
-									<Bundle-DocURL>https://github.com/remondis-it/remap</Bundle-DocURL>
-									<Automatic-Module-Name>com.remondis.remap</Automatic-Module-Name>
-								</manifestEntries>
 							</manifest>
+							<manifestEntries>
+								<Bundle-Vendor>REMONDIS IT Services GmbH &amp; Co. KG</Bundle-Vendor>
+								<Bundle-DocURL>https://github.com/remondis-it/remap</Bundle-DocURL>
+								<Automatic-Module-Name>com.remondis.remap</Automatic-Module-Name>
+							</manifestEntries>
 						</archive>
 					</configuration>
 				</plugin>
@@ -272,7 +272,7 @@
 			<version>3.2.6</version>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
