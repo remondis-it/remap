@@ -267,7 +267,7 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>cgli</groupId>
+			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>3.2.6</version>
 			<scope>compile</scope>
