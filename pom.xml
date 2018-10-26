@@ -190,7 +190,7 @@
 									<failWhenParentIsSnapshot>false</failWhenParentIsSnapshot>
 									<message>No Snapshots Allowed!</message>
 									<excludes>
-										<!-- We want to exclude child module dependencies from this check, 
+										<!-- We want to exclude child module dependencies from this check,
 											as we're always using SNAPSHOT versions (except when performing a release) -->
 										<exclude>${project.groupId}:*</exclude>
 									</excludes>
