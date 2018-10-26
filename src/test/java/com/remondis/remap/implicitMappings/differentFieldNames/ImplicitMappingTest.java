@@ -1,4 +1,4 @@
-package com.remondis.remap.implicitMappings.sameFieldNames;
+package com.remondis.remap.implicitMappings.differentFieldNames;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -18,6 +18,7 @@ import com.remondis.remap.Mapping;
  * mapper was registered that maps type(b) -> type(b') ].
  */
 public class ImplicitMappingTest {
+
   private Mapper<A, AResource> aMapper;
 
   @Before
@@ -29,6 +30,10 @@ public class ImplicitMappingTest {
         .mapper();
     this.aMapper = Mapping.from(A.class)
         .to(AResource.class)
+        .reassign(A::getB)
+        .to(AResource::getbResource)
+        .reassign(A::getBs)
+        .to(AResource::getbResources)
         .useMapper(bMapper)
         .mapper();
   }
@@ -36,15 +41,15 @@ public class ImplicitMappingTest {
   @Test
   public void mappingImplicitNullValues() {
     AResource aResource = aMapper.map(new A(null, null));
-    assertNull(aResource.getB());
+    assertNull(aResource.getbResource());
   }
 
   @Test
   public void mappingImplicit() {
     AResource aResource = aMapper
         .map(new A(new B("string"), asList(new B("string"), new B("string1"), new B("string2"))));
-    assertNotNull(aResource.getB());
-    List<BResource> bs = aResource.getBs();
+    assertNotNull(aResource.getbResource());
+    List<BResource> bs = aResource.getbResources();
     assertNotNull(bs);
     assertEquals(3, bs.size());
   }
