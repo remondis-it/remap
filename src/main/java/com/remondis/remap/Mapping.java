@@ -152,12 +152,11 @@ public final class Mapping<S, D> {
    *        invocation.
    * @return Returns a {@link ReassignBuilder} to specify the destination field.
    */
-  public <RS> ReassignBuilder<S, D, RS> reassign(TypedSelector<RS, S> sourceSelector) {
+  public <RS> ReassignBuilder<S, D> reassign(FieldSelector<S> sourceSelector) {
     denyNull("sourceSelector", sourceSelector);
-
-    TypedPropertyDescriptor<RS> typedSourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE,
-        ReassignBuilder.ASSIGN, this.source, sourceSelector);
-    ReassignBuilder<S, D, RS> reassignBuilder = new ReassignBuilder<>(typedSourceProperty, destination, this);
+    PropertyDescriptor typedSourceProperty = getPropertyFromFieldSelector(Target.SOURCE, ReassignBuilder.ASSIGN,
+        this.source, sourceSelector);
+    ReassignBuilder<S, D> reassignBuilder = new ReassignBuilder<>(typedSourceProperty, destination, this);
     return reassignBuilder;
   }
 

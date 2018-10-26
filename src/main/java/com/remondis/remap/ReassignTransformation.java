@@ -56,7 +56,7 @@ public class ReassignTransformation extends Transformation {
       "unchecked", "rawtypes"
   })
   private Object convertCollection(Object sourceValue, Class<?> sourceCollectionType,
-                                   Class<?> destinationCollectionType) {
+      Class<?> destinationCollectionType) {
     Collection collection = Collection.class.cast(sourceValue);
     Collector collector = getCollector(collection);
     return collection.stream()

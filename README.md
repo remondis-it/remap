@@ -26,11 +26,11 @@ ReMap is a library that simplifies conversion of objects field by field and grea
 <dependency>
     <groupId>com.remondis</groupId>
     <artifactId>remap</artifactId>
-    <version>3.0.2</version>
+    <version>4.0.3</version>
 </dependency>
 ```
 
-...or in Gradle using `compile "com.remondis:remap:3.0.2"`.
+...or in Gradle using `compile "com.remondis:remap:4.0.3"`.
 
 The following code snippet shows how to map a source type to a destination type:
 
@@ -61,14 +61,16 @@ You can find this demo and the involved classes [here](src/test/java/com/remondi
 
 ReMap is a library that simplifies conversion of objects field by field. It was developed to make conversion of database entities to DTOs (data transfer objects) easier. The use of ReMap makes converter classes and unit tests for converters obsolete: ReMap only needs a specification of what fields are to be mapped, but the amount of code that actually performs the assignments and transformations is minimized. Therefore the code that must be unit-tested is also minimized.
 
-ReMap maps a objects of a source to a destination type. As per default ReMap tries to map all fields from the source to the destination object if the fields have equal name and type. __Only differences between the source type and the target type must be specified when creating a mapper.__
+ReMap maps a objects of a source to a destination type. As per default ReMap tries to map all fields from the source to the destination object if the fields have equal name and equal types or equal name and a mapper was registered to perform the type mapping. __Only differences between the source type and the target type must be specified when creating a mapper.__
 
 ## Mapping operations
 
 The following operations can be declared on a mapper:
 * `omitInSource`: omits a field in the source type and skips the mapping.
 * `omitInDestination`: omits a field in the destination type and skips the mapping.
-* `reassign`: maps a source field to the destination field of the same type while changing the field name.
+* `reassign`: maps a source field to the destination field
+	* if the property types are equal, references are copied
+	* if the property types differ, a mapper must be registered that supports the type mapping
 * `replace`: converts a source field to the destination field while changing the field name and the type. To transform the source object into the destination type a transformation function is to be specified.
 * `replaceCollection`: converts a source collection to the destination collection by applying a transform function elementwise.
 * `set`: Sets a value provided either by a function or by a value supplier in the destination.

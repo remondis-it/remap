@@ -1,16 +1,16 @@
-package com.remondis.remap.visibility;
+package com.remondis.remap.implicitMappings.sameFieldNames;
 
-class CResource {
+public class B {
 
   private String string;
 
-  public CResource() {
-    super();
-  }
-
-  public CResource(String string) {
+  public B(String string) {
     super();
     this.string = string;
+  }
+
+  public B() {
+    super();
   }
 
   public String getString() {
