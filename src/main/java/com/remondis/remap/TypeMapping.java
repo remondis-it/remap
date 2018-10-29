@@ -50,18 +50,6 @@ public final class TypeMapping<S, D> implements InternalMapper<S, D> {
     }
 
     /**
-     * Specifies a conversion function that performs the type mapping. The {@link BiFunction} may support mapping into
-     * an instance of the destination object if specified.
-     *
-     * @param conversionFunction The conversion function that performs the type conversion.
-     * @return Returns the {@link TypeMapping} for use within a {@link Mapping} configuration.
-     */
-    public TypeMapping<S, D> applying(BiFunction<S, Optional<D>, D> conversionFunction) {
-      denyNull("conversionFunction", conversionFunction);
-      return new TypeMapping<>(source, destination, conversionFunction);
-    }
-
-    /**
      * Specified a conversion function that performs the type mapping. When using {@link Function}, mapping into
      * destination instances will not supported by the resulting mapper.
      *
