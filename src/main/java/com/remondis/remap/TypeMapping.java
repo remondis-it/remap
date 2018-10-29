@@ -1,9 +1,12 @@
 package com.remondis.remap;
 
 import static com.remondis.remap.Lang.denyNull;
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * A type mapping wraps a function that maps one type into another. This mapping can be used to define a global type
@@ -21,7 +24,7 @@ public final class TypeMapping<S, D> implements InternalMapper<S, D> {
   private Class<D> destination;
   private BiFunction<S, Optional<D>, D> conversionFunction;
 
-  static class TypeMappingBuilder<S> {
+  public static class TypeMappingBuilder<S> {
     private Class<S> source;
 
     public TypeMappingBuilder(Class<S> source) {
@@ -36,7 +39,7 @@ public final class TypeMapping<S, D> implements InternalMapper<S, D> {
 
   }
 
-  static class TypeMappingFunctionBuilder<S, D> {
+  public static class TypeMappingFunctionBuilder<S, D> {
     private Class<S> source;
     private Class<D> destination;
 
@@ -47,13 +50,25 @@ public final class TypeMapping<S, D> implements InternalMapper<S, D> {
     }
 
     /**
-     * Specifies a conversion function that performs the type mapping. The function may support mapping into a
-     * destination object if specified.
+     * Specifies a conversion function that performs the type mapping. The {@link BiFunction} may support mapping into
+     * an instance of the destination object if specified.
      *
      * @param conversionFunction The conversion function that performs the type conversion.
      * @return Returns the {@link TypeMapping} for use within a {@link Mapping} configuration.
      */
     public TypeMapping<S, D> applying(BiFunction<S, Optional<D>, D> conversionFunction) {
+      denyNull("conversionFunction", conversionFunction);
+      return new TypeMapping<>(source, destination, conversionFunction);
+    }
+
+    /**
+     * Specified a conversion function that performs the type mapping. When using {@link Function}, mapping into
+     * destination instances will not supported by the resulting mapper.
+     *
+     * @param conversionFunction The conversion function.
+     * @return Returns the {@link TypeMapping} for use within a {@link Mapping} configuration.
+     */
+    public TypeMapping<S, D> applying(Function<S, D> conversionFunction) {
       denyNull("conversionFunction", conversionFunction);
       return new TypeMapping<>(source, destination, conversionFunction);
     }
@@ -79,14 +94,26 @@ public final class TypeMapping<S, D> implements InternalMapper<S, D> {
     this.conversionFunction = conversionFunction;
   }
 
+  TypeMapping(Class<S> source, Class<D> destination, Function<S, D> conversionFunction) {
+    super();
+    this.source = source;
+    this.destination = destination;
+    this.conversionFunction = new BiFunction<S, Optional<D>, D>() {
+      @Override
+      public D apply(S s, Optional<D> d) {
+        return conversionFunction.apply(s);
+      }
+    };
+  }
+
   @Override
   public D map(S source, D destination) {
-    return conversionFunction.apply(source, Optional.of(destination));
+    return conversionFunction.apply(source, ofNullable(destination));
   }
 
   @Override
   public D map(S source) {
-    return conversionFunction.apply(source, Optional.empty());
+    return conversionFunction.apply(source, empty());
   }
 
   @Override
