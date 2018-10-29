@@ -1,4 +1,4 @@
-package com.remondis.remap.multimapping;
+package com.remondis.remap.multimapping.replace;
 
 public class A {
 
