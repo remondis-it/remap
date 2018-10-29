@@ -493,6 +493,22 @@ public final class Mapping<S, D> {
     return this;
   }
 
+  /**
+   * Registers a custom type conversion to this mapping that is to be used whenever a type mapping is required that is
+   * not defined by a replace operation.
+   * <b>Note: Only one mapper/type converter can be added for a combination of
+   * source and destination type!</b>
+   *
+   * @param typeMapping
+   *        A {@link TypeMapping}.
+   * @return Returns this {@link Mapping} object for further configuration.
+   */
+  public Mapping<S, D> useMapper(TypeMapping<?, ?> typeMapping) {
+    denyNull("typeMapping", typeMapping);
+    _useMapper(typeMapping);
+    return this;
+  }
+
   private void _useMapper(InternalMapper<?, ?> interalMapper) {
     Projection<?, ?> projection = interalMapper.getProjection();
     if (mappers.containsKey(projection)) {
@@ -513,10 +529,10 @@ public final class Mapping<S, D> {
    * @return Returns the registered mapper.
    */
   @SuppressWarnings("unchecked")
-  <S1, D1> Mapper<S1, D1> getMapperFor(Class<S1> sourceType, Class<D1> destinationType) {
+  <S1, D1> InternalMapper<S1, D1> getMapperFor(Class<S1> sourceType, Class<D1> destinationType) {
     Projection<?, ?> projection = new Projection<>(sourceType, destinationType);
     if (mappers.containsKey(projection)) {
-      return (Mapper<S1, D1>) mappers.get(projection);
+      return (InternalMapper<S1, D1>) mappers.get(projection);
     } else {
       throw MappingException.noMapperFound(sourceType, destinationType);
     }

@@ -1,7 +1,8 @@
 package com.remondis.remap;
 
-import static java.util.Objects.requireNonNull;
+import static com.remondis.remap.Lang.denyNull;
 
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 /**
@@ -18,7 +19,7 @@ public final class TypeMapping<S, D> implements InternalMapper<S, D> {
 
   private Class<S> source;
   private Class<D> destination;
-  private BiFunction<S, D, D> conversionFunction;
+  private BiFunction<S, Optional<D>, D> conversionFunction;
 
   static class TypeMappingBuilder<S> {
     private Class<S> source;
@@ -29,7 +30,7 @@ public final class TypeMapping<S, D> implements InternalMapper<S, D> {
     }
 
     public <D> TypeMappingFunctionBuilder<S, D> to(Class<D> destination) {
-      requireNonNull(destination, "Destination must not be null!");
+      denyNull("destination", destination);
       return new TypeMappingFunctionBuilder<>(source, destination);
     }
 
@@ -45,8 +46,15 @@ public final class TypeMapping<S, D> implements InternalMapper<S, D> {
       this.destination = destination;
     }
 
-    public TypeMapping<S, D> applying(BiFunction<S, D, D> conversionFunction) {
-      requireNonNull(destination, "Conversion function must not be null!");
+    /**
+     * Specifies a conversion function that performs the type mapping. The function may support mapping into a
+     * destination object if specified.
+     *
+     * @param conversionFunction The conversion function that performs the type conversion.
+     * @return Returns the {@link TypeMapping} for use within a {@link Mapping} configuration.
+     */
+    public TypeMapping<S, D> applying(BiFunction<S, Optional<D>, D> conversionFunction) {
+      denyNull("conversionFunction", conversionFunction);
       return new TypeMapping<>(source, destination, conversionFunction);
     }
 
@@ -60,19 +68,25 @@ public final class TypeMapping<S, D> implements InternalMapper<S, D> {
    * @return Returns a {@link Types} object for further mapping configuration.
    */
   public static <S> TypeMappingBuilder<S> from(Class<S> source) {
-    requireNonNull(source, "Source must not be null!");
+    denyNull("source", source);
     return new TypeMappingBuilder<>(source);
   }
 
-  TypeMapping(Class<S> source, Class<D> destination, BiFunction<S, D, D> conversionFunction) {
+  TypeMapping(Class<S> source, Class<D> destination, BiFunction<S, Optional<D>, D> conversionFunction) {
     super();
     this.source = source;
     this.destination = destination;
+    this.conversionFunction = conversionFunction;
   }
 
   @Override
   public D map(S source, D destination) {
-    return conversionFunction.apply(source, destination);
+    return conversionFunction.apply(source, Optional.of(destination));
+  }
+
+  @Override
+  public D map(S source) {
+    return conversionFunction.apply(source, Optional.empty());
   }
 
   @Override

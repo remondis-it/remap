@@ -6,6 +6,7 @@ package com.remondis.remap;
  * functions.
  */
 interface InternalMapper<S, D> {
+
   /**
    * Performs the mapping from the source into a specified destination object. In case of a Java Bean mapper the fields
    * in the destination object are overridden if affected by the mapping configuration. In case of a custom type mapper,
@@ -18,8 +19,17 @@ interface InternalMapper<S, D> {
   public D map(S source, D destination);
 
   /**
+   * Performs the mapping from the source into a new destination object. This method is expected to return a new
+   * instance of the target object.
+   *
+   * @param source The source object.
+   * @return Returns the specified destination object.
+   */
+  public D map(S source);
+
+  /**
    * Returns the {@link Projection} this mapper defines.
-   * 
+   *
    * @return Returns the type projection information.
    */
   public Projection<S, D> getProjection();

@@ -21,6 +21,11 @@ class MapperAdapter<S, D> implements InternalMapper<S, D> {
   }
 
   @Override
+  public D map(S source) {
+    return mapper.map(source);
+  }
+
+  @Override
   public Projection<S, D> getProjection() {
     Class<S> source = mapper.getMapping()
         .getSource();
