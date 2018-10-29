@@ -60,7 +60,7 @@ public final class Mapping<S, D> {
   /**
    * Holds the list of mappers registered for hierarchical mapping.
    */
-  private Map<Projection<?, ?>, Mapper<?, ?>> mappers;
+  private Map<Projection<?, ?>, InternalMapper<?, ?>> mappers;
 
   /**
    * Holds the list of mapping operations.
@@ -488,18 +488,18 @@ public final class Mapping<S, D> {
    */
   public Mapping<S, D> useMapper(Mapper<?, ?> mapper) {
     denyNull("mapper", mapper);
-    Class<?> source = mapper.getMapping()
-        .getSource();
-    Class<?> destination = mapper.getMapping()
-        .getDestination();
+    InternalMapper<?, ?> interalMapper = new MapperAdapter<>(mapper);
+    _useMapper(interalMapper);
+    return this;
+  }
 
-    Projection<?, ?> projection = new Projection<>(source, destination);
+  private void _useMapper(InternalMapper<?, ?> interalMapper) {
+    Projection<?, ?> projection = interalMapper.getProjection();
     if (mappers.containsKey(projection)) {
       throw MappingException.duplicateMapper(source, destination);
     } else {
-      mappers.put(projection, mapper);
+      mappers.put(projection, interalMapper);
     }
-    return this;
   }
 
   /**
