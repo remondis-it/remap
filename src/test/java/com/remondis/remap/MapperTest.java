@@ -374,7 +374,7 @@ public class MapperTest {
           .omitInDestination(AResource::getMoreInAResource)
           .reassign(A::getZahlInA)
           .to(AResource::getZahlInAResource)
-          .useMapper(null);
+          .useMapper((Mapper<?, ?>) null);
     }).isInstanceOf(IllegalArgumentException.class)
         .hasNoCause();
 

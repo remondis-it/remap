@@ -78,7 +78,7 @@ public class ReassignTransformation extends Transformation {
       return sourceValue;
     } else {
       // Object types must be mapped by a registered mapper before setting the value.
-      Mapper delegateMapper = getMapperFor(sourceType, destinationType);
+      InternalMapper delegateMapper = getMapperFor(sourceType, destinationType);
       return delegateMapper.map(sourceValue);
     }
   }
@@ -91,7 +91,7 @@ public class ReassignTransformation extends Transformation {
       return sourceValue;
     } else {
       // Object types must be mapped by a registered mapper before setting the value.
-      Mapper delegateMapper = getMapperFor(sourceType, destinationType);
+      InternalMapper delegateMapper = getMapperFor(sourceType, destinationType);
       Object destinationValueMapped = readOrFail(destinationProperty, destinationValue);
       return delegateMapper.map(sourceValue, destinationValueMapped);
     }
