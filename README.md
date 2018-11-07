@@ -12,6 +12,7 @@
    2. [Mapping maps](#mapping-maps)
    2. [Transforming collections](#transforming-collections)
    3. [Bidirectional mapping](#bidirectional-mapping)
+   3. [Type mappings](#type-mappings)
    4. [Tests](#tests)
 8. [Spring integration](#spring-integration)
    1. [Spring Boot Issue](#spring-boot-issue)
@@ -26,11 +27,11 @@ ReMap is a library that simplifies conversion of objects field by field and grea
 <dependency>
     <groupId>com.remondis</groupId>
     <artifactId>remap</artifactId>
-    <version>4.0.3</version>
+    <version>4.1.0</version>
 </dependency>
 ```
 
-...or in Gradle using `compile "com.remondis:remap:4.0.3"`.
+...or in Gradle using `compile "com.remondis:remap:4.1.0"`.
 
 The following code snippet shows how to map a source type to a destination type:
 
@@ -234,7 +235,7 @@ Person mappedBackToPerson = bidirectionalMapper.mapFrom(human);
 
 You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/bidirectional/BidirectionalDemo.java)
 
-# Type mappings
+### Type mappings
 
 When mapping types that are not Java Beans you can either use the `replace` operation or you can use a type mapping. Type mappings are functions that convert non Java Bean types. They are used in implicit mappings (if field names are equal) or in reassing operations.
 
