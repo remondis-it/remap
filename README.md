@@ -74,7 +74,9 @@ The following operations can be declared on a mapper:
 * `replace`: converts a source field to the destination field while changing the field name and the type. To transform the source object into the destination type a transformation function is to be specified.
 * `replaceCollection`: converts a source collection to the destination collection by applying a transform function elementwise.
 * `set`: Sets a value provided either by a function or by a value supplier in the destination.
-* `useMapper`: registers a specific mapper instance that is used to convert referenced types.
+* `useMapper`:
+    * registers a specific mapper instance that is used to convert referenced Java Bean types.
+    * registers a type mapping that is used to convert non-Java Bean types.
 
 ## Validation
 
@@ -115,7 +117,7 @@ ReMap supports
 
 ## Limitations
 
-* objects that are part of the mapping process must meet the Java Bean convention
+* objects that should be mapped must meet the Java Bean convention
   * fields can have any visibility
   * fields have properly named public get/set methods
     * getter methods are mandatory for source and destination properties
@@ -123,6 +125,7 @@ ReMap supports
   * fields of primitive type boolean comply with is-method convention as getter.
   * the declaring type has a public default constructor (this is only necessary for the destination object)
   * keywords like `transient` do not have an effect on the mapping
+* fields holding non-Java Bean types can be mapped using a specific type mapping.
 * non-static inner classes are not supported (they do not have a parameterless default constructor!)
 * circular references are currently not supported
 * mapping equal types does not copy object instances!
@@ -230,6 +233,40 @@ Person mappedBackToPerson = bidirectionalMapper.mapFrom(human);
 ```
 
 You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/bidirectional/BidirectionalDemo.java)
+
+# Type mappings
+
+When mapping types that are not Java Beans you can either use the `replace` operation or you can use a type mapping. Type mappings are functions that convert non Java Bean types. They are used in implicit mappings (if field names are equal) or in reassing operations.
+
+Type mappings may reduce the number of `replace` operations in your mapping configuration if the type mapping occurs very often.
+
+The following example shows the use of type mappings:
+
+```
+public class Person {
+  private CharSequence forname;
+  private CharSequence lastName;
+  private List<CharSequence> addresses;
+  // Getters/Setters...
+}
+
+public class Customer {
+  private String forname;
+  private String lastName;
+  private List<String> addresses;
+  // Getters/Setters...
+}
+
+Mapping.from(Person.class)
+        .to(Customer.class)
+        .useMapper(
+             TypeMapping.from(CharSequence.class)
+                        .to(String.class)
+                        .applying(String::valueOf))
+        .mapper();
+```
+
+In this example the mapping from `CharSequence` to `String` is defined globally for the mapping. In implicit mappings (field names are equal) or reassing operations the global mapping function defined by the type mapping is used to perform the conversion.
 
 
 ### Tests
