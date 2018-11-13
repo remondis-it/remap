@@ -2,6 +2,7 @@
 
 # Table of Contents
 1. [Long story short](#long-story-short)
+1. [Hot Tip](#hot-tip)
 2. [About ReMap](#about-remap)
 3. [Mapping operations](#mapping-operations)
 4. [Validation](#validation)
@@ -58,7 +59,7 @@ The resulting mapper does the following:
 
 You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/demo/DemoTest.java)
 
-### Hot Tip!!!
+### Hot Tip
 
 You can call `Mapper.toString()` to get an overview of what the mapper does. Since the first version of ReMap the mapping configuration can be visualized this way but only a few people now that.
 
