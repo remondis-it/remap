@@ -58,6 +58,31 @@ The resulting mapper does the following:
 
 You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/demo/DemoTest.java)
 
+### Hot Tip!!!
+
+You can call `Mapper.toString()` to get an overview of what the mapper does. Since the first version of ReMap the mapping configuration can be visualized this way but only a few people now that.
+
+The mapper from the example above would produce the following `toString()` output:
+
+```
+Mapping from com.remondis.remap.demo.Customer
+	  to com.remondis.remap.demo.Person
+ with transformation:
+- Omitting Property 'bodyHeight' in com.remondis.remap.demo.Person
+- Map Property 'name' in com.remondis.remap.demo.Customer
+   to Property 'name' in com.remondis.remap.demo.Person
+- Omitting Property 'address' in com.remondis.remap.demo.Customer
+- Replacing but skipping when null Property 'gender' in com.remondis.remap.demo.Customer
+           with Property 'gender' in com.remondis.remap.demo.Person using transformation
+- Map Property 'forname' in com.remondis.remap.demo.Customer
+   to Property 'forname' in com.remondis.remap.demo.Person
+- Reassigning Property 'title' in com.remondis.remap.demo.Customer
+           to Property 'salutation' in com.remondis.remap.demo.Person
+All properties are mapped!
+```
+
+This may give you a better overview when trying to understand especially older mapping configurations.
+
 ## About ReMap
 
 ReMap is a library that simplifies conversion of objects field by field. It was developed to make conversion of database entities to DTOs (data transfer objects) easier. The use of ReMap makes converter classes and unit tests for converters obsolete: ReMap only needs a specification of what fields are to be mapped, but the amount of code that actually performs the assignments and transformations is minimized. Therefore the code that must be unit-tested is also minimized.
