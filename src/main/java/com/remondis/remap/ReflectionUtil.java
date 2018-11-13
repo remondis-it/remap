@@ -111,6 +111,23 @@ class ReflectionUtil {
   }
 
   /**
+   * Returns a {@link Collector} that supports the specified collection type.
+   *
+   * @param collectionType The collection type
+   * @return Returns a {@link Collector} that supports the specified collection type. If no supported collection type
+   *         was specified a {@link MappingException} is thrown.
+   */
+  static Collector getCollector(Class<?> collectionType) {
+    if (Set.class.isAssignableFrom(collectionType)) {
+      return Collectors.toSet();
+    } else if (List.class.isAssignableFrom(collectionType)) {
+      return Collectors.toList();
+    } else {
+      throw MappingException.unsupportedCollection(collectionType);
+    }
+  }
+
+  /**
    * Checks if the method has a return type.
    *
    * @param method the method

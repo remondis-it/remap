@@ -156,6 +156,19 @@ abstract class Transformation {
     return this.mapping.getMapperFor(sourceType, destinationType);
   }
 
+  /**
+   * Checks if the specified mapper is registered.
+   *
+   * @param sourceType The source type
+   * @param destinationType the destination type
+   * @return Returns <code>true</code> if a mapper was registered for this type of conversion. Otherwise
+   *         <code>false</code>
+   *         is returned.
+   */
+  public <S, T> boolean hasMapperFor(Class<S> sourceType, Class<T> destinationType) {
+    return this.mapping.hasMapperFor(sourceType, destinationType);
+  }
+
   PropertyDescriptor getSourceProperty() {
     return sourceProperty;
   }

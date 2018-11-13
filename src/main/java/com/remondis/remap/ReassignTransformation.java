@@ -27,6 +27,9 @@ public class ReassignTransformation extends Transformation {
     denyDifferentPrimitiveTypes(getSourceType(), getDestinationType());
   }
 
+  @SuppressWarnings({
+      "unchecked", "rawtypes"
+  })
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
@@ -40,7 +43,10 @@ public class ReassignTransformation extends Transformation {
 
       // Primitive types can be set without any conversion, because we checked type
       // compatibility before.
-      if (isCollection(sourceType)) {
+      if (hasMapperFor(sourceType, destinationType)) {
+        InternalMapper mapper = getMapperFor(sourceType, destinationType);
+        destinationValue = mapper.map(sourceValue, destinationValue);
+      } else if (isCollection(sourceType)) {
         Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
         Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
         destinationValue = convertCollection(sourceValue, sourceCollectionType, destinationCollectionType);

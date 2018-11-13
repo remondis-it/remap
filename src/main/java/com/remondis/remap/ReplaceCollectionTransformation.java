@@ -6,6 +6,9 @@ import static com.remondis.remap.ReflectionUtil.getCollector;
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.function.Function;
+import java.util.stream.Collector;
+
+import javax.xml.crypto.dsig.Transform;
 
 /**
  * A replace transformation converts a source object into a destination object by applying the specified {@link
@@ -44,6 +47,9 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
       return;
     } else {
       Collection collection = (Collection) sourceValue;
+
+      Class<?> destinationCollectionType = destinationProperty.getPropertyType();
+      Collector collector = getCollector(destinationCollectionType);
       Collection<RD> destinationValue = null;
 
       // Skip when null on collection means to skip null items.
@@ -51,16 +57,15 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
         destinationValue = (Collection<RD>) collection.stream()
             .filter(i -> (i != null))
             .map(sourceItem -> transformation.apply((RS) sourceItem))
-            .collect(getCollector(collection));
+            .collect(collector);
       } else {
         destinationValue = (Collection<RD>) collection.stream()
             .map(sourceItem -> {
-
               RS sourceItem2 = null;
               sourceItem2 = (RS) sourceItem;
               return transformation.apply(sourceItem2);
             })
-            .collect(getCollector(collection));
+            .collect(collector);
       }
       writeOrFail(destinationProperty, destination, destinationValue);
     }
