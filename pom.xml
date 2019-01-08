@@ -132,6 +132,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
 				<configuration>
 					<debug>true</debug>
 					<optimize>true</optimize>
@@ -171,10 +172,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M2</version>
 				<executions>
 					<execution>
 						<id>enforce</id>
@@ -204,6 +207,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.0.0.</version>
 				<configuration>
 					<configLocation>${project.basedir}/shared/checkstyle/checkstyle.xml</configLocation>
 				</configuration>

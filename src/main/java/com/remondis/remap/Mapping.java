@@ -539,6 +539,20 @@ public final class Mapping<S, D> {
   }
 
   /**
+   * Checks if the specified mapper is registered.
+   *
+   * @param sourceType The source type
+   * @param destinationType the destination type
+   * @return Returns <code>true</code> if a mapper was registered for this type of conversion. Otherwise
+   *         <code>false</code>
+   *         is returned.
+   */
+  public <S1, D1> boolean hasMapperFor(Class<S1> sourceType, Class<D1> destinationType) {
+    Projection<?, ?> projection = new Projection<>(sourceType, destinationType);
+    return mappers.containsKey(projection);
+  }
+
+  /**
    * Performs the actual mapping with iteration recursively through the object hierarchy.
    *
    * @param source
