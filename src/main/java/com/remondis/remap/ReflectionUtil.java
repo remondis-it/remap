@@ -1,5 +1,6 @@
 package com.remondis.remap;
 
+import java.beans.Introspector;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -190,7 +191,8 @@ class ReflectionUtil {
       return firstCharacterToLowerCase(name.substring(2, name.length()));
     } else {
       if (isGetterOrSetter(method)) {
-        return firstCharacterToLowerCase(name.substring(3, name.length()));
+        // Use the default implementation to convert property names correctly.
+        return Introspector.decapitalize(name.substring(3, name.length()));
       } else {
         throw new IllegalArgumentException("The specified method is neither a getter nor a setter method.");
       }
