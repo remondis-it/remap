@@ -18,9 +18,9 @@ public class SetBuilder<S, D, RD> {
   static final String TRANSFORM = "transform";
 
   private TypedPropertyDescriptor<RD> destProperty;
-  private Mapping<S, D> mapping;
+  private MappingBuilder<S, D> mapping;
 
-  SetBuilder(TypedPropertyDescriptor<RD> destProperty, Mapping<S, D> mapping) {
+  SetBuilder(TypedPropertyDescriptor<RD> destProperty, MappingBuilder<S, D> mapping) {
     super();
     this.destProperty = destProperty;
     this.mapping = mapping;
@@ -34,9 +34,9 @@ public class SetBuilder<S, D, RD> {
    * <code>null</code></b> argument.
    *
    * @param valueSupplier The value supplier that requires a reference to the whole source object.
-   * @return Returns the {@link Mapping} for further mapping configuration.
+   * @return Returns the {@link MappingBuilder} for further mapping configuration.
    */
-  public Mapping<S, D> with(Function<S, RD> valueSupplier) {
+  public MappingBuilder<S, D> with(Function<S, RD> valueSupplier) {
     denyNull("valueSupplier", valueSupplier);
     SetTransformation<S, D, RD> setTransformation = new SetTransformation<>(mapping, destProperty.property,
         valueSupplier);
@@ -48,9 +48,9 @@ public class SetBuilder<S, D, RD> {
    * Sets a value to the specified destination field supplied by a custom value supplier.
    *
    * @param valueSupplier The value supplier that requires a reference to the whole source object.
-   * @return Returns the {@link Mapping} for further mapping configuration.
+   * @return Returns the {@link MappingBuilder} for further mapping configuration.
    */
-  public Mapping<S, D> with(Supplier<RD> valueSupplier) {
+  public MappingBuilder<S, D> with(Supplier<RD> valueSupplier) {
     denyNull("valueSupplier", valueSupplier);
     SetSupplierTransformation<S, D, RD> setTransformation = new SetSupplierTransformation<>(mapping,
         destProperty.property, valueSupplier);
@@ -62,9 +62,9 @@ public class SetBuilder<S, D, RD> {
    * Sets the specified value to the specified destination field.
    *
    * @param value The value to set.
-   * @return Returns the {@link Mapping} for further mapping configuration.
+   * @return Returns the {@link MappingBuilder} for further mapping configuration.
    */
-  public Mapping<S, D> with(RD value) {
+  public MappingBuilder<S, D> with(RD value) {
     denyNull("value", value);
     SetValueTransformation<S, D, RD> setTransformation = new SetValueTransformation<>(mapping, destProperty.property,
         value);

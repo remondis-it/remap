@@ -36,7 +36,7 @@ public class MapsTest {
   /**
    * Since maps are not supported out-of-the-box, the mapper should support
    * mapping transformation via
-   * {@link Mapping#replace(com.remondis.remap.TypedSelector, com.remondis.remap.TypedSelector)}.
+   * {@link MappingBuilder#replace(com.remondis.remap.TypedSelector, com.remondis.remap.TypedSelector)}.
    */
   @Test
   public void shouldWorkaroundMappingOfMaps() {

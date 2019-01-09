@@ -21,7 +21,7 @@ public class ReassignTransformation extends Transformation {
 
   private static final String REASSIGNING_MSG = "Reassigning %s\n           to %s";
 
-  ReassignTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
+  ReassignTransformation(MappingBuilder<?, ?> mapping, PropertyDescriptor sourceProperty,
       PropertyDescriptor destinationProperty) {
     super(mapping, sourceProperty, destinationProperty);
     denyDifferentPrimitiveTypes(getSourceType(), getDestinationType());

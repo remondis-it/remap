@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  */
 class SetSupplierTransformation<S, D, RD> extends SetTransformation<S, D, RD> {
 
-  SetSupplierTransformation(Mapping<S, D> mapping, PropertyDescriptor destProperty, Supplier<RD> supplier) {
+  SetSupplierTransformation(MappingBuilder<S, D> mapping, PropertyDescriptor destProperty, Supplier<RD> supplier) {
     super(mapping, destProperty, S -> supplier.get());
   }
 

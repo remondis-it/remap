@@ -1,7 +1,7 @@
 package com.remondis.remap;
 
 import static com.remondis.remap.Lang.denyNull;
-import static com.remondis.remap.Mapping.getPropertyFromFieldSelector;
+import static com.remondis.remap.MappingBuilder.getPropertyFromFieldSelector;
 
 import java.beans.PropertyDescriptor;
 
@@ -17,11 +17,11 @@ public class ReassignBuilder<S, D> {
 
   private PropertyDescriptor sourceProperty;
 
-  private Mapping<S, D> mapping;
+  private MappingBuilder<S, D> mapping;
 
   private Class<D> destination;
 
-  ReassignBuilder(PropertyDescriptor sourceProperty, Class<D> destination, Mapping<S, D> mapping) {
+  ReassignBuilder(PropertyDescriptor sourceProperty, Class<D> destination, MappingBuilder<S, D> mapping) {
     super();
     this.sourceProperty = sourceProperty;
     this.mapping = mapping;
@@ -34,9 +34,9 @@ public class ReassignBuilder<S, D> {
    * @param destinationSelector
    *        {@link TypedSelector} to select the destination field.
    *
-   * @return Returns the {@link Mapping} for further mapping configuration.
+   * @return Returns the {@link MappingBuilder} for further mapping configuration.
    */
-  public Mapping<S, D> to(FieldSelector<D> destinationSelector) {
+  public MappingBuilder<S, D> to(FieldSelector<D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
     PropertyDescriptor destProperty = getPropertyFromFieldSelector(Target.DESTINATION, ASSIGN, destination,
         destinationSelector);

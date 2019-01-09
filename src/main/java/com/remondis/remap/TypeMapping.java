@@ -10,7 +10,7 @@ import java.util.function.Function;
 
 /**
  * A type mapping wraps a function that maps one type into another. This mapping can be used to define a global type
- * mapping on a {@link Mapping}. Apart from Java Bean mappers, that support a field by field mapping a
+ * mapping on a {@link MappingBuilder}. Apart from Java Bean mappers, that support a field by field mapping a
  * {@link TypeMapping} can be useful if a type conversion occurs very often in a mapping. A {@link TypeMapping} may
  * reduce the number of replace-operations needed to define a mapping.
  *
@@ -54,7 +54,7 @@ public final class TypeMapping<S, D> implements InternalMapper<S, D> {
      * destination instances will not supported by the resulting mapper.
      *
      * @param conversionFunction The conversion function.
-     * @return Returns the {@link TypeMapping} for use within a {@link Mapping} configuration.
+     * @return Returns the {@link TypeMapping} for use within a {@link MappingBuilder} configuration.
      */
     public TypeMapping<S, D> applying(Function<S, D> conversionFunction) {
       denyNull("conversionFunction", conversionFunction);

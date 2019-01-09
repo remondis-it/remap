@@ -5,7 +5,7 @@ import static com.remondis.remap.Lang.denyNull;
 import java.lang.reflect.Constructor;
 
 /**
- * Builder step implementation for the to-method of {@link Mapping}.
+ * Builder step implementation for the to-method of {@link MappingBuilder}.
  *
  * @param <S> The source type.
  */
@@ -34,12 +34,12 @@ public final class Types<S> {
    * Specifies the destination type of the specified mapping.
    *
    * @param destination The destination type to map to.
-   * @return Returns {@link Mapping} for further mapping configurations.
+   * @return Returns {@link MappingBuilder} for further mapping configurations.
    */
-  public <D> Mapping<S, D> to(Class<D> destination) {
+  public <D> MappingBuilder<S, D> to(Class<D> destination) {
     denyNull("destination", destination);
     denyNoDefaultConstructor(destination);
-    return new Mapping<>(source, destination);
+    return new MappingBuilder<>(source, destination);
   }
 
 }

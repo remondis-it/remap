@@ -11,7 +11,7 @@ import java.beans.PropertyDescriptor;
  */
 class SetValueTransformation<S, D, RD> extends SetTransformation<S, D, RD> {
 
-  SetValueTransformation(Mapping<S, D> mapping, PropertyDescriptor destProperty, RD value) {
+  SetValueTransformation(MappingBuilder<S, D> mapping, PropertyDescriptor destProperty, RD value) {
     super(mapping, destProperty, S -> value);
   }
 

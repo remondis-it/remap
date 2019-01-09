@@ -19,10 +19,10 @@ public class ReplaceBuilder<S, D, RD, RS> {
 
   private TypedPropertyDescriptor<RS> sourceProperty;
   private TypedPropertyDescriptor<RD> destProperty;
-  private Mapping<S, D> mapping;
+  private MappingBuilder<S, D> mapping;
 
   ReplaceBuilder(TypedPropertyDescriptor<RS> sourceProperty, TypedPropertyDescriptor<RD> destProperty,
-      Mapping<S, D> mapping) {
+      MappingBuilder<S, D> mapping) {
     super();
     this.sourceProperty = sourceProperty;
     this.destProperty = destProperty;
@@ -35,9 +35,9 @@ public class ReplaceBuilder<S, D, RD, RS> {
    * #withSkipWhenNull(Function)} to skip on <code>null</code> input values.</b>
    *
    * @param transformation The transform function.
-   * @return Returns the {@link Mapping} for further mapping configuration.
+   * @return Returns the {@link MappingBuilder} for further mapping configuration.
    */
-  public Mapping<S, D> with(Function<RS, RD> transformation) {
+  public MappingBuilder<S, D> with(Function<RS, RD> transformation) {
     denyNull("tranformation", transformation);
     ReplaceTransformation<RS, RD> replace = new ReplaceTransformation<>(mapping, sourceProperty.property,
         destProperty.property, transformation, false);
@@ -50,9 +50,9 @@ public class ReplaceBuilder<S, D, RD, RS> {
    * skips the execution of the transform function if the source value is null.</b>
    *
    * @param transformation The transform function.
-   * @return Returns the {@link Mapping} for further mapping configuration.
+   * @return Returns the {@link MappingBuilder} for further mapping configuration.
    */
-  public Mapping<S, D> withSkipWhenNull(Function<RS, RD> transformation) {
+  public MappingBuilder<S, D> withSkipWhenNull(Function<RS, RD> transformation) {
     denyNull("tranformation", transformation);
     ReplaceTransformation<RS, RD> replace = new ReplaceTransformation<>(mapping, sourceProperty.property,
         destProperty.property, transformation, true);

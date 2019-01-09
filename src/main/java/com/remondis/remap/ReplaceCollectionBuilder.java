@@ -19,10 +19,10 @@ public class ReplaceCollectionBuilder<S, D, RD, RS> {
 
   private TypedPropertyDescriptor<Collection<RS>> sourceProperty;
   private TypedPropertyDescriptor<Collection<RD>> destProperty;
-  private Mapping<S, D> mapping;
+  private MappingBuilder<S, D> mapping;
 
   ReplaceCollectionBuilder(TypedPropertyDescriptor<Collection<RS>> sourceProperty,
-      TypedPropertyDescriptor<Collection<RD>> destProperty, Mapping<S, D> mapping) {
+      TypedPropertyDescriptor<Collection<RD>> destProperty, MappingBuilder<S, D> mapping) {
     super();
     this.sourceProperty = sourceProperty;
     this.destProperty = destProperty;
@@ -35,9 +35,9 @@ public class ReplaceCollectionBuilder<S, D, RD, RS> {
    * #withSkipWhenNull(Function)} to skip on <code>null</code> items.</b>
    *
    * @param transformation The transform function.
-   * @return Returns the {@link Mapping} for further mapping configuration.
+   * @return Returns the {@link MappingBuilder} for further mapping configuration.
    */
-  public Mapping<S, D> with(Function<RS, RD> transformation) {
+  public MappingBuilder<S, D> with(Function<RS, RD> transformation) {
     denyNull("tranformation", transformation);
     ReplaceCollectionTransformation<RS, RD> replace = new ReplaceCollectionTransformation<>(mapping,
         sourceProperty.property, destProperty.property, transformation, false);
@@ -51,9 +51,9 @@ public class ReplaceCollectionBuilder<S, D, RD, RS> {
    * skips the execution of the transform function if the source value is <code>null</code>.</b>
    *
    * @param transformation The transform function.
-   * @return Returns the {@link Mapping} for further mapping configuration.
+   * @return Returns the {@link MappingBuilder} for further mapping configuration.
    */
-  public Mapping<S, D> withSkipWhenNull(Function<RS, RD> transformation) {
+  public MappingBuilder<S, D> withSkipWhenNull(Function<RS, RD> transformation) {
     denyNull("tranformation", transformation);
     ReplaceCollectionTransformation<RS, RD> replace = new ReplaceCollectionTransformation<>(mapping,
         sourceProperty.property, destProperty.property, transformation, true);

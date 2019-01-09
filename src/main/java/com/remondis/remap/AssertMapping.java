@@ -1,10 +1,10 @@
 package com.remondis.remap;
 
 import static com.remondis.remap.Lang.denyNull;
-import static com.remondis.remap.Mapping.OMIT_FIELD_DEST;
-import static com.remondis.remap.Mapping.OMIT_FIELD_SOURCE;
-import static com.remondis.remap.Mapping.getPropertyFromFieldSelector;
-import static com.remondis.remap.Mapping.getTypedPropertyFromFieldSelector;
+import static com.remondis.remap.MappingBuilder.OMIT_FIELD_DEST;
+import static com.remondis.remap.MappingBuilder.OMIT_FIELD_SOURCE;
+import static com.remondis.remap.MappingBuilder.getPropertyFromFieldSelector;
+import static com.remondis.remap.MappingBuilder.getTypedPropertyFromFieldSelector;
 import static com.remondis.remap.OmitTransformation.omitDestination;
 import static com.remondis.remap.OmitTransformation.omitSource;
 import static com.remondis.remap.ReassignBuilder.ASSIGN;
@@ -330,7 +330,7 @@ public class AssertMapping<S, D> {
     _add(transformation);
   }
 
-  Mapping<S, D> getMapping() {
+  MappingBuilder<S, D> getMapping() {
     return mapper.getMapping();
   }
 

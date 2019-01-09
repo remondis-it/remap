@@ -11,7 +11,7 @@ import java.util.function.Function;
  */
 abstract class SkipWhenNullTransformation<RS, RD> extends Transformation {
 
-  SkipWhenNullTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
+  SkipWhenNullTransformation(MappingBuilder<?, ?> mapping, PropertyDescriptor sourceProperty,
       PropertyDescriptor destinationProperty) {
     super(mapping, sourceProperty, destinationProperty);
   }

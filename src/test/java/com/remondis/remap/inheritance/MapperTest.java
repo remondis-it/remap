@@ -10,6 +10,7 @@ import com.remondis.remap.B;
 import com.remondis.remap.BResource;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import com.remondis.remap.MappingBuilder;
 
 public class MapperTest {
 
@@ -64,12 +65,12 @@ public class MapperTest {
 
   @Test
   public void shouldReuseParentMapperConfig() {
-    Mapping<? extends Parent, ? extends ParentResource> parentMapping = Mapping.from(Parent.class)
+    MappingBuilder<? extends Parent, ? extends ParentResource> parentMapping = Mapping.from(Parent.class)
         .to(ParentResource.class);
     parentMappingConfig(parentMapping);
     Mapper<? extends Parent, ? extends ParentResource> parentMapper = parentMapping.mapper();
 
-    Mapping<Child, ChildResource> childMapping = Mapping.from(Child.class)
+    MappingBuilder<Child, ChildResource> childMapping = Mapping.from(Child.class)
         .to(ChildResource.class);
     parentMappingConfig(childMapping);
     Mapper<Child, ChildResource> childMapper = childMapping.mapper();
@@ -103,8 +104,8 @@ public class MapperTest {
 
   }
 
-  private Mapping<? extends Parent, ? extends ParentResource> parentMappingConfig(
-      Mapping<? extends Parent, ? extends ParentResource> mapping) {
+  private MappingBuilder<? extends Parent, ? extends ParentResource> parentMappingConfig(
+      MappingBuilder<? extends Parent, ? extends ParentResource> mapping) {
     return mapping.reassign(Parent::getMoreInParent)
         .to(ParentResource::getMoreInParentResource)
         .omitInSource(Parent::getShouldNotMap)

@@ -5,7 +5,7 @@ package com.remondis.remap;
  * implemented with calling the get-method to select the corresponding property. The mapping framework then detects the
  * get-method invocation on the destination object and selects the corresponding property for further mapping
  * configuration. The mapping configuration is specified with the surrounding configuration method like {@link
- * Mapping#omitInDestination(FieldSelector)},{@link Mapping#omitInSource(FieldSelector)} .
+ * MappingBuilder#omitInDestination(FieldSelector)},{@link MappingBuilder#omitInSource(FieldSelector)} .
  *
  * @param <T> The object type selecting a field on.
  * @param <R> The type of the field.
