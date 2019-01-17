@@ -1,9 +1,9 @@
 package com.remondis.remap;
 
 /**
- * This is an internal abstraction of the essential mapping function that is used internally by {@link MappingBuilder}. This
- * interface is used to generalize the mapper specified by {@link MappingBuilder#useMapper(Mapper)} and the type mapping
- * functions.
+ * This is an internal abstraction of the essential mapping function that is used internally by {@link MappingBuilder}.
+ * This interface is used to generalize the mapper specified by {@link MappingBuilder#useMapper(Mapper)} and the type
+ * mapping functions.
  */
 interface InternalMapper<S, D> {
 

@@ -22,8 +22,8 @@ class ReplaceTransformation<RS, RD> extends SkipWhenNullTransformation<RS, RD> {
   private Function<RS, RD> transformation;
   private boolean skipWhenNull;
 
-  ReplaceTransformation(MappingBuilder<?, ?> mapping, PropertyDescriptor sourceProperty, PropertyDescriptor destProperty,
-      Function<RS, RD> transformation, boolean skipWhenNull) {
+  ReplaceTransformation(MappingBuilder<?, ?> mapping, PropertyDescriptor sourceProperty,
+      PropertyDescriptor destProperty, Function<RS, RD> transformation, boolean skipWhenNull) {
     super(mapping, sourceProperty, destProperty);
     this.transformation = transformation;
     this.skipWhenNull = skipWhenNull;

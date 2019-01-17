@@ -19,7 +19,8 @@ abstract class Transformation {
   protected PropertyDescriptor destinationProperty;
   private MappingBuilder<?, ?> mapping;
 
-  Transformation(MappingBuilder<?, ?> mapping, PropertyDescriptor sourceProperty, PropertyDescriptor destinationProperty) {
+  Transformation(MappingBuilder<?, ?> mapping, PropertyDescriptor sourceProperty,
+      PropertyDescriptor destinationProperty) {
     super();
     denyNull("mapping", mapping);
     this.mapping = mapping;
