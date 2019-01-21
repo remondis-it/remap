@@ -2,6 +2,7 @@ package com.remondis.remap;
 
 import static com.remondis.remap.Properties.asString;
 import static com.remondis.remap.ReflectionUtil.getCollector;
+import static com.remondis.remap.ReflectionUtil.isBuildInType;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
@@ -25,6 +26,60 @@ public class ReassignTransformation extends Transformation {
       PropertyDescriptor destinationProperty) {
     super(mapping, sourceProperty, destinationProperty);
     denyDifferentPrimitiveTypes(getSourceType(), getDestinationType());
+  }
+
+  protected boolean isEqualTypes(Class<?> sourceType, Class<?> destinationType) {
+    return sourceType.equals(destinationType);
+  }
+
+  /**
+   * Checks if the specified mapping is a valid reference mapping. A reference mapping should be chosen if types are
+   * equal and
+   * <ul>
+   * <li>Java primitives</li>
+   * <li>or Java build-in type such as {@link Integer} or {@link String}</li>
+   * <li>or if enum values are to be mapped.</li>
+   * </ul>
+   *
+   * @param sourceType The source type
+   * @param destinationType The destination type
+   * @return Returns <code>true</code> if both types equal and Java primitives, otherwise <code>false</code> is
+   *         returned.
+   */
+  protected boolean isReferenceMapping(Class<?> sourceType, Class<?> destinationType) {
+    return ((sourceType.isPrimitive() && destinationType.isPrimitive())
+        || (isBuildInType(sourceType) && isBuildInType(destinationType)))
+        || ((isEnumType(sourceType) && isEnumType(destinationType))) && isEqualTypes(sourceType, destinationType);
+  }
+
+  private boolean isEnumType(Class<?> type) {
+    return type.isEnum();
+  }
+
+  protected boolean isPrimitiveToObjectMapping(Class<?> sourceType, Class<?> destinationType) {
+    return sourceType.isPrimitive() ^ destinationType.isPrimitive();
+  }
+
+  /**
+   * This method throws a {@link MappingException} if the source and destination types of this transformation are not
+   * equal.
+   *
+   * @param sourceType The source type
+   * @param destinationType The destination type
+   */
+  protected void denyDifferentPrimitiveTypes(Class<?> sourceType, Class<?> destinationType) {
+    // We can check here for !destinationType.isAssignableFrom(sourceType) but this would result in type casts and this
+    // must be tested with every client using the mapper to assert this intention. To avoid the need of tests, we only
+    // allow type mappings on exactly equal classes.
+    /*
+     * Fail if
+     * a) a primitive type is mapped to object or
+     * b) both are primitives but of different types.
+     */
+    if (isPrimitiveToObjectMapping(sourceType, destinationType)
+        || (isReferenceMapping(sourceType, destinationType) && !isEqualTypes(sourceType, destinationType))) {
+      throw MappingException.incompatiblePropertyTypes(this, sourceProperty, destinationProperty);
+    }
   }
 
   @SuppressWarnings({
