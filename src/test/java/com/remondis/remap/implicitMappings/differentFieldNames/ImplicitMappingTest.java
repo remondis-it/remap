@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 
@@ -36,6 +37,16 @@ public class ImplicitMappingTest {
         .to(AResource::getbResources)
         .useMapper(bMapper)
         .mapper();
+  }
+
+  @Test
+  public void testAssert() {
+    AssertMapping.of(aMapper)
+        .expectReassign(A::getB)
+        .to(AResource::getbResource)
+        .expectReassign(A::getBs)
+        .to(AResource::getbResources)
+        .ensure();
   }
 
   @Test

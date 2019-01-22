@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  *
  * <p>
  * The mapper always tries to map all properties with name from the source to the destination
- * object. To retrieve a valid mapper, all properties must be either mapped/reassinged or omitted.
+ * object. To retrieve a valid mapper, all properties must be either mapped/reassigned or omitted.
  * If there are unmapped properties in source/destination type, the {@link Mapping#mapper()} throws
  * an error. If the mapping contains nested mappings of other complex types, a delegation mapper
  * must be registered using {@link #useMapper(Mapper)}, otherweise a {@link MappingException} is
