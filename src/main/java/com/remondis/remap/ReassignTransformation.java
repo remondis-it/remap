@@ -13,8 +13,8 @@ import java.util.Map;
 import java.util.stream.Collector;
 
 /**
- * The reassing operation maps a field to another field while the field names may differ. A reassign operation is only
- * allowed on fields of the same type.
+ * The reassing operation maps a field to another field allowing different names and different types. The latter is
+ * allowed if a registered mapper is able to perform the type mapping.
  *
  * @author schuettec
  */
@@ -28,7 +28,7 @@ public class ReassignTransformation extends Transformation {
     denyDifferentPrimitiveTypes(getSourceType(), getDestinationType());
   }
 
-  protected boolean isEqualTypes(Class<?> sourceType, Class<?> destinationType) {
+  protected static boolean isEqualTypes(Class<?> sourceType, Class<?> destinationType) {
     return sourceType.equals(destinationType);
   }
 
@@ -46,17 +46,17 @@ public class ReassignTransformation extends Transformation {
    * @return Returns <code>true</code> if both types equal and Java primitives, otherwise <code>false</code> is
    *         returned.
    */
-  protected boolean isReferenceMapping(Class<?> sourceType, Class<?> destinationType) {
+  protected static boolean isReferenceMapping(Class<?> sourceType, Class<?> destinationType) {
     return ((sourceType.isPrimitive() && destinationType.isPrimitive())
         || (isBuildInType(sourceType) && isBuildInType(destinationType)))
         || ((isEnumType(sourceType) && isEnumType(destinationType))) && isEqualTypes(sourceType, destinationType);
   }
 
-  private boolean isEnumType(Class<?> type) {
+  private static boolean isEnumType(Class<?> type) {
     return type.isEnum();
   }
 
-  protected boolean isPrimitiveToObjectMapping(Class<?> sourceType, Class<?> destinationType) {
+  protected static boolean isPrimitiveToObjectMapping(Class<?> sourceType, Class<?> destinationType) {
     return sourceType.isPrimitive() ^ destinationType.isPrimitive();
   }
 
