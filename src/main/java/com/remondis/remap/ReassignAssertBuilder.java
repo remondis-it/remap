@@ -1,7 +1,7 @@
 package com.remondis.remap;
 
 import static com.remondis.remap.Lang.denyNull;
-import static com.remondis.remap.Mapping.getTypedPropertyFromFieldSelector;
+import static com.remondis.remap.Mapping.getPropertyFromFieldSelector;
 
 import java.beans.PropertyDescriptor;
 
@@ -19,34 +19,31 @@ import java.beans.PropertyDescriptor;
  */
 public class ReassignAssertBuilder<S, D, RS> {
 
-  private TypedPropertyDescriptor<RS> typedSourceProperty;
+  private PropertyDescriptor sourceProperty;
 
   private AssertMapping<S, D> asserts;
 
   private Class<D> destination;
 
-  ReassignAssertBuilder(TypedPropertyDescriptor<RS> typedSourceProperty, Class<D> destination,
-      AssertMapping<S, D> asserts) {
+  ReassignAssertBuilder(PropertyDescriptor sourceProperty, Class<D> destination, AssertMapping<S, D> asserts) {
     super();
-    this.typedSourceProperty = typedSourceProperty;
+    this.sourceProperty = sourceProperty;
     this.asserts = asserts;
     this.destination = destination;
   }
 
   /**
-   * Reassings a source field to the specified destination field.
+   * Reassigns a source field to the specified destination field.
    *
    * @param destinationSelector
    *        {@link TypedSelector} to select the destination field.
    *
    * @return Returns the {@link Mapping} for further mapping configuration.
    */
-  public AssertMapping<S, D> to(TypedSelector<RS, D> destinationSelector) {
+  public AssertMapping<S, D> to(FieldSelector<D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
-    TypedPropertyDescriptor<RS> typedDestProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
-        ReassignBuilder.ASSIGN, this.destination, destinationSelector);
-    PropertyDescriptor sourceProperty = typedSourceProperty.property;
-    PropertyDescriptor destinationProperty = typedDestProperty.property;
+    PropertyDescriptor destinationProperty = getPropertyFromFieldSelector(Target.DESTINATION, ReassignBuilder.ASSIGN,
+        this.destination, destinationSelector);
     ReassignTransformation transformation = new ReassignTransformation(asserts.getMapping(), sourceProperty,
         destinationProperty);
     asserts.addAssertion(transformation);

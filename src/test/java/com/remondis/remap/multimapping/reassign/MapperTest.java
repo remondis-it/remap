@@ -11,7 +11,7 @@ import com.remondis.remap.Mapping;
 public class MapperTest {
 
   @Test
-  public void shouldAllowMultipleReassings() {
+  public void shouldAllowMultipleReassigns() {
 
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)

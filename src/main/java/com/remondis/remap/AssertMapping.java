@@ -71,17 +71,17 @@ public class AssertMapping<S, D> {
   }
 
   /**
-   * Specifies an assertion for a reassing operation.
+   * Specifies an assertion for a reassign operation.
    *
    * @param sourceSelector
    *        The source field selector.
    * @return Returns a {@link ReassignAssertBuilder} for further configuration.
    */
-  public <RS> ReassignAssertBuilder<S, D, RS> expectReassign(TypedSelector<RS, S> sourceSelector) {
+  public <RS> ReassignAssertBuilder<S, D, RS> expectReassign(FieldSelector<S> sourceSelector) {
     denyNull("sourceSelector", sourceSelector);
-    TypedPropertyDescriptor<RS> typedSourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE, ASSIGN,
-        getMapping().getSource(), sourceSelector);
-    ReassignAssertBuilder<S, D, RS> reassignBuilder = new ReassignAssertBuilder<S, D, RS>(typedSourceProperty,
+    PropertyDescriptor sourceProperty = getPropertyFromFieldSelector(Target.SOURCE, ASSIGN, getMapping().getSource(),
+        sourceSelector);
+    ReassignAssertBuilder<S, D, RS> reassignBuilder = new ReassignAssertBuilder<S, D, RS>(sourceProperty,
         getMapping().getDestination(), this);
     return reassignBuilder;
   }

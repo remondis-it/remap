@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.stream.Collector;
 
 /**
- * The reassing operation maps a field to another field while the field names may differ. A reassign operation is only
+ * The reassign operation maps a field to another field while the field names may differ. A reassign operation is only
  * allowed on fields of the same type.
  *
  * @author schuettec
