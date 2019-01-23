@@ -6,7 +6,7 @@ import static com.remondis.remap.Mapping.getPropertyFromFieldSelector;
 import java.beans.PropertyDescriptor;
 
 /**
- * Builds a reassing operation.
+ * Builds a reassign operation.
  *
  * @param <S> The source type.
  * @param <D> The destination type.
@@ -29,7 +29,7 @@ public class ReassignBuilder<S, D> {
   }
 
   /**
-   * Reassings a source field to the specified destination field.
+   * Reassigns a source field to the specified destination field.
    *
    * @param destinationSelector
    *        {@link TypedSelector} to select the destination field.

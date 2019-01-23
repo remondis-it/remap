@@ -1,6 +1,8 @@
 package com.remondis.remap.nullvalues;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -122,7 +124,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldReassingNullValue() {
+  public void shouldReassignNullValue() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .reassign(A::getMoreInA)

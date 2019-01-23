@@ -138,7 +138,7 @@ public class MappingException extends RuntimeException {
   static MappingException denyReassignOnMaps(PropertyDescriptor source, PropertyDescriptor dest) {
     return new MappingException(String
         .format("The implicit mapping of maps is not supported. Use a replace operation for properties holding maps."
-            + " Invalid reassing was:\n%s\n->%s", asStringWithType(source), asStringWithType(dest)));
+            + " Invalid reassign was:\n%s\n->%s", asStringWithType(source), asStringWithType(dest)));
   }
 
   static MappingException denyMappingOfNull() {

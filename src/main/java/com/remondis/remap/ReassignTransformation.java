@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.stream.Collector;
 
 /**
- * The reassing operation maps a field to another field allowing different names and different types. The latter is
- * allowed if a registered mapper is able to perform the type mapping.
+ * The reassign operation maps a field to another field while the field names may differ. A reassign operation is only
+ * allowed on fields of the same type.
  *
  * @author schuettec
  */

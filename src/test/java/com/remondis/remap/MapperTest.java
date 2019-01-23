@@ -42,6 +42,18 @@ public class MapperTest {
     mapper.map((A) null);
   }
 
+  @Test
+  public void shouldFailDueToNoRegisteredMapper() {
+    assertThatThrownBy(() -> Mapping.from(A.class)
+        .to(AResource.class)
+        .reassign(A::getMoreInA)
+        .to(AResource::getMoreInAResource)
+        .reassign(A::getZahlInA)
+        .to(AResource::getZahlInAResource)
+        .mapper()).isInstanceOf(MappingException.class)
+            .hasMessageStartingWith("No mapper found for type mapping");
+  }
+
   /**
    * This is the happy-path test for mapping {@link A} to {@link AResource} with a nested mapping. This test does not
    * check the inherited fields.
