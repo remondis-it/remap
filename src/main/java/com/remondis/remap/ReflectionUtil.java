@@ -57,6 +57,7 @@ class ReflectionUtil {
   }
 
   private static final Map<String, Class<?>> primitiveNameMap = new HashMap<>();
+  private static final Map<Class<?>, Class<?>> wrapperMap = new HashMap<>();
 
   static {
     primitiveNameMap.put(boolean.class.getName(), boolean.class);
@@ -68,6 +69,16 @@ class ReflectionUtil {
     primitiveNameMap.put(double.class.getName(), double.class);
     primitiveNameMap.put(float.class.getName(), float.class);
     primitiveNameMap.put(void.class.getName(), void.class);
+
+    wrapperMap.put(boolean.class, Boolean.class);
+    wrapperMap.put(byte.class, Byte.class);
+    wrapperMap.put(char.class, Character.class);
+    wrapperMap.put(short.class, Short.class);
+    wrapperMap.put(int.class, Integer.class);
+    wrapperMap.put(long.class, Long.class);
+    wrapperMap.put(double.class, Double.class);
+    wrapperMap.put(float.class, Float.class);
+    wrapperMap.put(void.class, Void.class);
   }
 
   /**
@@ -251,6 +262,22 @@ class ReflectionUtil {
     } catch (Exception e) {
       throw MappingException.newInstanceFailed(type, e);
     }
+  }
+
+  /**
+   * Checks if type 1 is a primitive type and type 2 represents the corresponding primitive wrapper type.
+   *
+   * <p>
+   * For example isWrapper(int.class, Integer.class) is <code>true</code>.
+   * </p>
+   *
+   * @param type1 The type expected to represent a primitive type.
+   * @param type2 The type expected to be the primitive wrapper type.
+   * @return Returns <code>true</code> if the above expectations apply, <code>false</code> otherwise.
+   */
+  public static boolean isWrapper(Class<?> type1, Class<?> type2) {
+    return type1.isPrimitive() && wrapperMap.get(type1)
+        .equals(type2);
   }
 
 }
