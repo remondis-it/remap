@@ -1,3 +1,5 @@
+[![Maven Central](https://img.shields.io/maven-central/v/com.remondis/remap.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.remondis%22%20AND%20a:%22remap%22)
+
 # ReMap - A declarative object mapper
 
 # Table of Contents
@@ -21,8 +23,6 @@
 10. [How to contribute](#how-to-contribute)
 
 ## Long story short
-
-[![Maven Central](https://img.shields.io/maven-central/v/com.remondis/remap.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.remondis%22%20AND%20a:%22remap%22)
 
 ReMap is a library that simplifies conversion of objects field by field and greatly reduces the efforts for unit testing mapper classes. You can get this library via Maven Central using the following coordinates
 
