@@ -24,7 +24,15 @@ public class ReassignTransformation extends Transformation {
   ReassignTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
       PropertyDescriptor destinationProperty) {
     super(mapping, sourceProperty, destinationProperty);
-    denyDifferentPrimitiveTypes(getSourceType(), getDestinationType());
+  }
+
+  protected static boolean isEqualTypes(Class<?> sourceType, Class<?> destinationType) {
+    return sourceType.equals(destinationType);
+  }
+
+  private boolean isReferenceMapping(Class<?> sourceType, Class<?> destinationType) {
+    return isEqualTypes(sourceType, destinationType) || ReflectionUtil.isWrapper(sourceType, destinationType)
+        || ReflectionUtil.isWrapper(destinationType, sourceType);
   }
 
   @SuppressWarnings({
@@ -80,7 +88,7 @@ public class ReassignTransformation extends Transformation {
       "unchecked", "rawtypes"
   })
   Object convertValue(Object sourceValue, Class<?> sourceType, Class<?> destinationType) {
-    if (isReferenceMapping(sourceType, destinationType) || isEqualTypes(sourceType, destinationType)) {
+    if (isReferenceMapping(sourceType, destinationType)) {
       return sourceValue;
     } else {
       // Object types must be mapped by a registered mapper before setting the value.
@@ -93,7 +101,7 @@ public class ReassignTransformation extends Transformation {
       "unchecked", "rawtypes"
   })
   Object convertValue(Object sourceValue, Class<?> sourceType, Object destinationValue, Class<?> destinationType) {
-    if (isReferenceMapping(sourceType, destinationType) || isEqualTypes(sourceType, destinationType)) {
+    if (isReferenceMapping(sourceType, destinationType)) {
       return sourceValue;
     } else {
       // Object types must be mapped by a registered mapper before setting the value.
@@ -134,8 +142,8 @@ public class ReassignTransformation extends Transformation {
 
   @Override
   protected void validateTransformation() throws MappingException {
-    // we have to check that all needed mappers are known for nested mapping
-    // if this transformation performes an object mapping, check for known mappers
+    // we have to check that all required mappers are known for nested mapping
+    // if this transformation performs an object mapping, check for known mappers
     Class<?> sourceType = getSourceType();
     if (isMap(sourceType)) {
       throw MappingException.denyReassignOnMaps(getSourceProperty(), getDestinationProperty());
@@ -151,7 +159,9 @@ public class ReassignTransformation extends Transformation {
   }
 
   private void validateTypeMapping(Class<?> sourceType, Class<?> destinationType) {
-    if (!(isReferenceMapping(sourceType, destinationType) || isEqualTypes(sourceType, destinationType))) {
+
+    if (!isReferenceMapping(sourceType, destinationType)) {
+      // Check if there is a registered mapper if required.
       getMapperFor(sourceType, destinationType);
     }
   }

@@ -145,7 +145,7 @@ public class MappingException extends RuntimeException {
     return new MappingException("Mapper cannot map null object.");
   }
 
-  public static MappingException unsupportedCollection(Class<?> collectionType) {
+  static MappingException unsupportedCollection(Class<?> collectionType) {
     return new MappingException(String.format("The collection type %s is unsupported.", collectionType.getName()));
   }
 
