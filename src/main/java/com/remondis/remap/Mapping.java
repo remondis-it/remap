@@ -11,6 +11,7 @@ import static java.util.Objects.nonNull;
 
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -124,6 +125,37 @@ public final class Mapping<S, D> {
     mappedDestinationProperties.add(propertyDescriptor);
     // create omit transformation object
     mappings.add(omitDestination);
+  }
+
+  /**
+   * Omits all unmapped source and destination fields. This method adds the necessary
+   * {@link #omitInDestination(FieldSelector)} and {@link #omitInSource(FieldSelector)} declarations to the mapping as
+   * if they were called specifically.
+   * <p>
+   * <b>Note: The use of {@link #omitAll()} carries the risk of erroneously excluding fields from mapping. For example:
+   * If a field is added on the source type, a mapping configuration that does not use {@link #omitAll()} will complain
+   * about a new unmapped field. This normally gives the developer a hint, to either specify a mapping or omit this
+   * field intentionally. If this method is used, any unmapped field will be omitted without notification!
+   * </b>
+   * </p>
+   *
+   * @return Returns this object for method chaining.
+   */
+  public Mapping<S, D> omitAll() {
+    Set<PropertyDescriptor> unmappedDestinationProperties = getUnmappedDestinationProperties();
+    for (PropertyDescriptor propertyDescriptor : unmappedDestinationProperties) {
+      OmitTransformation omitDestination = OmitTransformation.omitDestination(this, propertyDescriptor);
+      omitMapping(mappedDestinationProperties, propertyDescriptor, omitDestination);
+    }
+
+    // For source
+    Set<PropertyDescriptor> unmappedSourceProperties = getUnmappedSourceProperties();
+    for (PropertyDescriptor propertyDescriptor : unmappedSourceProperties) {
+      OmitTransformation omitSource = OmitTransformation.omitSource(this, propertyDescriptor);
+      omitMapping(mappedSourceProperties, propertyDescriptor, omitSource);
+    }
+
+    return this;
   }
 
   /**
@@ -287,14 +319,13 @@ public final class Mapping<S, D> {
   private void addStrictMapping() {
     // Get all unmapped properties from destination because this will be the only properties that can be mapped from
     // source.
-    Set<PropertyDescriptor> unmappedDestinationProperties = getUnmappedProperties(destination,
-        mappedDestinationProperties, Target.DESTINATION);
+    Set<PropertyDescriptor> unmappedDestinationProperties = getUnmappedDestinationProperties();
     // Get the set of property names
     Set<String> unmappedDestinationPropertyNames = unmappedDestinationProperties.stream()
         .map(PropertyDescriptor::getName)
         .collect(Collectors.toSet());
     // Add a reassign for all properties of source that are unmapped properties in the destination
-    getUnmappedProperties(source, mappedSourceProperties, Target.SOURCE).stream()
+    getUnmappedSourceProperties().stream()
         .filter(pd -> unmappedDestinationPropertyNames.contains(pd.getName()))
         .forEach(pd -> {
           // find the corresponding PropertyDescriptor in the unmapped
@@ -340,10 +371,18 @@ public final class Mapping<S, D> {
   private Set<PropertyDescriptor> getUnmappedProperties() {
     Set<PropertyDescriptor> unmapped = new HashSet<>();
     // Check that there are no unmapped source fields
-    unmapped.addAll(getUnmappedProperties(source, mappedSourceProperties, Target.SOURCE));
+    unmapped.addAll(getUnmappedSourceProperties());
     // Check that there are no unmapped destination fields
-    unmapped.addAll(getUnmappedProperties(destination, mappedDestinationProperties, Target.DESTINATION));
+    unmapped.addAll(getUnmappedDestinationProperties());
     return unmapped;
+  }
+
+  private Set<PropertyDescriptor> getUnmappedDestinationProperties() {
+    return getUnmappedProperties(destination, mappedDestinationProperties, Target.DESTINATION);
+  }
+
+  private Set<PropertyDescriptor> getUnmappedSourceProperties() {
+    return getUnmappedProperties(source, mappedSourceProperties, Target.SOURCE);
   }
 
   /**
@@ -610,11 +649,14 @@ public final class Mapping<S, D> {
         .append(destination.getName())
         .append("\n with transformation:\n");
 
-    for (Transformation t : mappings) {
-      b.append("- ")
-          .append(t.toString())
-          .append("\n");
-    }
+    mappings.stream()
+        .sorted(Comparator.comparing(t -> t.getClass()
+            .getName()))
+        .forEach(t -> {
+          b.append("- ")
+              .append(t.toString())
+              .append("\n");
+        });
 
     Set<PropertyDescriptor> unmappedProperties = getUnmappedProperties();
     if (unmappedProperties.isEmpty()) {
