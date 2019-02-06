@@ -1,5 +1,7 @@
 package com.remondis.remap.omitAll;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.Test;
 
 import com.remondis.remap.AssertMapping;
@@ -16,9 +18,8 @@ public class MapperTest {
         .withSkipWhenNull(String::valueOf)
         .reassign(A::getDescription)
         .to(AResource::getName)
-        .omitAll() // Omit all should add omits for a,b,c,d,e
+        .omitOthers() // Omit all should add omits for a,b,c,d,e
         .mapper();
-    System.out.println(mapper);
 
     AssertMapping.of(mapper)
         .expectReplace(A::getId, AResource::getId)
@@ -31,6 +32,31 @@ public class MapperTest {
         .expectOmitInDestination(AResource::getD)
         .expectOmitInDestination(AResource::getE)
         .ensure();
+  }
+
+  @Test
+  public void shouldDenyOmitAllIfNotExpected() {
+    Mapper<A, AResource> mapper = Mapping.from(A.class)
+        .to(AResource.class)
+        .replace(A::getId, AResource::getId)
+        .withSkipWhenNull(String::valueOf)
+        .reassign(A::getDescription)
+        .to(AResource::getName)
+        .omitOthers() // Omit all should add omits for a,b,c,d,e
+        .mapper();
+
+    assertThatThrownBy(() -> AssertMapping.of(mapper)
+        .expectReplace(A::getId, AResource::getId)
+        .andSkipWhenNull()
+        .expectReassign(A::getDescription)
+        .to(AResource::getName)
+        .ensure()).isInstanceOf(AssertionError.class)
+            .hasMessageContaining("The following unexpected transformation were specified on the mapping:")
+            .hasMessageContaining("- Omitting Property 'a' in com.remondis.remap.omitAll.A")
+            .hasMessageContaining("- Omitting Property 'd' in com.remondis.remap.omitAll.AResource")
+            .hasMessageContaining("- Omitting Property 'c' in com.remondis.remap.omitAll.AResource")
+            .hasMessageContaining("- Omitting Property 'e' in com.remondis.remap.omitAll.AResource")
+            .hasMessageContaining("- Omitting Property 'b' in com.remondis.remap.omitAll.A");
 
   }
 }

@@ -132,8 +132,10 @@ public final class Mapping<S, D> {
    * {@link #omitInDestination(FieldSelector)} and {@link #omitInSource(FieldSelector)} declarations to the mapping as
    * if they were called specifically.
    * <p>
-   * <b>Note: The use of {@link #omitAll()} carries the risk of erroneously excluding fields from mapping. For example:
-   * If a field is added on the source type, a mapping configuration that does not use {@link #omitAll()} will complain
+   * <b>Note: The use of {@link #omitOthers()} carries the risk of erroneously excluding fields from mapping. For
+   * example:
+   * If a field is added on the source type, a mapping configuration that does not use {@link #omitOthers()} will
+   * complain
    * about a new unmapped field. This normally gives the developer a hint, to either specify a mapping or omit this
    * field intentionally. If this method is used, any unmapped field will be omitted without notification!
    * </b>
@@ -141,7 +143,7 @@ public final class Mapping<S, D> {
    *
    * @return Returns this object for method chaining.
    */
-  public Mapping<S, D> omitAll() {
+  public Mapping<S, D> omitOthers() {
     Set<PropertyDescriptor> unmappedDestinationProperties = getUnmappedDestinationProperties();
     for (PropertyDescriptor propertyDescriptor : unmappedDestinationProperties) {
       OmitTransformation omitDestination = OmitTransformation.omitDestination(this, propertyDescriptor);
@@ -154,7 +156,6 @@ public final class Mapping<S, D> {
       OmitTransformation omitSource = OmitTransformation.omitSource(this, propertyDescriptor);
       omitMapping(mappedSourceProperties, propertyDescriptor, omitSource);
     }
-
     return this;
   }
 
