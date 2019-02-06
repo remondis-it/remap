@@ -100,11 +100,12 @@ public class MapperTest {
    * Ensures that the {@link Mapper} detects one more property in the source object that is not omitted by the mapping
    * configuration. The {@link Mapper} is expected to throw a {@link MappingException}.
    */
-  @Test(expected = MappingException.class)
+  @Test
   public void oneMoreSourceFieldInA() {
-    Mapping.from(AWithOneMoreSourceField.class)
+    assertThatThrownBy(() -> Mapping.from(AWithOneMoreSourceField.class)
         .to(AResourceWithOneMoreSourceField.class)
-        .mapper();
+        .mapper()).isInstanceOf(MappingException.class)
+            .hasMessageContaining("- Property 'onlyInA' in com.remondis.remap.AWithOneMoreSourceField");
   }
 
   /**
@@ -130,11 +131,13 @@ public class MapperTest {
    * mapping
    * configuration. The {@link Mapper} is expected to throw a {@link MappingException}.
    */
-  @Test(expected = MappingException.class)
+  @Test
   public void oneMoreDestinationFieldInAResource() {
-    Mapping.from(AWithOneMoreDestinationField.class)
+    assertThatThrownBy(() -> Mapping.from(AWithOneMoreDestinationField.class)
         .to(AResourceWithOneMoreDestinationField.class)
-        .mapper();
+        .mapper()).isInstanceOf(MappingException.class)
+            .hasMessageContaining(
+                "- Property 'onlyInAResource' in com.remondis.remap.AResourceWithOneMoreDestinationField");
   }
 
   /**
