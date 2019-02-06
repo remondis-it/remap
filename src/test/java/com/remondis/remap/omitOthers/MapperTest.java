@@ -1,4 +1,4 @@
-package com.remondis.remap.omitAll;
+package com.remondis.remap.omitOthers;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
