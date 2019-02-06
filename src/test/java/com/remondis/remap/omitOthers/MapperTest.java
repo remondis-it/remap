@@ -1,4 +1,4 @@
-package com.remondis.remap.omitAll;
+package com.remondis.remap.omitOthers;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -11,14 +11,14 @@ import com.remondis.remap.Mapping;
 public class MapperTest {
 
   @Test
-  public void shouldOmitAll() {
+  public void shouldOmitOthers() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
         .withSkipWhenNull(String::valueOf)
         .reassign(A::getDescription)
         .to(AResource::getName)
-        .omitOthers() // Omit all should add omits for a,b,c,d,e
+        .omitOthers() // Should add omits for a,b,c,d,e
         .mapper();
 
     AssertMapping.of(mapper)
@@ -35,14 +35,14 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldDenyOmitAllIfNotExpected() {
+  public void shouldDenyOmitOthersIfNotExpected() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
         .withSkipWhenNull(String::valueOf)
         .reassign(A::getDescription)
         .to(AResource::getName)
-        .omitOthers() // Omit all should add omits for a,b,c,d,e
+        .omitOthers() // should add omits for a,b,c,d,e
         .mapper();
 
     assertThatThrownBy(() -> AssertMapping.of(mapper)
@@ -52,11 +52,11 @@ public class MapperTest {
         .to(AResource::getName)
         .ensure()).isInstanceOf(AssertionError.class)
             .hasMessageContaining("The following unexpected transformation were specified on the mapping:")
-            .hasMessageContaining("- Omitting Property 'a' in com.remondis.remap.omitAll.A")
-            .hasMessageContaining("- Omitting Property 'd' in com.remondis.remap.omitAll.AResource")
-            .hasMessageContaining("- Omitting Property 'c' in com.remondis.remap.omitAll.AResource")
-            .hasMessageContaining("- Omitting Property 'e' in com.remondis.remap.omitAll.AResource")
-            .hasMessageContaining("- Omitting Property 'b' in com.remondis.remap.omitAll.A");
+            .hasMessageContaining("- Omitting Property 'a' in com.remondis.remap.omitOthers.A")
+            .hasMessageContaining("- Omitting Property 'd' in com.remondis.remap.omitOthers.AResource")
+            .hasMessageContaining("- Omitting Property 'c' in com.remondis.remap.omitOthers.AResource")
+            .hasMessageContaining("- Omitting Property 'e' in com.remondis.remap.omitOthers.AResource")
+            .hasMessageContaining("- Omitting Property 'b' in com.remondis.remap.omitOthers.A");
 
   }
 }

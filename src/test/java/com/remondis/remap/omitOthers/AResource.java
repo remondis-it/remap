@@ -1,4 +1,4 @@
-package com.remondis.remap.omitAll;
+package com.remondis.remap.omitOthers;
 
 public class AResource {
   private String id;
