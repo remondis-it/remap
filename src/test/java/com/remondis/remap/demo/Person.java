@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Person {
 
   private String salutation;
-  private String forname;
+  private String forename;
   private String name;
   private Gender gender;
   private double bodyHeight;

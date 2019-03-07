@@ -144,12 +144,57 @@ public final class Mapping<S, D> {
    * @return Returns this object for method chaining.
    */
   public Mapping<S, D> omitOthers() {
+    omitOtherSourceProperties();
+    omitOtherDestinationProperties();
+    return this;
+  }
+
+  /**
+   * Omits all unmapped destination fields. This method adds the necessary
+   * {@link #omitInDestination(FieldSelector)} declarations to the mapping as
+   * if they were called specifically.
+   * <p>
+   * <b>Note: The use of {@link #omitOtherDestinationProperties()} carries the risk of erroneously excluding fields from
+   * mapping. For
+   * example:
+   * If a field is added on the destination type, a mapping configuration that does not use
+   * {@link #omitOtherDestinationProperties()} will
+   * complain
+   * about a new unmapped field. This normally gives the developer a hint, to either specify a mapping or omit this
+   * field intentionally. If this method is used, any unmapped field will be omitted without notification!
+   * </b>
+   * </p>
+   *
+   * @return Returns this object for method chaining.
+   */
+  public Mapping<S, D> omitOtherDestinationProperties() {
     Set<PropertyDescriptor> unmappedDestinationProperties = getUnmappedDestinationProperties();
     for (PropertyDescriptor propertyDescriptor : unmappedDestinationProperties) {
       OmitTransformation omitDestination = OmitTransformation.omitDestination(this, propertyDescriptor);
       omitMapping(mappedDestinationProperties, propertyDescriptor, omitDestination);
     }
+    return this;
+  }
 
+  /**
+   * Omits all unmapped source fields. This method adds the necessary
+   * {@link #omitInSource(FieldSelector)} declarations to the mapping as
+   * if they were called specifically.
+   * <p>
+   * <b>Note: The use of {@link #omitOtherSourceProperties()} carries the risk of erroneously excluding fields from
+   * mapping. For
+   * example:
+   * If a field is added on the source type, a mapping configuration that does not use
+   * {@link #omitOtherSourceProperties()} will
+   * complain
+   * about a new unmapped field. This normally gives the developer a hint, to either specify a mapping or omit this
+   * field intentionally. If this method is used, any unmapped field will be omitted without notification!
+   * </b>
+   * </p>
+   *
+   * @return Returns this object for method chaining.
+   */
+  public Mapping<S, D> omitOtherSourceProperties() {
     // For source
     Set<PropertyDescriptor> unmappedSourceProperties = getUnmappedSourceProperties();
     for (PropertyDescriptor propertyDescriptor : unmappedSourceProperties) {

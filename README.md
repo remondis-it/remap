@@ -93,6 +93,9 @@ ReMap maps a objects of a source to a destination type. As per default ReMap tri
 The following operations can be declared on a mapper:
 * `omitInSource`: omits a field in the source type and skips the mapping.
 * `omitInDestination`: omits a field in the destination type and skips the mapping.
+* `omitOtherSourceProperties`: omits all source fields that are not configured differently.
+* `omitOtherDestinationProperties`: omits all source fields that are not configured differently.
+* `omitOthers`: omits all source and destination fields that are not configured differently.
 * `reassign`: maps a source field to the destination field
 	* if the property types are equal, references are copied
 	* if the property types differ, a mapper must be registered that supports the type mapping
@@ -131,6 +134,7 @@ to creep into your codebase (see [Tests](#tests)).
 ReMap supports
 * out-of-the-box mapping of primitives, built-in types, custom Java Beans and enumeration values
 * type inheritance
+* fields holding non-Java Bean types can be mapped using a specific type mapping.
 * mapping object references to fields
 * restrictive visibilities
 * mapping from interface to Java Bean type
@@ -150,7 +154,6 @@ ReMap supports
   * fields of primitive type boolean comply with is-method convention as getter.
   * the declaring type has a public default constructor (this is only necessary for the destination object)
   * keywords like `transient` do not have an effect on the mapping
-* fields holding non-Java Bean types can be mapped using a specific type mapping.
 * non-static inner classes are not supported (they do not have a parameterless default constructor!)
 * circular references are currently not supported
 * mapping equal types does not copy object instances!

@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Creates a test for a {@link Mapper} object to assert the mapping specification. The expected mapping is to be
@@ -52,6 +53,15 @@ public class AssertMapping<S, D> {
   private Mapper<S, D> mapper;
 
   private Set<Transformation> assertedTransformations;
+
+  /**
+   * Flag indicating that mappings that are not expected by asserts must be omitInSource mappings.
+   */
+  private boolean omitOthersSource = false;
+  /**
+   * Flag indicating that mappings that are not expected by asserts must be omitInDestination mappings.
+   */
+  private boolean omitOthersDestination = false;
 
   private AssertMapping(Mapper<S, D> mapper) {
     denyNull("mapper", mapper);
@@ -189,6 +199,37 @@ public class AssertMapping<S, D> {
   }
 
   /**
+   * Expects all other field to be omitted.
+   *
+   * @return Returns a {@link AssertMapping} for further configuration.
+   */
+  public AssertMapping<S, D> expectOthersToBeOmitted() {
+    expectOtherSourceFieldsToBeOmitted();
+    expectOtherDestinationFieldsToBeOmitted();
+    return this;
+  }
+
+  /**
+   * Expects all other source fields to be omitted.
+   *
+   * @return Returns a {@link AssertMapping} for further configuration.
+   */
+  public AssertMapping<S, D> expectOtherSourceFieldsToBeOmitted() {
+    this.omitOthersSource = true;
+    return this;
+  }
+
+  /**
+   * Expects all other destination fields to be omitted.
+   *
+   * @return Returns a {@link AssertMapping} for further configuration.
+   */
+  public AssertMapping<S, D> expectOtherDestinationFieldsToBeOmitted() {
+    this.omitOthersDestination = true;
+    return this;
+  }
+
+  /**
    * Performs the specified assertions against the specified mapper instance. If a replace operation was specified with
    * a transformation function to be also called for <code>null</code> values a null check is performed against the
    * function.
@@ -301,11 +342,38 @@ public class AssertMapping<S, D> {
 
     if (!mappings.isEmpty()) {
       // if there are more elements left, the remaining transformations must be MapTransformations
-      Set<Transformation> unexpectedTransformations = mappings.stream()
-          .filter(t -> {
-            return !(t instanceof MapTransformation);
-          })
-          .collect(Collectors.toSet());
+      Stream<Transformation> tranformationStream = mappings.stream();
+
+      // If omit others for destination, then all omitInDestination transformations are expected.
+      if (omitOthersDestination) {
+        tranformationStream = tranformationStream.filter(t -> {
+          if (t instanceof OmitTransformation) {
+            OmitTransformation omitTransformation = (OmitTransformation) t;
+            return !(omitTransformation.isOmitInDestination());
+          } else {
+            return true;
+          }
+        });
+      }
+      // If omit others for source, then all omitInSource transformations are expected.
+      if (omitOthersDestination) {
+        tranformationStream = tranformationStream.filter(t -> {
+          if (t instanceof OmitTransformation) {
+            OmitTransformation omitTransformation = (OmitTransformation) t;
+            return !(omitTransformation.isOmitInSource());
+          } else {
+            return true;
+          }
+        });
+      }
+
+      // Ignore MapTransformations, because those are implicit transformations.
+      tranformationStream = tranformationStream.filter(t -> {
+        return !(t instanceof MapTransformation);
+      });
+
+      // All remaining transformations were not backed by an assert.
+      Set<Transformation> unexpectedTransformations = tranformationStream.collect(Collectors.toSet());
       if (!unexpectedTransformations.isEmpty()) {
         throw new AssertionError(UNEXPECTED_TRANSFORMATION + listCollection(unexpectedTransformations));
       }

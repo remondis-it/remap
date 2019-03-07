@@ -4,25 +4,25 @@ import java.util.List;
 
 public class A {
 
-  private CharSequence forname;
+  private CharSequence forename;
   private List<CharSequence> addresses;
 
   public A() {
     super();
   }
 
-  public A(CharSequence forname, List<CharSequence> addresses) {
+  public A(CharSequence forename, List<CharSequence> addresses) {
     super();
-    this.forname = forname;
+    this.forename = forename;
     this.addresses = addresses;
   }
 
-  public CharSequence getForname() {
-    return forname;
+  public CharSequence getForename() {
+    return forename;
   }
 
-  public void setForname(CharSequence forname) {
-    this.forname = forname;
+  public void setForename(CharSequence forename) {
+    this.forename = forename;
   }
 
   public List<CharSequence> getAddresses() {

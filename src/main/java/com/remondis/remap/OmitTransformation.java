@@ -2,6 +2,7 @@ package com.remondis.remap;
 
 import static com.remondis.remap.Lang.denyNull;
 import static com.remondis.remap.Properties.asString;
+import static java.util.Objects.nonNull;
 
 import java.beans.PropertyDescriptor;
 
@@ -30,6 +31,20 @@ class OmitTransformation extends Transformation {
     denyNull("mapping", mapping);
     denyNull("destinationProperty", destinationProperty);
     return new OmitTransformation(mapping, null, destinationProperty);
+  }
+
+  /**
+   * Returns <code>true</code> if this {@link OmitTransformation} omits a destination property.
+   */
+  public boolean isOmitInDestination() {
+    return nonNull(destinationProperty);
+  }
+
+  /**
+   * Returns <code>true</code> if this {@link OmitTransformation} omits a destination property.
+   */
+  public boolean isOmitInSource() {
+    return nonNull(sourceProperty);
   }
 
   /**
