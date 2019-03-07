@@ -4,25 +4,25 @@ import java.util.List;
 
 public class AResource {
 
-  private String forname;
+  private String forename;
   private List<String> addresses;
 
   public AResource() {
     super();
   }
 
-  public AResource(String forname, List<String> addresses) {
+  public AResource(String forename, List<String> addresses) {
     super();
-    this.forname = forname;
+    this.forename = forename;
     this.addresses = addresses;
   }
 
-  public String getForname() {
-    return forname;
+  public String getForename() {
+    return forename;
   }
 
-  public void setForname(String forname) {
-    this.forname = forname;
+  public void setForename(String forename) {
+    this.forename = forename;
   }
 
   public List<String> getAddresses() {
