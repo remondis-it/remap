@@ -33,7 +33,7 @@ public class CustomTypeConversionsTest {
   public void mappingImplicitNullValues() {
     A a = new A(null, null);
     AResource aResource = mapper().map(a);
-    assertNull(aResource.getForname());
+    assertNull(aResource.getForename());
     assertNull(aResource.getAddresses());
   }
 
@@ -43,7 +43,7 @@ public class CustomTypeConversionsTest {
     CharSequence charSeq = "Forename";
     A a = new A(charSeq, charSeqs);
     AResource aResource = mapper().map(a);
-    assertNotNull(aResource.getForname());
+    assertNotNull(aResource.getForename());
     List<String> addresses = aResource.getAddresses();
     assertNotNull(addresses);
     assertEquals(2, addresses.size());
