@@ -55,9 +55,13 @@ public class AssertMapping<S, D> {
   private Set<Transformation> assertedTransformations;
 
   /**
-   * Flag indicating that mappings that are not expected by asserts must be omitInSource or omitInDestination mappings.
+   * Flag indicating that mappings that are not expected by asserts must be omitInSource mappings.
    */
-  private boolean omitOthers = false;
+  private boolean omitOthersSource = false;
+  /**
+   * Flag indicating that mappings that are not expected by asserts must be omitInDestination mappings.
+   */
+  private boolean omitOthersDestination = false;
 
   private AssertMapping(Mapper<S, D> mapper) {
     denyNull("mapper", mapper);
@@ -200,7 +204,28 @@ public class AssertMapping<S, D> {
    * @return Returns a {@link AssertMapping} for further configuration.
    */
   public AssertMapping<S, D> expectOthersToBeOmitted() {
-    this.omitOthers = true;
+    expectOtherSourceFieldsToBeOmitted();
+    expectOtherDestinationFieldsToBeOmitted();
+    return this;
+  }
+
+  /**
+   * Expects all other source fields to be omitted.
+   *
+   * @return Returns a {@link AssertMapping} for further configuration.
+   */
+  public AssertMapping<S, D> expectOtherSourceFieldsToBeOmitted() {
+    this.omitOthersSource = true;
+    return this;
+  }
+
+  /**
+   * Expects all other destination fields to be omitted.
+   *
+   * @return Returns a {@link AssertMapping} for further configuration.
+   */
+  public AssertMapping<S, D> expectOtherDestinationFieldsToBeOmitted() {
+    this.omitOthersDestination = true;
     return this;
   }
 
@@ -318,14 +343,32 @@ public class AssertMapping<S, D> {
     if (!mappings.isEmpty()) {
       // if there are more elements left, the remaining transformations must be MapTransformations
       Stream<Transformation> tranformationStream = mappings.stream();
-      if (omitOthers) {
-        // If omit others, then all omit transformations are expected.
-        tranformationStream.filter(t -> {
-          return !(t instanceof OmitTransformation);
+
+      // If omit others for destination, then all omitInDestination transformations are expected.
+      if (omitOthersDestination) {
+        tranformationStream = tranformationStream.filter(t -> {
+          if (t instanceof OmitTransformation) {
+            OmitTransformation omitTransformation = (OmitTransformation) t;
+            return !(omitTransformation.isOmitInDestination());
+          } else {
+            return true;
+          }
         });
       }
+      // If omit others for source, then all omitInSource transformations are expected.
+      if (omitOthersDestination) {
+        tranformationStream = tranformationStream.filter(t -> {
+          if (t instanceof OmitTransformation) {
+            OmitTransformation omitTransformation = (OmitTransformation) t;
+            return !(omitTransformation.isOmitInSource());
+          } else {
+            return true;
+          }
+        });
+      }
+
       // Ignore MapTransformations, because those are implicit transformations.
-      tranformationStream.filter(t -> {
+      tranformationStream = tranformationStream.filter(t -> {
         return !(t instanceof MapTransformation);
       });
 

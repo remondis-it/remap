@@ -11,6 +11,96 @@ import com.remondis.remap.Mapping;
 public class MapperTest {
 
   @Test
+  public void shouldOmitOtherSourceProperties() {
+    assertThatThrownBy(() -> Mapping.from(A.class)
+        .to(AResource.class)
+        .replace(A::getId, AResource::getId)
+        .withSkipWhenNull(String::valueOf)
+        .reassign(A::getDescription)
+        .to(AResource::getName)
+        .omitOtherSourceProperties()
+        .mapper()).hasMessageContaining("- Property 'e' in com.remondis.remap.omitOthers.AResource")
+            .hasMessageContaining("- Property 'c' in com.remondis.remap.omitOthers.AResource")
+            .hasMessageContaining("- Property 'd' in com.remondis.remap.omitOthers.AResource");
+  }
+
+  @Test
+  public void shouldOmitOtherDestinationProperties() {
+    assertThatThrownBy(() -> Mapping.from(A.class)
+        .to(AResource.class)
+        .replace(A::getId, AResource::getId)
+        .withSkipWhenNull(String::valueOf)
+        .reassign(A::getDescription)
+        .to(AResource::getName)
+        .omitOtherDestinationProperties()
+        .mapper()).hasMessageContaining("- Property 'b' in com.remondis.remap.omitOthers.A")
+            .hasMessageContaining("- Property 'a' in com.remondis.remap.omitOthers.A");
+  }
+
+  @Test
+  public void shouldOmitOtherSourceAndDestFields_withExpectOtherSourceAndDestFieldsToBeOmitted() {
+    Mapper<A, AResource> mapper = Mapping.from(A.class)
+        .to(AResource.class)
+        .replace(A::getId, AResource::getId)
+        .withSkipWhenNull(String::valueOf)
+        .reassign(A::getDescription)
+        .to(AResource::getName)
+        .omitOtherSourceProperties()
+        .omitOtherDestinationProperties()
+        .mapper();
+
+    AssertMapping.of(mapper)
+        .expectReplace(A::getId, AResource::getId)
+        .andSkipWhenNull()
+        .expectReassign(A::getDescription)
+        .to(AResource::getName)
+        .expectOtherSourceFieldsToBeOmitted()
+        .expectOtherDestinationFieldsToBeOmitted()
+        .ensure();
+  }
+
+  @Test
+  public void shouldOmitOtherSourceAndDestFields_withExpectOthersToBeOmitted() {
+    Mapper<A, AResource> mapper = Mapping.from(A.class)
+        .to(AResource.class)
+        .replace(A::getId, AResource::getId)
+        .withSkipWhenNull(String::valueOf)
+        .reassign(A::getDescription)
+        .to(AResource::getName)
+        .omitOtherSourceProperties()
+        .omitOtherDestinationProperties()
+        .mapper();
+
+    AssertMapping.of(mapper)
+        .expectReplace(A::getId, AResource::getId)
+        .andSkipWhenNull()
+        .expectReassign(A::getDescription)
+        .to(AResource::getName)
+        .expectOthersToBeOmitted()
+        .ensure();
+  }
+
+  @Test
+  public void shouldOmitOthers_withExpectOthersToBeOmitted() {
+    Mapper<A, AResource> mapper = Mapping.from(A.class)
+        .to(AResource.class)
+        .replace(A::getId, AResource::getId)
+        .withSkipWhenNull(String::valueOf)
+        .reassign(A::getDescription)
+        .to(AResource::getName)
+        .omitOthers() // Should add omits for a,b,c,d,e
+        .mapper();
+
+    AssertMapping.of(mapper)
+        .expectReplace(A::getId, AResource::getId)
+        .andSkipWhenNull()
+        .expectReassign(A::getDescription)
+        .to(AResource::getName)
+        .expectOthersToBeOmitted()
+        .ensure();
+  }
+
+  @Test
   public void shouldOmitOthers() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
