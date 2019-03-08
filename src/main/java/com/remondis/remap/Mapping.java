@@ -78,6 +78,19 @@ public final class Mapping<S, D> {
    */
   private Set<PropertyDescriptor> mappedDestinationProperties;
 
+  /**
+   * This flag indicates that all other source properties that are not part of the mapping should be omitted. Attention:
+   * Do not omit implicit mappings.
+   */
+  private boolean omitOtherSourceProperties;
+
+  /**
+   * This flag indicates that all other destination properties that are not part of the mapping should be omitted.
+   * Attention:
+   * Do not omit implicit mappings.
+   */
+  private boolean omitOtherDestinationProperties;
+
   Mapping(Class<S> source, Class<D> destination) {
     this.source = source;
     this.destination = destination;
@@ -168,11 +181,7 @@ public final class Mapping<S, D> {
    * @return Returns this object for method chaining.
    */
   public Mapping<S, D> omitOtherDestinationProperties() {
-    Set<PropertyDescriptor> unmappedDestinationProperties = getUnmappedDestinationProperties();
-    for (PropertyDescriptor propertyDescriptor : unmappedDestinationProperties) {
-      OmitTransformation omitDestination = OmitTransformation.omitDestination(this, propertyDescriptor);
-      omitMapping(mappedDestinationProperties, propertyDescriptor, omitDestination);
-    }
+    this.omitOtherDestinationProperties = true;
     return this;
   }
 
@@ -195,12 +204,7 @@ public final class Mapping<S, D> {
    * @return Returns this object for method chaining.
    */
   public Mapping<S, D> omitOtherSourceProperties() {
-    // For source
-    Set<PropertyDescriptor> unmappedSourceProperties = getUnmappedSourceProperties();
-    for (PropertyDescriptor propertyDescriptor : unmappedSourceProperties) {
-      OmitTransformation omitSource = OmitTransformation.omitSource(this, propertyDescriptor);
-      omitMapping(mappedSourceProperties, propertyDescriptor, omitSource);
-    }
+    this.omitOtherSourceProperties = true;
     return this;
   }
 
@@ -354,8 +358,38 @@ public final class Mapping<S, D> {
    */
   public Mapper<S, D> mapper() {
     addStrictMapping();
+    if (omitOtherSourceProperties) {
+      addOmitForSource();
+    }
+    if (omitOtherDestinationProperties) {
+      addOmitForDestination();
+    }
+
     validateMapping();
     return new Mapper<>(this);
+  }
+
+  private void addOmitForDestination() {
+    Set<PropertyDescriptor> unmappedDestinationProperties = getUnmappedDestinationProperties();
+    for (PropertyDescriptor propertyDescriptor : unmappedDestinationProperties) {
+      OmitTransformation omitDestination = OmitTransformation.omitDestination(this, propertyDescriptor);
+      omitMapping(mappedDestinationProperties, propertyDescriptor, omitDestination);
+    }
+  }
+
+  private void addOmitForSource() {
+    // Get the set of property names
+    Set<String> unmappedSourcePropertyNames = getUnmappedSourceProperties().stream()
+        .map(PropertyDescriptor::getName)
+        .collect(Collectors.toSet());
+
+    // Add a reassign for all properties of source that are unmapped properties in the destination
+    getUnmappedSourceProperties().stream()
+        .filter(pd -> unmappedSourcePropertyNames.contains(pd.getName()))
+        .forEach(pd -> {
+          OmitTransformation omitSource = OmitTransformation.omitSource(this, pd);
+          omitMapping(mappedSourceProperties, pd, omitSource);
+        });
   }
 
   /**
