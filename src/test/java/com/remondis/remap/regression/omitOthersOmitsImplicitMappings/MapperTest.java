@@ -2,6 +2,7 @@ package com.remondis.remap.regression.omitOthersOmitsImplicitMappings;
 
 import org.junit.Test;
 
+import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 
@@ -20,7 +21,13 @@ public class MapperTest {
         .omitOtherSourceProperties()
         .omitInDestination(B::getSomeOtherString)
         .mapper();
-    System.out.println(mapper);
+
+    AssertMapping.of(mapper)
+        .expectReplace(A::getString2, B::getString2Length)
+        .andSkipWhenNull()
+        .expectOtherSourceFieldsToBeOmitted()
+        .expectOmitInDestination(B::getSomeOtherString)
+        .ensure();
   }
 
 }

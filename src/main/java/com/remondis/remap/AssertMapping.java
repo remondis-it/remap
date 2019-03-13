@@ -356,7 +356,7 @@ public class AssertMapping<S, D> {
         });
       }
       // If omit others for source, then all omitInSource transformations are expected.
-      if (omitOthersDestination) {
+      if (omitOthersSource) {
         tranformationStream = tranformationStream.filter(t -> {
           if (t instanceof OmitTransformation) {
             OmitTransformation omitTransformation = (OmitTransformation) t;
