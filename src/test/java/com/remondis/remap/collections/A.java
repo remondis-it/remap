@@ -12,7 +12,7 @@ public class A {
   private Set<String> strings;
   private List<B> bs;
 
-  private List<List<B>> nestedLists;
+  private List<Set<B>> nestedLists;
 
   public A() {
     super();
@@ -26,14 +26,14 @@ public class A {
     this.bs = Arrays.asList(bs);
   }
 
-  public void addNestedLists(@SuppressWarnings("unchecked") List<B>... lists) {
+  public void addNestedLists(@SuppressWarnings("unchecked") Set<B>... lists) {
     this.nestedLists = Arrays.asList(lists);
   }
 
   /**
    * @return the nestedLists
    */
-  public List<List<B>> getNestedLists() {
+  public List<Set<B>> getNestedLists() {
     return nestedLists;
   }
 
@@ -41,7 +41,7 @@ public class A {
    * @param nestedLists
    *        the nestedLists to set
    */
-  public void setNestedLists(List<List<B>> nestedLists) {
+  public void setNestedLists(List<Set<B>> nestedLists) {
     this.nestedLists = nestedLists;
   }
 

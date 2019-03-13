@@ -3,7 +3,9 @@ package com.remondis.remap.collections;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -57,8 +59,8 @@ public class CollectionsTest {
     a.addStrings(stringsArr);
     a.addBs(b1, b2);
 
-    List<B> firstList = Arrays.asList(b1);
-    List<B> secondList = Arrays.asList(b2);
+    Set<B> firstList = new HashSet<>(Arrays.asList(b1));
+    Set<B> secondList = new HashSet<>(Arrays.asList(b2));
     a.addNestedLists(firstList, secondList);
 
     AResource ar = aMapper.map(a);
@@ -118,8 +120,8 @@ public class CollectionsTest {
     a.addStrings(stringsArr);
     a.addBs(b1, b2);
 
-    List<B> firstList = Arrays.asList(b1);
-    List<B> secondList = Arrays.asList(b2);
+    Set<B> firstList = new HashSet<>(Arrays.asList(b1));
+    Set<B> secondList = new HashSet<>(Arrays.asList(b2));
     a.addNestedLists(firstList, secondList);
 
     AResource ar = aMapper.map(a);
