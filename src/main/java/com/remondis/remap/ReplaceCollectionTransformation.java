@@ -77,15 +77,6 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
   }
 
   @Override
-  public String toString() {
-    if (skipWhenNull) {
-      return String.format(REPLACE_SKIPPED_MSG, asString(sourceProperty), asString(destinationProperty));
-    } else {
-      return String.format(REPLACE_MSG, asString(sourceProperty), asString(destinationProperty));
-    }
-  }
-
-  @Override
   Function<RS, RD> getTransformation() {
     return transformation;
   }
@@ -93,6 +84,16 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
   @Override
   boolean isSkipWhenNull() {
     return skipWhenNull;
+  }
+
+  @Override
+  public String toString(boolean detailed) {
+    if (skipWhenNull) {
+      return String.format(REPLACE_SKIPPED_MSG, asString(sourceProperty, detailed),
+          asString(destinationProperty, detailed));
+    } else {
+      return String.format(REPLACE_MSG, asString(sourceProperty, detailed), asString(destinationProperty, detailed));
+    }
   }
 
 }
