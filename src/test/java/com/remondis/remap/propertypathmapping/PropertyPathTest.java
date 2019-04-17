@@ -30,13 +30,6 @@ public class PropertyPathTest {
   }
 
   @Test
-  public void shouldToStringCorrectly() {
-    String string = mapper.toString();
-    System.out.println(string);
-
-  }
-
-  @Test
   public void shouldEvaluatePropertyPath() {
 
     Person person = new Person("forename", "name", new Address("street", "houseNumber", "zipCode", "city"));
