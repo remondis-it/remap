@@ -19,13 +19,13 @@ public class PropertyPathTest {
     this.mapper = Mapping.from(Person.class)
         .to(PersonView.class)
         .replace(Person::getAddress, PersonView::getStreet)
-        .byPropertyPath(Address::getStreet)
+        .withPropertyPath(Address::getStreet)
         .replace(Person::getAddress, PersonView::getHouseNumber)
-        .byPropertyPath(Address::getHouseNumber)
+        .withPropertyPath(Address::getHouseNumber)
         .replace(Person::getAddress, PersonView::getZipCode)
-        .byPropertyPath(Address::getZipCode)
+        .withPropertyPath(Address::getZipCode)
         .replace(Person::getAddress, PersonView::getCity)
-        .byPropertyPath(Address::getCity)
+        .withPropertyPath(Address::getCity)
         .mapper();
   }
 
@@ -49,13 +49,13 @@ public class PropertyPathTest {
 
     AssertMapping.of(mapper)
         .expectReplace(Person::getAddress, PersonView::getStreet)
-        .byPropertyPath(Address::getStreet)
+        .withPropertyPath(Address::getStreet)
         .expectReplace(Person::getAddress, PersonView::getHouseNumber)
-        .byPropertyPath(Address::getHouseNumber)
+        .withPropertyPath(Address::getHouseNumber)
         .expectReplace(Person::getAddress, PersonView::getZipCode)
-        .byPropertyPath(Address::getZipCode)
+        .withPropertyPath(Address::getZipCode)
         .expectReplace(Person::getAddress, PersonView::getCity)
-        .byPropertyPath(Address::getCity)
+        .withPropertyPath(Address::getCity)
         .ensure();
 
   }

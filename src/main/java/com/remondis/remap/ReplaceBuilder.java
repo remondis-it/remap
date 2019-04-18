@@ -60,7 +60,7 @@ public class ReplaceBuilder<S, D, RD, RS> {
    *        <b>This is not a function operating on real object. So do not manipulate or calculate here!</b>
    * @return Returns the {@link Mapping} for further mapping configuration.
    */
-  public <E extends Exception> Mapping<S, D> byPropertyPath(PropertyPath<RD, RS, E> propertyPath) {
+  public <E extends Exception> Mapping<S, D> withPropertyPath(PropertyPath<RD, RS, E> propertyPath) {
     denyNull("propertyPath", propertyPath);
     PropertyPathTransformation<RS, RD> replace = new PropertyPathTransformation<RS, RD>(mapping,
         sourceProperty.property, destProperty.property, propertyPath);
