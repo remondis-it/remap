@@ -141,10 +141,7 @@ public class SetOperationTest {
   }
 
   private A a() {
-    return A.builder()
-        .string(STRING)
-        .anotherString(ANOTHER_STRING)
-        .build();
+    return new A(STRING, ANOTHER_STRING);
   }
 
   private Function<A, Integer> valueFunction() {

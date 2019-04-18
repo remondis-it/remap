@@ -275,7 +275,7 @@
         <dependency>
             <groupId>com.remondis</groupId>
             <artifactId>propertypath</artifactId>
-            <version>0.0.4</version>
+            <version>0.0.5</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -291,12 +291,6 @@
         </dependency>
 
 		<!-- Test scoped dependencies -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.20</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

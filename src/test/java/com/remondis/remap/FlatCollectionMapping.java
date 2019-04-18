@@ -2,8 +2,10 @@ package com.remondis.remap;
 
 import static com.remondis.remap.AssertMapping.DIFFERENT_NULL_STRATEGY;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,9 +27,7 @@ public class FlatCollectionMapping {
         .with(idBuilder())
         .mapper();
 
-    Source source = Source.builder()
-        .ids(Arrays.asList(1L, 2L, 3L))
-        .build();
+    Source source = new Source(Arrays.asList(1L, 2L, 3L));
     Destination map = mapper.map(source);
     List<Id> expected = Arrays.asList(idBuilder().apply(1L), idBuilder().apply(2L), idBuilder().apply(3L));
     List<Id> actual = map.getIds();
@@ -73,15 +73,14 @@ public class FlatCollectionMapping {
         .with(idBuilder())
         .mapper();
 
-    Source source = Source.builder()
-        .ids(Arrays.asList(1L, null, 2L, null, 3L))
-        .build();
+    Source source = new Source(Arrays.asList(1L, null, 2L, null, 3L));
     Destination map = mapper.map(source);
 
     List<Id> expected = Arrays.asList(idBuilder().apply(1L), idBuilder().apply(null), idBuilder().apply(2L),
         idBuilder().apply(null), idBuilder().apply(3L));
     List<Id> actual = map.getIds();
-    assertEquals(expected, actual);
+
+    assertThat(actual, is(expected));
 
     // Assert the mapping
     AssertMapping.of(mapper)
@@ -98,9 +97,7 @@ public class FlatCollectionMapping {
         .withSkipWhenNull(idBuilder())
         .mapper();
 
-    Source source = Source.builder()
-        .ids(Arrays.asList(1L, null, 2L, null, 3L))
-        .build();
+    Source source = new Source(Arrays.asList(1L, null, 2L, null, 3L));
     Destination map = mapper.map(source);
 
     List<Id> expected = Arrays.asList(idBuilder().apply(1L), idBuilder().apply(2L), idBuilder().apply(3L));
@@ -122,9 +119,7 @@ public class FlatCollectionMapping {
         .with(idBuilder())
         .mapper();
 
-    Source source = Source.builder()
-        .ids(null)
-        .build();
+    Source source = new Source(null);
     Destination map = mapper.map(source);
     assertNull(map.getIds());
   }
@@ -148,9 +143,7 @@ public class FlatCollectionMapping {
   }
 
   public static Function<Long, Id> idBuilder() {
-    return id -> Id.builder()
-        .id(id)
-        .build();
+    return id -> new Id(id);
   }
 
 }

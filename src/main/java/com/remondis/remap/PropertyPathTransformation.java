@@ -31,14 +31,15 @@ public class PropertyPathTransformation<RS, RD> extends Transformation {
 
   @SuppressWarnings("unchecked")
   private Get<RS, RD, ?> createGetter(PropertyDescriptor sourceProperty, PropertyPath<RD, RS, ?> propertyPath) {
-    try {
-      return Getter.newFor((Class<RS>) sourceProperty.getPropertyType())
-          .evaluate(propertyPath);
-    } catch (Exception e) {
-      // TODO: This is a known API bug in property path that will be fixed with the next release.
-      throw new RuntimeException(
-          "This will never happen, if this happens please file a bug report on https://github.com/remondis-it/remap/issues");
-    }
+    // try {
+    return Getter.newFor((Class<RS>) sourceProperty.getPropertyType())
+        .evaluate(propertyPath);
+    // } catch (Exception e) {
+    // // TODO: This is a known API bug in property path that will be fixed with the next release.
+    // throw new RuntimeException(
+    // "This will never happen, if this happens please file a bug report on
+    // https://github.com/remondis-it/remap/issues");
+    // }
   }
 
   @SuppressWarnings("unchecked")
