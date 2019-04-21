@@ -2,6 +2,7 @@ package com.remondis.remap.propertypathmapping;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +28,31 @@ public class PropertyPathTest {
         .replace(Person::getAddress, PersonView::getCity)
         .withPropertyPath(Address::getCity)
         .mapper();
+  }
+
+  @Test
+  public void shouldNotComplainAboutNull_1() {
+    Person person = new Person("forename", "name", null);
+    PersonView view = mapper.map(person);
+    assertEquals(person.getForename(), view.getForename());
+    assertEquals(person.getName(), view.getName());
+    assertNull(person.getAddress());
+  }
+
+  @Test
+  public void shouldNotComplainAboutNull_2() {
+    Person person = new Person("forename", "name", new Address(null, "houseNumber", "zipCode", "city"));
+    PersonView view = mapper.map(person);
+    assertEquals(person.getForename(), view.getForename());
+    assertEquals(person.getName(), view.getName());
+    assertNull(person.getAddress()
+        .getStreet());
+    assertEquals(person.getAddress()
+        .getHouseNumber(), view.getHouseNumber());
+    assertEquals(person.getAddress()
+        .getZipCode(), view.getZipCode());
+    assertEquals(person.getAddress()
+        .getCity(), view.getCity());
   }
 
   @Test
