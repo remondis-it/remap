@@ -724,9 +724,19 @@ public final class Mapping<S, D> {
 
   @Override
   public String toString() {
-    StringBuilder b = new StringBuilder("Mapping from ").append(source.getName())
+    return toString(false);
+  }
+
+  /**
+   * Returns a string representation of this mapper.
+   *
+   * @param detailed If <code>true</code> the string will be more detailed.
+   * @return Returns a string representation of this mapper.
+   */
+  public String toString(boolean detailed) {
+    StringBuilder b = new StringBuilder("Mapping from ").append(detailed ? source.getName() : source.getSimpleName())
         .append("\n\t  to ")
-        .append(destination.getName())
+        .append(detailed ? destination.getName() : destination.getSimpleName())
         .append("\n with transformation:\n");
 
     mappings.stream()
@@ -734,7 +744,7 @@ public final class Mapping<S, D> {
             .getName()))
         .forEach(t -> {
           b.append("- ")
-              .append(t.toString())
+              .append(t.toString(detailed))
               .append("\n");
         });
 

@@ -272,7 +272,7 @@ public class AssertMapping<S, D> {
    * @param transformation The {@link Function} that is null checked.
    * @throws AssertionError Thrown if the null check fails.
    */
-  public static <S, D> void assertionErrorIfNullCheckFails(Transformation r, Function<S, D> transformation)
+  private static <S, D> void assertionErrorIfNullCheckFails(Transformation r, Function<S, D> transformation)
       throws AssertionError {
     try {
       transformation.apply(null);

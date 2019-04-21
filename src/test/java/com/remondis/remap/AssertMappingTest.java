@@ -159,8 +159,7 @@ public class AssertMappingTest {
           .expectOmitInDestination(AResource::getOmitted)
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessageEndingWith(
-            "with Property 'integerAsString' in com.remondis.remap.assertion.AResource using transformation")
+        .hasMessageEndingWith("with Property 'integerAsString' in AResource using transformation")
         .hasCauseExactlyInstanceOf(NullPointerException.class);
   }
 

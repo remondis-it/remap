@@ -170,13 +170,10 @@ public class ReassignTransformation extends Transformation {
     return Map.class.isAssignableFrom(sourceType);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
   @Override
-  public String toString() {
-    return String.format(REASSIGNING_MSG, asString(sourceProperty), asString(destinationProperty));
+  public String toString(boolean detailed) {
+    return String.format(REASSIGNING_MSG, asString(sourceProperty, detailed), asString(destinationProperty, detailed));
+
   }
+
 }

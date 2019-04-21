@@ -61,7 +61,7 @@ public class SetOperationTest {
           .ensure();
     }).isInstanceOf(AssertionError.class)
         .hasMessage("The following unexpected transformation were specified on the mapping:\n"
-            + "- Set Property 'valueSet' in com.remondis.remap.setOperation.B with a custom value supplier.\n");
+            + "- Set Property 'valueSet' in B with a custom value supplier.\n");
   }
 
   @Test
@@ -80,7 +80,7 @@ public class SetOperationTest {
           .ensure();
     }).isInstanceOf(AssertionError.class)
         .hasMessage("The following unexpected transformation were specified on the mapping:\n"
-            + "- Set Property 'integerRef' in com.remondis.remap.setOperation.B with a custom value supplier.\n");
+            + "- Set Property 'integerRef' in B with a custom value supplier.\n");
   }
 
   @Test
@@ -99,7 +99,7 @@ public class SetOperationTest {
           .ensure();
     }).isInstanceOf(AssertionError.class)
         .hasMessage("The following unexpected transformation were specified on the mapping:\n"
-            + "- Set Property 'integer' in com.remondis.remap.setOperation.B with a custom value supplier.\n");
+            + "- Set Property 'integer' in B with a custom value supplier.\n");
   }
 
   @Test
@@ -141,10 +141,7 @@ public class SetOperationTest {
   }
 
   private A a() {
-    return A.builder()
-        .string(STRING)
-        .anotherString(ANOTHER_STRING)
-        .build();
+    return new A(STRING, ANOTHER_STRING);
   }
 
   private Function<A, Integer> valueFunction() {

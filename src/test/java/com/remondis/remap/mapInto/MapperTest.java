@@ -1,14 +1,14 @@
 package com.remondis.remap.mapInto;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
-import java.util.Arrays;
-import java.util.List;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
 
 public class MapperTest {
 
@@ -20,38 +20,15 @@ public class MapperTest {
 
   @Test
   public void shouldUseDestinationObjectForNestedMappingsAlso() {
-    Address address1 = Address.builder()
-        .city("city1")
-        .houseNumber(1)
-        .street("street1")
-        .build();
-    Address address2 = Address.builder()
-        .city("city2")
-        .houseNumber(2)
-        .street("street2")
-        .build();
+    Address address1 = new Address(1, "street1", "city1");
+    Address address2 = new Address(2, "street2", "city2");
     List<Address> addresses = Arrays.asList(address1, address2);
-    Person person = Person.builder()
-        .age(EXPECTED_AGE)
-        .forename("forename")
-        .lastname("lastname")
-        .addresses(addresses)
-        .build();
+    Person person = new Person(EXPECTED_AGE, "forename", "lastname", addresses);
 
-    AddressLite addressLite1 = AddressLite.builder()
-        .city(EXPECTED_CITY)
-        .street(EXPECTED_STREET)
-        .build();
-    AddressLite addressLite2 = AddressLite.builder()
-        .city(EXPECTED_CITY)
-        .street(EXPECTED_STREET)
-        .build();
+    AddressLite addressLite1 = new AddressLite(EXPECTED_STREET, EXPECTED_CITY);
+    AddressLite addressLite2 = new AddressLite(EXPECTED_STREET, EXPECTED_CITY);
     List<AddressLite> addressesList = Arrays.asList(addressLite1, addressLite2);
-    PersonLite personLite = PersonLite.builder()
-        .forename(EXPECTED_FORENAME)
-        .lastname(EXPECTED_LASTNAME)
-        .addresses(addressesList)
-        .build();
+    PersonLite personLite = new PersonLite(EXPECTED_FORENAME, EXPECTED_LASTNAME, addressesList);
 
     Mapper<AddressLite, Address> addressMapper = Mapping.from(AddressLite.class)
         .to(Address.class)

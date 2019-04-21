@@ -26,9 +26,21 @@ class Properties {
    * @return Returns a readable string.
    */
   static String asStringWithType(PropertyDescriptor pd) {
-    String sourceClassname = Properties.getPropertyClass(pd);
+    return asStringWithType(pd, false);
+  }
+
+  /**
+   * A readable string representation for a {@link PropertyDescriptor}.
+   *
+   * @param pd The pd
+   * @param detailed If <code>false</code> simple names should be used. If <code>true</code> fully qualified names
+   *        should be used.
+   * @return Returns a readable string.
+   */
+  static String asStringWithType(PropertyDescriptor pd, boolean detailed) {
+    Class<?> clazz = Properties.getPropertyClass(pd);
     return String.format("Property '%s' (%s) in %s", pd.getName(), pd.getPropertyType()
-        .getName(), sourceClassname);
+        .getName(), (detailed ? clazz.getName() : clazz.getSimpleName()));
   }
 
   /**
@@ -38,20 +50,31 @@ class Properties {
    * @return Returns a readable string.
    */
   static String asString(PropertyDescriptor pd) {
-    String sourceClassname = Properties.getPropertyClass(pd);
-    return String.format("Property '%s' in %s", pd.getName(), sourceClassname);
+    return asString(pd, false);
+  }
+
+  /**
+   * A readable string representation for a {@link PropertyDescriptor}.
+   *
+   * @param pd The pd
+   * @param detailed If <code>false</code> simple names should be used. If <code>true</code> fully qualified names
+   *        should be used.
+   * @return Returns a readable string.
+   */
+  static String asString(PropertyDescriptor pd, boolean detailed) {
+    Class<?> clazz = Properties.getPropertyClass(pd);
+    return String.format("Property '%s' in %s", pd.getName(), (detailed ? clazz.getName() : clazz.getSimpleName()));
   }
 
   /**
    * Returns the class declaring the property.
    *
    * @param propertyDescriptor the {@link PropertyDescriptor}
-   * @return Returns the class name of the declaring class.
+   * @return Returns the declaring class.
    */
-  static String getPropertyClass(PropertyDescriptor propertyDescriptor) {
+  static Class<?> getPropertyClass(PropertyDescriptor propertyDescriptor) {
     return propertyDescriptor.getReadMethod()
-        .getDeclaringClass()
-        .getName();
+        .getDeclaringClass();
   }
 
   /**

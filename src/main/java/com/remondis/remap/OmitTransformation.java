@@ -66,16 +66,16 @@ class OmitTransformation extends Transformation {
   }
 
   @Override
-  public String toString() {
-    if (this.sourceProperty != null) {
-      return String.format(OMITTING_MSG, asString(sourceProperty));
-    } else {
-      return String.format(OMITTING_MSG, asString(destinationProperty));
-    }
+  protected void validateTransformation() throws MappingException {
   }
 
   @Override
-  protected void validateTransformation() throws MappingException {
+  public String toString(boolean detailed) {
+    if (this.sourceProperty != null) {
+      return String.format(OMITTING_MSG, asString(sourceProperty, detailed));
+    } else {
+      return String.format(OMITTING_MSG, asString(destinationProperty, detailed));
+    }
   }
 
 }

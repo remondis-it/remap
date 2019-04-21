@@ -25,9 +25,7 @@ public class DemoTest {
   }
 
   public Function<Long, Id> newId() {
-    return id -> Id.builder()
-        .id(id)
-        .build();
+    return id -> new Id(id);
   }
 
 }

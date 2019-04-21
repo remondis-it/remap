@@ -105,7 +105,7 @@ public class MapperTest {
     assertThatThrownBy(() -> Mapping.from(AWithOneMoreSourceField.class)
         .to(AResourceWithOneMoreSourceField.class)
         .mapper()).isInstanceOf(MappingException.class)
-            .hasMessageContaining("- Property 'onlyInA' in com.remondis.remap.AWithOneMoreSourceField");
+            .hasMessageContaining("- Property 'onlyInA' in AWithOneMoreSourceField");
   }
 
   /**
@@ -136,8 +136,7 @@ public class MapperTest {
     assertThatThrownBy(() -> Mapping.from(AWithOneMoreDestinationField.class)
         .to(AResourceWithOneMoreDestinationField.class)
         .mapper()).isInstanceOf(MappingException.class)
-            .hasMessageContaining(
-                "- Property 'onlyInAResource' in com.remondis.remap.AResourceWithOneMoreDestinationField");
+            .hasMessageContaining("- Property 'onlyInAResource' in AResourceWithOneMoreDestinationField");
   }
 
   /**

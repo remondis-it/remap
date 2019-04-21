@@ -5,6 +5,8 @@ import static com.remondis.remap.Properties.asString;
 import java.beans.PropertyDescriptor;
 import java.util.function.Function;
 
+import javax.xml.crypto.dsig.Transform;
+
 /**
  * A replace transformation converts a source object into a destination object by applying the specified {@link
  * Transform} function on the source.
@@ -50,11 +52,12 @@ class ReplaceTransformation<RS, RD> extends SkipWhenNullTransformation<RS, RD> {
   }
 
   @Override
-  public String toString() {
+  public String toString(boolean detailed) {
     if (skipWhenNull) {
-      return String.format(REPLACE_SKIPPED_MSG, asString(sourceProperty), asString(destinationProperty));
+      return String.format(REPLACE_SKIPPED_MSG, asString(sourceProperty, detailed),
+          asString(destinationProperty, detailed));
     } else {
-      return String.format(REPLACE_MSG, asString(sourceProperty), asString(destinationProperty));
+      return String.format(REPLACE_MSG, asString(sourceProperty, detailed), asString(destinationProperty, detailed));
     }
   }
 

@@ -160,4 +160,11 @@ abstract class Transformation {
     return true;
   }
 
+  @Override
+  public String toString() {
+    return toString(false);
+  }
+
+  public abstract String toString(boolean detailed);
+
 }
