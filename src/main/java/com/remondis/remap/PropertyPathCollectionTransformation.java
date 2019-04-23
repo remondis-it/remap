@@ -1,9 +1,13 @@
 package com.remondis.remap;
 
 import static com.remondis.remap.Properties.asString;
+import static com.remondis.remap.ReflectionUtil.getCollector;
 
 import java.beans.PropertyDescriptor;
+import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collector;
 
 import com.remondis.propertypath.api.Get;
 import com.remondis.propertypath.api.Getter;
@@ -17,13 +21,13 @@ import com.remondis.propertypath.api.PropertyPath;
  * @param <RD> The type of the destination field.
  * @author schuettec
  */
-public class PropertyPathTransformation<RS, RD> extends Transformation {
+public class PropertyPathCollectionTransformation<RS, RD> extends Transformation {
 
   private static final String PROPERTY_PATH_MSG = "Replacing %s\n           with %s\n"
       + "           using property path: %s";
   private Get<RS, RD, ?> propertyPath;
 
-  PropertyPathTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
+  PropertyPathCollectionTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
       PropertyDescriptor destinationProperty, PropertyPath<RD, RS, ?> propertyPath) {
     super(mapping, sourceProperty, destinationProperty);
     this.propertyPath = createGetter(sourceProperty, propertyPath);
@@ -31,33 +35,53 @@ public class PropertyPathTransformation<RS, RD> extends Transformation {
 
   @SuppressWarnings("unchecked")
   private Get<RS, RD, ?> createGetter(PropertyDescriptor sourceProperty, PropertyPath<RD, RS, ?> propertyPath) {
-    return Getter.newFor((Class<RS>) sourceProperty.getPropertyType())
+    Class<RS> genericSourceType = (Class<RS>) ReassignTransformation
+        .findGenericTypeFromMethod(sourceProperty.getReadMethod());
+    return Getter.newFor(genericSourceType)
         .evaluate(propertyPath);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
+  @SuppressWarnings({
+      "rawtypes", "unchecked"
+  })
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
 
     if (sourceValue == null) {
-      // Skip if source value is null. Property paths are null-friendly.
+      // Skip if source value is null and the transformation was declared to skip on null input.
       return;
+    } else {
+      Collection collection = (Collection) sourceValue;
+
+      Class<?> destinationCollectionType = destinationProperty.getPropertyType();
+      Collector collector = getCollector(destinationCollectionType);
+      Collection<RD> destinationValue = null;
+
+      // Skip when null on collection means to skip null items.
+      destinationValue = (Collection<RD>) collection.stream()
+          .filter(i -> (i != null))
+          .map(sourceItem -> {
+            try {
+              Optional<RD> optional = propertyPath.from((RS) sourceItem);
+              if (optional.isPresent()) {
+                return optional.get();
+              } else {
+                return null;
+              }
+            } catch (Exception e) {
+              throw new MappingException(
+                  String.format("The property path for mapping %s to %s evaluating %s failed with an exception.",
+                      asString(sourceProperty), asString(destinationProperty), propertyPath.toString()),
+                  e);
+            }
+          })
+          .filter(Objects::nonNull)
+          .collect(collector);
+      writeOrFail(destinationProperty, destination, destinationValue);
     }
 
-    try {
-      Optional<RD> optional = propertyPath.from((RS) sourceValue);
-      if (optional.isPresent()) {
-        RD destinationValue = optional.get();
-        writeOrFail(destinationProperty, destination, destinationValue);
-      }
-    } catch (Exception e) {
-      throw new MappingException(
-          String.format("The property path for mapping %s to %s evaluating %s failed with an exception.",
-              asString(sourceProperty), asString(destinationProperty), propertyPath.toString()),
-          e);
-    }
   }
 
   @Override
@@ -83,7 +107,7 @@ public class PropertyPathTransformation<RS, RD> extends Transformation {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    PropertyPathTransformation other = (PropertyPathTransformation) obj;
+    PropertyPathCollectionTransformation other = (PropertyPathCollectionTransformation) obj;
     if (propertyPath == null) {
       if (other.propertyPath != null) {
         return false;

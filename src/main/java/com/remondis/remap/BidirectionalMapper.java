@@ -10,9 +10,15 @@ import java.util.Set;
  * This class can be used to manage bidirectional mappings. The configuration of mappers for both directions is required
  * to build a bidirectional mapping.
  *
+ * @deprecated The intent of this class was to shorten the access to bidirectional mappings. Actually this class
+ *             introduces overhead for creation and the access to the different mapping directions is confusing in most
+ *             cases.
+ *
  * @param <S> Source type
  * @param <D> Destination type
  */
+
+@Deprecated
 public class BidirectionalMapper<S, D> {
 
   Mapper<S, D> to;

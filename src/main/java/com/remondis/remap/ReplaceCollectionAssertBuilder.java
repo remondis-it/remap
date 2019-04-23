@@ -5,6 +5,8 @@ import static com.remondis.remap.Lang.denyNull;
 import java.util.Collection;
 import java.util.function.Function;
 
+import com.remondis.propertypath.api.PropertyPath;
+
 /**
  * Builder to assert a replace operation on a {@link Mapper} object using {@link AssertMapping}.
  *
@@ -26,6 +28,20 @@ public class ReplaceCollectionAssertBuilder<S, D, RD, RS> {
     this.sourceProperty = sourceProperty;
     this.destProperty = destProperty;
     this.asserts = asserts;
+  }
+
+  /**
+   * Expects the mapping to evaluate the exact property path that was specified.
+   *
+   * @param propertyPath The expected property path.
+   * @return Returns the {@link AssertMapping} for further configuration.
+   */
+  public <E extends Exception> AssertMapping<S, D> withPropertyPath(PropertyPath<RD, RS, E> propertyPath) {
+    denyNull("propertyPath", propertyPath);
+    PropertyPathCollectionTransformation<RS, RD> replace = new PropertyPathCollectionTransformation<RS, RD>(
+        asserts.getMapping(), sourceProperty.property, destProperty.property, propertyPath);
+    asserts.addAssertion(replace);
+    return asserts;
   }
 
   /**
