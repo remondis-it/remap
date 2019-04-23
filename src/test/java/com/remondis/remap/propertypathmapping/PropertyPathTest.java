@@ -72,7 +72,10 @@ public class PropertyPathTest {
         .getZipCode(), view.getZipCode());
     assertEquals(person.getAddress()
         .getCity(), view.getCity());
+  }
 
+  @Test
+  public void shouldAssertCorrectly() {
     AssertMapping.of(mapper)
         .expectReplace(Person::getAddress, PersonView::getStreet)
         .withPropertyPath(Address::getStreet)
@@ -83,7 +86,6 @@ public class PropertyPathTest {
         .expectReplace(Person::getAddress, PersonView::getCity)
         .withPropertyPath(Address::getCity)
         .ensure();
-
   }
 
   @Test
