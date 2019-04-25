@@ -12,7 +12,7 @@
 4. [Validation](#validation)
 5. [Features](#features)
 6. [Limitations](#limitations)
-7. [How to use](#how-to-use)
+7. [The mapping cookbook](#the-mapping-cookbook)
    1. [Implicit Mappings](#implicit-mappings)
    2. [Mapping fields of the same type](#mapping-fields-of-the-same-type)
    3. [Mapping fields using another mapper](#mapping-fields-using-another-mapper)
@@ -165,7 +165,7 @@ ReMap supports
 * multi-classloader environments are currently not supported. All types must be loaded by the same classloader.
 * Generics cannot be used without limitations: It is possible to build a mapper for generic types, but due to the class literals used when declaring the mapping, the generic type informations gets lost.
 
-## How to use
+## The mapping cookbook
 
 The short mapping shown under [Long story short](#long-story-short) shows only a few mapping features of ReMap. The following examples try to cover up the basics of ReMap but also provides code snippets that may help if your mapping becomes a little more complex.
 
