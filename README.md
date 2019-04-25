@@ -13,11 +13,15 @@
 5. [Features](#features)
 6. [Limitations](#limitations)
 7. [How to use](#how-to-use)
-   1. [Object references](#object-references)
-   2. [Mapping maps](#mapping-maps)
-   2. [Transforming collections](#transforming-collections)
-   3. [Bidirectional mapping](#bidirectional-mapping)
-   3. [Type mappings](#type-mappings)
+   1. [Implicit Mappings](#implicit-mappings)
+   2. [Mapping fields of the same type](#mapping-fields-of-the-same-type)
+   2. [Mapping fields with another mapper](#mapping-fields-with-another-mapper)
+   3. [Mapping fields with different names with another mapper](#mapping-fields-with-different-names-with-another-mapper)
+   3. [Mapping fields with a custom mapping function](#mapping-fields-with-a-custom-mapping-function)
+   4. [Transforming collections with a custom mapping function](#transforming-collections-with-a-custom-mapping-function)
+   4. [Type mappings](#type-mappings)
+   4. [Mapping with property paths](#mapping-with-property-paths)
+   4. [Mapping maps](#mapping-maps)
    4. [Tests](#tests)
 8. [Spring integration](#spring-integration)
    1. [Spring Boot Issue](#spring-boot-issue)
@@ -164,19 +168,306 @@ ReMap supports
 
 The short mapping shown under [Long story short](#long-story-short) uses all common operations. When a mapping becomes a little more complex the following code snippets may help.
 
-### Object references
+### Implicit Mappings
 
-ReMap can be used to flatten object references. The following example maps the field `OrderEntity.address`
-of type `Address` to the field `OrderDTO.addressId` of type `long`.
+ReMap performs implicit mappings if
+* property name and type of source and destination fields are equal
+* property name of source and destination field are equal and mappers were registered that can perform the type conversion (explained later).
+
+Assuming `A` and `B` have the exact same number of properties with the same names and type, the following mapping configuration is enough to map all fields automatically.
+
+__This also works for collections!__
 
 ```java
-Mapper<OrderEntity, OrderDTO> mapper = Mapping
-    .from(OrderEntity.class)
-    .to(OrderDTO.class)
-    .replace(OrderEntity::getAddress, OrderDTO::getAddressId)
-        .with(Addresss::getId)
+Mapper<A, B> mapper = Mapping
+    .from(A.class)
+    .to(B.class)
     .mapper();
 ```
+
+### Mapping fields of the same type
+
+Sometimes fields have the same type but different names. In this case use a `reassign` operation.
+
+__This also works for collections!__
+
+```java
+public class A {
+String name;
+// default constructor, getter/setter, ...
+}
+
+public class B {
+String lastName;
+// default constructor, getter/setter, ...
+}
+
+Mapper<A, B> mapper = Mapping
+    .from(A.class)
+    .to(B.class)
+    .reassign(A::getName)
+    .to(AResource::getLastName)
+    .mapper();
+```
+
+### Mapping fields with another mapper
+
+ReMap supports the reuse of mappers. If you want to map fields for whose type conversions a mapper was already defined, you can register the mapper in the mapping configuration and use it.
+
+__This also works for collections!__
+
+```java
+public class A {
+SomeBean someBean;
+// default constructor, getter/setter, ...
+}
+
+public class B {
+AnotherBean someBean;
+// default constructor, getter/setter, ...
+}
+
+Mapper<SomeBean, AnotherBean> someBeanToAnotherBean = Mapping
+    .from(SomeBean.class)
+    .to(AnotherBean.class)
+    // ...
+    .mapper();
+
+Mapper<A, B> mapper = Mapping
+    .from(A.class)
+    .to(B.class)
+    .useMapper(someBeanToAnotherBean)
+    .mapper();
+```
+
+As you can see, the mapping of the fields with name `someBean` are performed automatically because the mapper supporting the required type conversion was registered.
+
+__If the field names differ you can simply use a `reassign` operation to specify the new field name__
+
+### Mapping fields with different names with another mapper
+
+Assuming the field names differ but you want to map fields for whose type conversions a mapper was already defined, you can register the mapper in the mapping configuration and use it in conjunction with a `reassign` operation.
+
+__This also works for collections!__
+
+```java
+public class A {
+SomeBean someBean;
+// default constructor, getter/setter, ...
+}
+
+public class B {
+AnotherBean anotherBean;
+// default constructor, getter/setter, ...
+}
+
+Mapper<SomeBean, AnotherBean> someBeanToAnotherBean = Mapping
+    .from(SomeBean.class)
+    .to(AnotherBean.class)
+    // ...
+    .mapper();
+
+Mapper<A, B> mapper = Mapping
+    .from(A.class)
+    .to(B.class)
+    .useMapper(someBeanToAnotherBean)
+    .reassign(A::getSomeBean)
+    .to(B::getAnotherBean)
+    .mapper();
+```
+
+As you can see, you only have to configure the different field names. The type conversion is performed automatically because the required mapper was registered.
+
+
+### Mapping fields with a custom mapping function
+
+Sometimes you want to perform the mapping of fields with a custom function. ReMap supports custom mapping functions with the `replace` operation.
+This operation takes two fields and performs the mapping by applying the specified function on the source field value. The result is then used as the destination field value.
+
+The `replace` operation allows two configurations:
+* `with(Function)`: applies the function, even if the source field is `null`. __As a consequence the function must implement null-checks to be null-safe.__
+* `withSkipWhenNull(Function)`: only applies the function if the source field is not `null`. If the source field is `null` this field will not be mapped.
+
+```java
+public class A {
+String name;
+// default constructor, getter/setter, ...
+}
+
+public class B {
+int nameLength;
+// default constructor, getter/setter, ...
+}
+
+Mapper<A, B> mapper = Mapping
+    .from(A.class)
+    .to(B.class)
+    .replace(A::getName, B::getNameLength)
+    .withSkipWhenNull(String::length)
+    .to(AResource::getLastName)
+    .mapper();
+```
+
+The above example maps the `name` property in `A` to the `nameLength` property in `B`.
+
+
+
+### Transforming collections with a custom mapping function
+
+When performing a `replace` operation on collections in earlier versions of ReMap you had to manually iterate over the collection to apply the conversion. Since ReMap version `1.0.0` you can use the operation `replaceCollection` to apply the transformation function automatically on the collection items.
+
+The following code snippet shows how to use `replaceCollection`:
+
+```java
+Mapper<Source, Destination> mapper = Mapping.from(Source.class)
+      .to(Destination.class)
+      .replaceCollection(Source::getIds, Destination::getIds)
+      .with(id -> Id.builder()
+        .id(id)
+        .build())
+      .mapper();
+```
+
+The following code asserts the above mapping:
+
+```
+AssertMapping.of(mapper)
+      .expectReplaceCollection(Source::getIds, Destination::getIds)
+      .andTest(id -> Id.builder()
+        .id(id)
+        .build())
+      .ensure();
+```
+
+You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/flatCollectionMapping/DemoTest.java)
+
+
+### Type mappings
+
+When mapping types that are not Java Beans you can either use the `replace` operation or you can use a type mapping. Type mappings are like the functions used for `replace` but they can be globally registered on the mapper. Type mappings act like registered mappers (see `useMapper()`): They are applied when a type conversion is required for an implicit mapping or a `reassign` mapping.
+
+Type mappings may reduce the number of `replace` operations in your mapping configuration if the type mapping occurs very often, because the type conversion can be registered globally.
+
+The following example shows the use of type mappings:
+
+```
+public class Person {
+  private CharSequence forname;
+  private CharSequence lastName;
+  private List<CharSequence> addresses;
+  // Getters/Setters...
+}
+
+public class Customer {
+  private String forname;
+  private String lastName;
+  private List<String> addresses;
+  // Getters/Setters...
+}
+
+Mapping.from(Person.class)
+        .to(Customer.class)
+        .useMapper(
+             TypeMapping.from(CharSequence.class)
+                        .to(String.class)
+                        .applying(String::valueOf))
+        .mapper();
+```
+
+In this example the mapping from `CharSequence` to `String` is defined globally for the mapping. In implicit mappings (field names are equal) or reassing operations the global mapping function defined by the type mapping is used to perform the conversion.
+
+
+### Mapping with property paths
+
+ReMap can be used to flatten object hierarchies. You can perform a mapping by specifying a get-call chain on the source type. If the get-call chain evaluates to a non-null value, the result is mapped to the destination field.
+
+A property path is a special get-call chain: The actual get-method calls are performed by the framework. Each get-call is checked for a non-null return value. If a get returns a `null` value, the whole property path evaluates to no value and the mapping is skipped.
+
+```java
+public class Contract {
+  private Company company; // Optional, may be null
+  // Getters, Setters, No-Args Default Constructor...
+}
+
+public class Company {
+  private List<Address> addresses; // Optional, may be null or empty
+  // Getters, Setters, No-Args Default Constructor...
+}
+
+public class Address {
+  String city; // Desired value to get.
+  // Getters, Setters, No-Args Default Constructor...
+}
+
+public class City {
+String city;
+// default constructor, getter/setter, ...
+}
+
+Mapper<Contract, City> mapper = Mapping
+    .from(Contract.class)
+    .to(City.class)
+    .replace(Contract::getCompany, City::getCity)
+    .withPropertyPath(c -> c.getCompany()
+        .getAddresses()
+        .get(0)
+        .getCity())
+    .mapper();
+```
+
+The above example maps the `city` from a complex object hierarchy to the destination field `City.city`.
+
+Keep in mind that if `Contract::getCompany` returns `null` or any other get-call in `c.getCompany().getAddresses().get(0).getCity()`, the mapping is skipped.
+
+It is also possible to apply a transformation function to the result of a property path evaluation. The following mapping reduces the city from the above example to the string length by applying a transformation function:
+
+```java
+Mapper<Contract, City> mapper = Mapping
+    .from(Contract.class)
+    .to(City.class)
+    .replace(Contract::getCompany, City::getCityLength)
+    .withPropertyPathAnd(c -> c.getCompany()
+        .getAddresses()
+        .get(0)
+        .getCity())
+    .apply(String::length)
+    .mapper();
+```
+
+The above example assumes, that the field `City.cityLength` of type `int` exists.
+
+### Mapping other values to a field
+
+Sometimes you want to specify another source of a value that is to be mapped to a destination field, rather than using the source field of the source mapping type. In this case you can use the `set` operation:
+
+```java
+public class A {
+String name;
+// default constructor, getter/setter, ...
+}
+
+public class B {
+String name;
+int age;
+// default constructor, getter/setter, ...
+}
+
+Mapper<A, B> mapper = Mapping
+    .from(A.class)
+    .to(B.class)
+    .set(B::getAge)
+    .with(24)
+    .mapper();
+```
+
+Assume you don't have a source field to map to `B.age`. In this case the `set` operation specifies the static value `24` that is used during the mapping. It is possible to provide a `java.util.function.Supplier` that produces a value, a static value or a `java.util.function.Function`.
+
+#### Use a function with set operation
+
+When using the `set` operation, you can specify a function that produces the value to be set on the destination field.
+The function gets the reference to the source object and returns a value used for the destination field. __This mapping is useful if you need full access to the source object for your custom mapping function.__
+
+__Do not mix up the `set`- and `replace`-operations:__ Sometimes you can write a `replace`- as a `set`-operation. As a result you often have to perform a get-call yourself instead of having ReMap handling the get-call and the optional null-checks. __Don't use set, if you can use `replace`.__
 
 ### Mapping maps
 
@@ -207,95 +498,6 @@ Mapper<B, BResource> bMapper = Mapping.from(B.class)
     .useMapper(bMapper)
     .mapper();
 ```
-
-### Transforming collections
-
-When performing a `replace` operation on collections in earlier versions of ReMap you had to manually iterate over the collection to apply the conversion. Since ReMap version `1.0.0` you can use the operation `replaceCollection` to apply the transformation function automatically on the collection items.
-
-The following code snippet shows how to use `replaceCollection`:
-
-```java
-Mapper<Source, Destination> mapper = Mapping.from(Source.class)
-      .to(Destination.class)
-      .replaceCollection(Source::getIds, Destination::getIds)
-      .with(id -> Id.builder()
-        .id(id)
-        .build())
-      .mapper();
-```
-
-The following code asserts the above mapping:
-
-```
-AssertMapping.of(mapper)
-      .expectReplaceCollection(Source::getIds, Destination::getIds)
-      .andTest(id -> Id.builder()
-        .id(id)
-        .build())
-      .ensure();
-```
-
-You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/flatCollectionMapping/DemoTest.java)
-
-### Bidirectional mapping
-
-ReMap provides a class to combine two mapper instances to a bidirectional mapping. Given the following mappings:
-
-```
-Mapper<Person, Human> to = Mapping.from(Person.class)
-    .to(Human.class)
-    .mapper();
-Mapper<Human, Person> from = Mapping.from(Human.class)
-    .to(Person.class)
-    .mapper();
-```
-
-a bidirectional mapper can be created to map a `Person` to `Human` and vice-versa:
-
-```
-BidirectionalMapper<Person, Human> bidirectionalMapper = BidirectionalMapper.of(to, from);
-
-Person person = new Person("Peter");
-Human human = bidirectionalMapper.map(person);
-Person mappedBackToPerson = bidirectionalMapper.mapFrom(human);
-```
-
-You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/bidirectional/BidirectionalDemo.java)
-
-### Type mappings
-
-When mapping types that are not Java Beans you can either use the `replace` operation or you can use a type mapping. Type mappings are functions that convert non Java Bean types. They are used in implicit mappings (if field names are equal) or in reassing operations.
-
-Type mappings may reduce the number of `replace` operations in your mapping configuration if the type mapping occurs very often.
-
-The following example shows the use of type mappings:
-
-```
-public class Person {
-  private CharSequence forname;
-  private CharSequence lastName;
-  private List<CharSequence> addresses;
-  // Getters/Setters...
-}
-
-public class Customer {
-  private String forname;
-  private String lastName;
-  private List<String> addresses;
-  // Getters/Setters...
-}
-
-Mapping.from(Person.class)
-        .to(Customer.class)
-        .useMapper(
-             TypeMapping.from(CharSequence.class)
-                        .to(String.class)
-                        .applying(String::valueOf))
-        .mapper();
-```
-
-In this example the mapping from `CharSequence` to `String` is defined globally for the mapping. In implicit mappings (field names are equal) or reassing operations the global mapping function defined by the type mapping is used to perform the conversion.
-
 
 ### Tests
 
