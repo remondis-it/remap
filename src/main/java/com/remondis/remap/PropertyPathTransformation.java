@@ -4,6 +4,7 @@ import static com.remondis.remap.Properties.asString;
 
 import java.beans.PropertyDescriptor;
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.remondis.propertypath.api.Get;
 import com.remondis.propertypath.api.Getter;
@@ -14,14 +15,16 @@ import com.remondis.propertypath.api.PropertyPath;
  * If the property path does not return a value, the mapping is omitted.
  *
  * @param <RS> The type of the source field.
+ * @param <X> Tje type of the value returned by a property path.
  * @param <RD> The type of the destination field.
  * @author schuettec
  */
-public class PropertyPathTransformation<RS, RD> extends Transformation {
+public class PropertyPathTransformation<RS, X, RD> extends Transformation {
 
   private static final String PROPERTY_PATH_MSG = "Replacing %s\n           with %s\n"
-      + "           using property path: %s";
+      + "           using property path%s: %s";
   private Get<RS, RD, ?> propertyPath;
+  private boolean hasTransformation;
 
   PropertyPathTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
       PropertyDescriptor destinationProperty, PropertyPath<RD, RS, ?> propertyPath) {
@@ -29,10 +32,25 @@ public class PropertyPathTransformation<RS, RD> extends Transformation {
     this.propertyPath = createGetter(sourceProperty, propertyPath);
   }
 
+  PropertyPathTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
+      PropertyDescriptor destinationProperty, PropertyPath<X, RS, ?> propertyPath, Function<X, RD> transformation) {
+    super(mapping, sourceProperty, destinationProperty);
+    this.propertyPath = createGetterAndApply(sourceProperty, propertyPath, transformation);
+    this.hasTransformation = true;
+  }
+
   @SuppressWarnings("unchecked")
   private Get<RS, RD, ?> createGetter(PropertyDescriptor sourceProperty, PropertyPath<RD, RS, ?> propertyPath) {
     return Getter.newFor((Class<RS>) sourceProperty.getPropertyType())
         .evaluate(propertyPath);
+  }
+
+  @SuppressWarnings("unchecked")
+  private Get<RS, RD, ?> createGetterAndApply(PropertyDescriptor sourceProperty, PropertyPath<X, RS, ?> propertyPath,
+      Function<X, RD> transformation) {
+    return Getter.newFor((Class<RS>) sourceProperty.getPropertyType())
+        .evaluateAnd(propertyPath)
+        .apply(transformation);
   }
 
   @SuppressWarnings("unchecked")
@@ -68,6 +86,7 @@ public class PropertyPathTransformation<RS, RD> extends Transformation {
   public int hashCode() {
     final int prime = 31;
     int result = super.hashCode();
+    result = prime * result + (hasTransformation ? 1231 : 1237);
     result = prime * result + ((propertyPath == null) ? 0 : propertyPath.hashCode());
     return result;
   }
@@ -84,6 +103,9 @@ public class PropertyPathTransformation<RS, RD> extends Transformation {
       return false;
     }
     PropertyPathTransformation other = (PropertyPathTransformation) obj;
+    if (hasTransformation != other.hasTransformation) {
+      return false;
+    }
     if (propertyPath == null) {
       if (other.propertyPath != null) {
         return false;
@@ -97,6 +119,6 @@ public class PropertyPathTransformation<RS, RD> extends Transformation {
   @Override
   public String toString(boolean detailed) {
     return String.format(PROPERTY_PATH_MSG, asString(sourceProperty, detailed), asString(destinationProperty, detailed),
-        propertyPath.toString(detailed));
+        hasTransformation ? " with transformation function" : "", propertyPath.toString(detailed));
   }
 }
