@@ -15,14 +15,15 @@
 7. [How to use](#how-to-use)
    1. [Implicit Mappings](#implicit-mappings)
    2. [Mapping fields of the same type](#mapping-fields-of-the-same-type)
-   3. [Mapping fields with another mapper](#mapping-fields-with-another-mapper)
+   3. [Mapping fields using another mapper](#mapping-fields-using-another-mapper)
    4. [Mapping fields with different names with another mapper](#mapping-fields-with-different-names-with-another-mapper)
    5. [Mapping fields with a custom mapping function](#mapping-fields-with-a-custom-mapping-function)
    6. [Transforming collections with a custom mapping function](#transforming-collections-with-a-custom-mapping-function)
    7. [Type mappings](#type-mappings)
    8. [Mapping with property paths](#mapping-with-property-paths)
-   9. [Mapping maps](#mapping-maps)
-   10. [Tests](#tests)
+   9. [Mapping other values to a field](#mapping-other-values-to-a-field)
+   10. [Mapping maps](#mapping-maps)
+   11. [Tests](#tests)
 8. [Spring integration](#spring-integration)
    1. [Spring Boot Issue](#spring-boot-issue)
 9. [Migration guide](#migration-guide)
@@ -166,15 +167,16 @@ ReMap supports
 
 ## How to use
 
-The short mapping shown under [Long story short](#long-story-short) uses all common operations. When a mapping becomes a little more complex the following code snippets may help.
+The short mapping shown under [Long story short](#long-story-short) shows only a few mapping features of ReMap. The following examples try to cover up the basics of ReMap but also provides code snippets that may help if your mapping becomes a little more complex.
+
 
 ### Implicit Mappings
 
 ReMap performs implicit mappings if
 * property name and type of source and destination fields are equal
-* property name of source and destination field are equal and mappers were registered that can perform the type conversion (explained later).
+* property name of source and destination field are equal and mappers were registered that can perform the necessary type conversion (explained later).
 
-Assuming `A` and `B` have the exact same number of properties with the same names and type, the following mapping configuration is enough to map all fields automatically.
+Assuming `A` and `B` have the exact same number of properties with the same names and types, the following mapping configuration is enough to map all fields automatically.
 
 __This also works for collections!__
 
@@ -187,9 +189,11 @@ Mapper<A, B> mapper = Mapping
 
 ### Mapping fields of the same type
 
-Sometimes fields have the same type but different names. In this case use a `reassign` operation.
+Sometimes fields have the same type but different names. In this case ReMap will not create implicit mappings. In this case use a `reassign` operation.
 
 __This also works for collections!__
+
+The following example shows how to map properties with the same type but differing field names.
 
 ```java
 public class A {
@@ -210,7 +214,8 @@ Mapper<A, B> mapper = Mapping
     .mapper();
 ```
 
-### Mapping fields with another mapper
+
+### Mapping fields using another mapper
 
 ReMap supports the reuse of mappers. If you want to map fields for whose type conversions a mapper was already defined, you can register the mapper in the mapping configuration and use it.
 
@@ -242,7 +247,7 @@ Mapper<A, B> mapper = Mapping
 
 As you can see, the mapping of the fields with name `someBean` are performed automatically because the mapper supporting the required type conversion was registered.
 
-__If the field names differ you can simply use a `reassign` operation to specify the new field name__
+__If the field names differ you can simply use a `reassign` operation to specify the new field name!__
 
 ### Mapping fields with different names with another mapper
 
@@ -282,11 +287,11 @@ As you can see, you only have to configure the different field names. The type c
 ### Mapping fields with a custom mapping function
 
 Sometimes you want to perform the mapping of fields with a custom function. ReMap supports custom mapping functions with the `replace` operation.
-This operation takes two fields and performs the mapping by applying the specified function on the source field value. The result is then used as the destination field value.
+This operation takes two fields and performs the mapping by applying a specified function on the source field value. The result is then used as the destination field value.
 
 The `replace` operation allows two configurations:
 * `with(Function)`: applies the function, even if the source field is `null`. __As a consequence the function must implement null-checks to be null-safe.__
-* `withSkipWhenNull(Function)`: only applies the function if the source field is not `null`. If the source field is `null` this field will not be mapped.
+* `withSkipWhenNull(Function)`: only applies the function if the source field is __not__ `null`. If the source field is `null` this field will not be mapped.
 
 ```java
 public class A {
@@ -308,13 +313,13 @@ Mapper<A, B> mapper = Mapping
     .mapper();
 ```
 
-The above example maps the `name` property in `A` to the `nameLength` property in `B`.
-
+The above example maps the `name` property in `A` to the `nameLength` property in `B` by converting the string to the length using a transformation function. Note: The example shows a transformation function that is only called if `A.name` has a value. If the property is `null` the mapping is skipped.
 
 
 ### Transforming collections with a custom mapping function
 
 When performing a `replace` operation on collections in earlier versions of ReMap you had to manually iterate over the collection to apply the conversion. Since ReMap version `1.0.0` you can use the operation `replaceCollection` to apply the transformation function automatically on the collection items.
+
 
 The following code snippet shows how to use `replaceCollection`:
 
@@ -328,16 +333,7 @@ Mapper<Source, Destination> mapper = Mapping.from(Source.class)
       .mapper();
 ```
 
-The following code asserts the above mapping:
-
-```
-AssertMapping.of(mapper)
-      .expectReplaceCollection(Source::getIds, Destination::getIds)
-      .andTest(id -> Id.builder()
-        .id(id)
-        .build())
-      .ensure();
-```
+In this example the mapping is performed from `List<String>` to `List<Id>` but with `replaceCollection` you only have to define a mapping function with type `String -> Id`.
 
 You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/flatCollectionMapping/DemoTest.java)
 
@@ -381,7 +377,7 @@ In this example the mapping from `CharSequence` to `String` is defined globally 
 
 ReMap can be used to flatten object hierarchies. You can perform a mapping by specifying a get-call chain on the source type. If the get-call chain evaluates to a non-null value, the result is mapped to the destination field.
 
-A property path is a special get-call chain: The actual get-method calls are performed by the framework. Each get-call is checked for a non-null return value. If a get returns a `null` value, the whole property path evaluates to no value and the mapping is skipped.
+__A property path is a special get-call chain:__ The actual get-method calls are performed by the framework. Each get-call is checked for a non-null return value. If a get returns a `null` value, the whole property path evaluates to no value and the mapping is skipped.
 
 ```java
 public class Contract {
@@ -408,16 +404,25 @@ Mapper<Contract, City> mapper = Mapping
     .from(Contract.class)
     .to(City.class)
     .replace(Contract::getCompany, City::getCity)
-    .withPropertyPath(c -> c.getCompany()
-        .getAddresses()
+    .withPropertyPath(company -> company.getAddresses()
         .get(0)
         .getCity())
     .mapper();
 ```
 
-The above example maps the `city` from a complex object hierarchy to the destination field `City.city`.
+The above example maps the `city` property from a complex object hierarchy to the destination field `City.city`.
 
-Keep in mind that if `Contract::getCompany` returns `null` or any other get-call in `c.getCompany().getAddresses().get(0).getCity()`, the mapping is skipped.
+Keep in mind that if `Contract::getCompany` returns `null` or any other get-call in `company.getAddresses().get(0).getCity()`, the mapping is skipped.
+
+### Allowed calls in a property path
+
+When declaring a property path the following calls are supported:
+
+* any Java Bean property conform getter
+* java.util.List.get(int)
+* java.util.Map.get(Object)
+
+### Applying a function to a property path
 
 It is also possible to apply a transformation function to the result of a property path evaluation. The following mapping reduces the city from the above example to the string length by applying a transformation function:
 
@@ -426,8 +431,7 @@ Mapper<Contract, City> mapper = Mapping
     .from(Contract.class)
     .to(City.class)
     .replace(Contract::getCompany, City::getCityLength)
-    .withPropertyPathAnd(c -> c.getCompany()
-        .getAddresses()
+    .withPropertyPathAnd(company -> company.getAddresses()
         .get(0)
         .getCity())
     .apply(String::length)
@@ -460,11 +464,14 @@ Mapper<A, B> mapper = Mapping
     .mapper();
 ```
 
-Assume you don't have a source field to map to `B.age`. In this case the `set` operation specifies the static value `24` that is used during the mapping. It is possible to provide a `java.util.function.Supplier` that produces a value, a static value or a `java.util.function.Function`.
+Assume you don't have a source field to map to `B.age`. In this case the `set` operation specifies the static value `24` that is used during the mapping. 
+
+The value for the mapping can be provided by either a static value, a `java.util.function.Supplier` or a `java.util.function.Function`.
 
 #### Use a function with set operation
 
 When using the `set` operation, you can specify a function that produces the value to be set on the destination field.
+
 The function gets the reference to the source object and returns a value used for the destination field. __This mapping is useful if you need full access to the source object for your custom mapping function.__
 
 __Do not mix up the `set`- and `replace`-operations:__ Sometimes you can write a `replace`- as a `set`-operation. As a result you often have to perform a get-call yourself instead of having ReMap handling the get-call and the optional null-checks. __Don't use set, if you can use `replace`.__
@@ -501,7 +508,11 @@ Mapper<B, BResource> bMapper = Mapping.from(B.class)
 
 ### Tests
 
-ReMap provides an easy way to assert the mapping specification for a mapper instance. These assertions should be used in unit tests to provide regression tests for your mapping configuration. The following example shows how to assert a mapping specification:
+ReMap provides an easy way to assert the mapping specification for a mapper instance. These assertions should be used in unit tests to provide regression tests for your mapping configuration. 
+
+For every mapping operation ReMap supports, an assert can be specified. Since there are a lot of mapping features please have a look at the JavaDoc of `com.remondis.remap.AssertMapping` for a documentation and further explanations.
+
+The following example shows how to assert some of the mapping features in a mapping specification:
 
 Given the following mapping...
 
@@ -538,6 +549,7 @@ AssertMapping.of(mapper)
 The asserts check that the expected mappings are also configured on the specified mapper. If there are differences, the `ensure()` method will throw an assertion error.
 
 Note: The `replace` operation supports two null-strategies and the mapper needs to specify the same strategy as the asserts! The transformation function in this example is checked against a `null` when `ensure()` is invoked. If the `replace` operation was added using `withSkipWhenNull()` the specified transformation function is not checked against `null`.
+
 
 ## Spring Integration
 
