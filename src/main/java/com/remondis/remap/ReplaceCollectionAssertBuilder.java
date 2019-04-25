@@ -38,8 +38,22 @@ public class ReplaceCollectionAssertBuilder<S, D, RD, RS> {
    */
   public <E extends Exception> AssertMapping<S, D> withPropertyPath(PropertyPath<RD, RS, E> propertyPath) {
     denyNull("propertyPath", propertyPath);
-    PropertyPathCollectionTransformation<RS, RD> replace = new PropertyPathCollectionTransformation<RS, RD>(
+    PropertyPathCollectionTransformation<RS, RD, RD> replace = new PropertyPathCollectionTransformation<RS, RD, RD>(
         asserts.getMapping(), sourceProperty.property, destProperty.property, propertyPath);
+    asserts.addAssertion(replace);
+    return asserts;
+  }
+
+  /**
+   * Expects the mapping to evaluate the exact property path that was specified.
+   *
+   * @param propertyPath The expected property path.
+   * @return Returns the {@link AssertMapping} for further configuration.
+   */
+  public AssertMapping<S, D> withPropertyPathAndTransformation(PropertyPath<?, RS, ?> propertyPath) {
+    denyNull("propertyPath", propertyPath);
+    PropertyPathCollectionTransformation<RS, ?, ?> replace = new PropertyPathCollectionTransformation<>(
+        asserts.getMapping(), sourceProperty.property, destProperty.property, propertyPath, Function.identity());
     asserts.addAssertion(replace);
     return asserts;
   }
