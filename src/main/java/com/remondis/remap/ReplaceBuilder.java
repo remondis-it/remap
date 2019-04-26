@@ -62,10 +62,28 @@ public class ReplaceBuilder<S, D, RD, RS> {
    */
   public <E extends Exception> Mapping<S, D> withPropertyPath(PropertyPath<RD, RS, E> propertyPath) {
     denyNull("propertyPath", propertyPath);
-    PropertyPathTransformation<RS, RD> replace = new PropertyPathTransformation<RS, RD>(mapping,
+    PropertyPathTransformation<RS, RD, RD> replace = new PropertyPathTransformation<RS, RD, RD>(mapping,
         sourceProperty.property, destProperty.property, propertyPath);
     mapping.addMapping(sourceProperty.property, destProperty.property, replace);
     return mapping;
+  }
+
+  /**
+   * Works exactly like {@link #withPropertyPath(PropertyPath)} but accepts a transformation function, that is to be
+   * specified on the
+   * returned builder. The function will be applied to the result of the property path evaluation, <b>but only if the
+   * property path evaluates to a non-null</b> value. If the specified transform function itself returns
+   * <code>null</code> the property path evaluates to no value.
+   *
+   * @param propertyPath A lambda function performing get calls on the specified object to declare the actual property
+   *        path.
+   *        <b>This is not a function operating on real object. So do not manipulate or calculate here!</b>
+   * @return Returns the {@link PropertyPathAndApplyBuilder} to specify the transformation function.
+   */
+  public <X, E extends Exception> PropertyPathAndApplyBuilder<S, D, RD, X, RS, E> withPropertyPathAnd(
+      PropertyPath<X, RS, E> propertyPath) {
+    denyNull("propertyPath", propertyPath);
+    return new PropertyPathAndApplyBuilder<S, D, RD, X, RS, E>(mapping, sourceProperty, destProperty, propertyPath);
   }
 
   /**

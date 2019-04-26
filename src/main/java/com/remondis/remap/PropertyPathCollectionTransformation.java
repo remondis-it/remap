@@ -7,6 +7,7 @@ import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collector;
 
 import com.remondis.propertypath.api.Get;
@@ -21,16 +22,24 @@ import com.remondis.propertypath.api.PropertyPath;
  * @param <RD> The type of the destination field.
  * @author schuettec
  */
-public class PropertyPathCollectionTransformation<RS, RD> extends Transformation {
+public class PropertyPathCollectionTransformation<RS, X, RD> extends Transformation {
 
   private static final String PROPERTY_PATH_MSG = "Replacing %s\n           with %s\n"
       + "           using property path: %s";
   private Get<RS, RD, ?> propertyPath;
+  private boolean hasTransformation;
 
   PropertyPathCollectionTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
       PropertyDescriptor destinationProperty, PropertyPath<RD, RS, ?> propertyPath) {
     super(mapping, sourceProperty, destinationProperty);
     this.propertyPath = createGetter(sourceProperty, propertyPath);
+  }
+
+  PropertyPathCollectionTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
+      PropertyDescriptor destinationProperty, PropertyPath<X, RS, ?> propertyPath, Function<X, RD> transformation) {
+    super(mapping, sourceProperty, destinationProperty);
+    this.propertyPath = createGetterAndApply(sourceProperty, propertyPath, transformation);
+    this.hasTransformation = true;
   }
 
   @SuppressWarnings("unchecked")
@@ -39,6 +48,16 @@ public class PropertyPathCollectionTransformation<RS, RD> extends Transformation
         .findGenericTypeFromMethod(sourceProperty.getReadMethod());
     return Getter.newFor(genericSourceType)
         .evaluate(propertyPath);
+  }
+
+  @SuppressWarnings("unchecked")
+  private Get<RS, RD, ?> createGetterAndApply(PropertyDescriptor sourceProperty, PropertyPath<X, RS, ?> propertyPath,
+      Function<X, RD> transformation) {
+    Class<RS> genericSourceType = (Class<RS>) ReassignTransformation
+        .findGenericTypeFromMethod(sourceProperty.getReadMethod());
+    return Getter.newFor(genericSourceType)
+        .evaluateAnd(propertyPath)
+        .apply(transformation);
   }
 
   @Override
@@ -92,6 +111,7 @@ public class PropertyPathCollectionTransformation<RS, RD> extends Transformation
   public int hashCode() {
     final int prime = 31;
     int result = super.hashCode();
+    result = prime * result + (hasTransformation ? 1231 : 1237);
     result = prime * result + ((propertyPath == null) ? 0 : propertyPath.hashCode());
     return result;
   }
@@ -108,6 +128,9 @@ public class PropertyPathCollectionTransformation<RS, RD> extends Transformation
       return false;
     }
     PropertyPathCollectionTransformation other = (PropertyPathCollectionTransformation) obj;
+    if (hasTransformation != other.hasTransformation) {
+      return false;
+    }
     if (propertyPath == null) {
       if (other.propertyPath != null) {
         return false;

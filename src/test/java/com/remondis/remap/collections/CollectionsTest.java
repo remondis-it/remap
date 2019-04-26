@@ -16,6 +16,24 @@ import com.remondis.remap.Mapping;
 import com.remondis.remap.MappingException;
 
 public class CollectionsTest {
+  @Test
+  public void shouldReassignCollections() {
+    A a = new A();
+    a.addStrings("a", "b", "c");
+    Set<String> expectedSet = a.getStrings();
+
+    Mapper<A, ReassignBean> mapper = Mapping.from(A.class)
+        .to(ReassignBean.class)
+        .reassign(A::getStrings)
+        .to(ReassignBean::getAnotherName)
+        .omitOtherSourceProperties()
+        .mapper();
+
+    ReassignBean b = mapper.map(a);
+
+    assertEquals(expectedSet, b.getAnotherName());
+
+  }
 
   /**
    * There was a bug in collection mappings. It was possible to declare a
