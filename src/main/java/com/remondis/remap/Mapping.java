@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
  *        destination type of the mapping
  * @author schuettec
  */
-public final class Mapping<S, D> {
+public class Mapping<S, D> {
 
   static final String OMIT_FIELD_DEST = "omit in destination";
   static final String OMIT_FIELD_SOURCE = "omit in source";
