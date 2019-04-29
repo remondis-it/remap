@@ -1,6 +1,7 @@
 package com.remondis.remap;
 
 import static com.remondis.remap.ReflectionUtil.getCollector;
+import static java.util.Objects.isNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -35,7 +36,7 @@ public class Mapper<S, D> {
    * @param source The source object to map to a new destination object.
    * @return Returns a newly created destination object.
    */
-  public <Source extends S> D map(Source source) {
+  public D map(S source) {
     return mapping.map(source);
   }
 
@@ -47,7 +48,7 @@ public class Mapper<S, D> {
    * @param destination The destination object to map into. Field affected by the mapping will be overwritten.
    * @return Returns the specified destination object.
    */
-  public <Source extends S> D map(Source source, D destination) {
+  public D map(S source, D destination) {
     return mapping.map(source, destination);
   }
 
@@ -92,6 +93,33 @@ public class Mapper<S, D> {
     Stream<? extends S> stream = StreamSupport.stream(iterable.spliterator(), false);
     return stream.map(this::map)
         .collect(Collectors.toList());
+  }
+
+  /**
+   * Performs the mapping from the source to destination type if the source value is <b>non-null</b>. If the source
+   * value is <code>null</code> this method returns <code>null</code>.
+   *
+   * @param source The source object to map to a new destination object. May be <code>null</code>.
+   * @return Returns a newly created destination object or <code>null</code> if the input value is <code>null</code>.
+   */
+  public D mapOptional(S source) {
+    return mapOrDefault(source, null);
+  }
+
+  /**
+   * Performs the mapping from the source to destination type if the source value is <b>non-null</b>. If the source
+   * value is <code>null</code> this method returns the specified default value.
+   *
+   * @param source The source object to map to a new destination object. May be <code>null</code>.
+   * @param defaultValue The default value to return if the input is <code>null</code>.
+   * @return Returns a newly created destination object or the default value if the input value is <code>null</code>.
+   */
+  public D mapOrDefault(S source, D defaultValue) {
+    if (isNull(source)) {
+      return defaultValue;
+    } else {
+      return mapping.map(source);
+    }
   }
 
   @SuppressWarnings("unchecked")

@@ -2,7 +2,7 @@ package com.remondis.remap.maps;
 
 import java.util.Map;
 
-import com.remondis.remap.BResource;
+import com.remondis.remap.basic.BResource;
 
 public class AResource {
 

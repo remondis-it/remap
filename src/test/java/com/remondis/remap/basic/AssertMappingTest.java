@@ -1,12 +1,12 @@
-package com.remondis.remap;
+package com.remondis.remap.basic;
 
-import static com.remondis.remap.AssertMapping.EXPECTED_TRANSFORMATION;
-import static com.remondis.remap.AssertMapping.TRANSFORMATION_ALREADY_ADDED;
-import static com.remondis.remap.AssertMapping.UNEXPECTED_TRANSFORMATION;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.Test;
 
+import com.remondis.remap.AssertMapping;
+import com.remondis.remap.Mapper;
+import com.remondis.remap.Mapping;
 import com.remondis.remap.assertion.A;
 import com.remondis.remap.assertion.AResource;
 import com.remondis.remap.assertion.B;
@@ -125,7 +125,7 @@ public class AssertMappingTest {
           .expectOmitInDestination(AResource::getOmitted)
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessageStartingWith(AssertMapping.UNEXPECTED_EXCEPTION)
+        .hasMessageStartingWith("Function threw an unexpected exception for transformation:")
         .hasCauseExactlyInstanceOf(Error.class);
   }
 
@@ -192,7 +192,7 @@ public class AssertMappingTest {
           .expectOmitInDestination(AResource::getIntegerAsString)
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessageContaining(EXPECTED_TRANSFORMATION)
+        .hasMessageContaining("The following expected transformation were not specified on the mapping:")
         .hasNoCause();
 
     assertThatThrownBy(() -> {
@@ -208,7 +208,7 @@ public class AssertMappingTest {
           .expectOmitInDestination(AResource::getOmitted)
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessageContaining(EXPECTED_TRANSFORMATION)
+        .hasMessageContaining("The following expected transformation were not specified on the mapping:")
         .hasNoCause();
   }
 
@@ -241,7 +241,7 @@ public class AssertMappingTest {
           .expectOmitInSource(A::getOmitted)
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessage(TRANSFORMATION_ALREADY_ADDED)
+        .hasMessage("The specified transformation was already added as an assertion")
         .hasNoCause();
 
     // Assert an error when defining expecteOmitInDestination multiple times.
@@ -255,7 +255,7 @@ public class AssertMappingTest {
           .expectOmitInDestination(AResource::getOmitted)
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessage(TRANSFORMATION_ALREADY_ADDED)
+        .hasMessage("The specified transformation was already added as an assertion")
         .hasNoCause();
 
     // Assert an error when defining expectReassign multiple times.
@@ -271,7 +271,7 @@ public class AssertMappingTest {
           .to(AResource::getAnotherString)
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessage(TRANSFORMATION_ALREADY_ADDED)
+        .hasMessage("The specified transformation was already added as an assertion")
         .hasNoCause();
 
     // Assert an error when defining expectReplace multiple times.
@@ -287,7 +287,7 @@ public class AssertMappingTest {
           .andTest(String::valueOf)
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessage(TRANSFORMATION_ALREADY_ADDED)
+        .hasMessage("The specified transformation was already added as an assertion")
         .hasNoCause();
 
     // Assert an error when defining expectReplace multiple times.
@@ -303,7 +303,7 @@ public class AssertMappingTest {
           .andSkipWhenNull()
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessage(TRANSFORMATION_ALREADY_ADDED)
+        .hasMessage("The specified transformation was already added as an assertion")
         .hasNoCause();
 
     // Assert an error when defining expectReplace multiple times but different null-skip configuration
@@ -319,7 +319,7 @@ public class AssertMappingTest {
           .andSkipWhenNull()
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessage(TRANSFORMATION_ALREADY_ADDED)
+        .hasMessage("The specified transformation was already added as an assertion")
         .hasNoCause();
 
     // Assert an error when defining expectReplace multiple times but different null-skip configuration
@@ -335,7 +335,7 @@ public class AssertMappingTest {
           .andTest(String::valueOf)
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessage(TRANSFORMATION_ALREADY_ADDED)
+        .hasMessage("The specified transformation was already added as an assertion")
         .hasNoCause();
 
   }
@@ -414,7 +414,7 @@ public class AssertMappingTest {
       AssertMapping.of(mapper)
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessageContaining(UNEXPECTED_TRANSFORMATION)
+        .hasMessageContaining("The following unexpected transformation were specified on the mapping:")
         .hasNoCause();
 
     assertThatThrownBy(() -> {
@@ -423,7 +423,7 @@ public class AssertMappingTest {
           .to(AResource::getAnotherString)
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessageContaining(UNEXPECTED_TRANSFORMATION)
+        .hasMessageContaining("The following unexpected transformation were specified on the mapping:")
         .hasNoCause();
 
     assertThatThrownBy(() -> {
@@ -434,7 +434,7 @@ public class AssertMappingTest {
           .andTest(String::valueOf)
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessageContaining(UNEXPECTED_TRANSFORMATION)
+        .hasMessageContaining("The following unexpected transformation were specified on the mapping:")
         .hasNoCause();
 
     assertThatThrownBy(() -> {
@@ -446,7 +446,7 @@ public class AssertMappingTest {
           .expectOmitInSource(A::getOmitted)
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessageContaining(UNEXPECTED_TRANSFORMATION)
+        .hasMessageContaining("The following unexpected transformation were specified on the mapping:")
         .hasNoCause();
 
   }

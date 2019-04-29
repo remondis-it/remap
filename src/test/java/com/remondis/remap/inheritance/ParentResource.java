@@ -1,6 +1,6 @@
 package com.remondis.remap.inheritance;
 
-import com.remondis.remap.BResource;
+import com.remondis.remap.basic.BResource;
 
 public class ParentResource {
   private Object moreInParentResource;
