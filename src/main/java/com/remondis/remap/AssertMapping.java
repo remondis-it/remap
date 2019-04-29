@@ -63,6 +63,10 @@ public class AssertMapping<S, D> {
    */
   private boolean omitOthersDestination = false;
 
+  private Object expectN;
+
+  private boolean expectNoImplicitMappings;
+
   private AssertMapping(Mapper<S, D> mapper) {
     denyNull("mapper", mapper);
     this.mapper = mapper;
@@ -183,6 +187,19 @@ public class AssertMapping<S, D> {
   }
 
   /**
+   * Expects the mapper to suppress creation of implicit mappings. Note: This requires the user to define the mappings
+   * explicitly using {@link Mapping#reassign(FieldSelector)} or any other mapping operation. Therefore all this
+   * explicit
+   * mappings must be backed by an assertion.
+   *
+   * @return Returns this instance for further configuration.
+   */
+  public AssertMapping<S, D> expectNoImplicitMappings() {
+    this.expectNoImplicitMappings = true;
+    return this;
+  }
+
+  /**
    * Specifies an assertion for a destination field to be omitted.
    *
    * @param destinationSelector
@@ -238,9 +255,20 @@ public class AssertMapping<S, D> {
    *         Thrown if an assertion made about the {@link Mapper} object failed.
    */
   public void ensure() throws AssertionError {
+    checkImplicitMappingStrategy();
     checkReplaceTransformations();
     checkTransformations();
     checkReplaceFunctions();
+  }
+
+  private void checkImplicitMappingStrategy() {
+    if (!mapper.getMapping()
+        .isNoImplicitMappings() && expectNoImplicitMappings) {
+      throw new AssertionError("The mapper was expected to create no implicit mappings but the actual mapper does.");
+    } else if (mapper.getMapping()
+        .isNoImplicitMappings() && !expectNoImplicitMappings) {
+      throw new AssertionError("The mapper was expected to create implicit mappings but the actual mapper does not.");
+    }
   }
 
   /**
