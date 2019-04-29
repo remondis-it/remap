@@ -91,6 +91,11 @@ public final class Mapping<S, D> {
    */
   private boolean omitOtherDestinationProperties;
 
+  /**
+   * This flag indicates that the creation of implicit mappings should be disabled.
+   */
+  private boolean noImplicitMappings;
+
   Mapping(Class<S> source, Class<D> destination) {
     this.source = source;
     this.destination = destination;
@@ -357,7 +362,10 @@ public final class Mapping<S, D> {
    * @return The mapper instance.
    */
   public Mapper<S, D> mapper() {
-    addStrictMapping();
+    if (!noImplicitMappings) {
+      addStrictMapping();
+    }
+
     if (omitOtherSourceProperties) {
       addOmitForSource();
     }
@@ -626,6 +634,26 @@ public final class Mapping<S, D> {
     denyNull("typeMapping", typeMapping);
     _useMapper(typeMapping);
     return this;
+  }
+
+  /**
+   * Disables the creation of implicit mappings, so that fields with the same name and same type are not mapped
+   * automatically any more. This requires the user to define the mappings explicitly using
+   * {@link #reassign(FieldSelector)} or any other mapping operation.
+   *
+   * @return Returns this {@link Mapping} object for further configuration.
+   */
+  public Mapping<S, D> noImplicitMappings() {
+    this.noImplicitMappings = true;
+    return this;
+  }
+
+  /**
+   * Returns <code>true</code> if the mapper does not create implicit mappings. If <code>false</code>
+   * is returned, the mapper creates implicit mappings for field that have the same name and type.
+   */
+  boolean isNoImplicitMappings() {
+    return noImplicitMappings;
   }
 
   private void _useMapper(InternalMapper<?, ?> interalMapper) {
