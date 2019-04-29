@@ -1,26 +1,23 @@
-package com.remondis.remap;
+package com.remondis.remap.basic;
 
-public class A {
+public class AResource {
 
-  private String moreInA;
+  private String moreInAResource;
+
   private String string;
   private int number;
   private Integer integer;
+  private Long zahlInAResource;
+  private BResource b;
 
-  private Long zahlInA;
-  private B b;
-
-  public A() {
+  public AResource() {
     super();
   }
 
-  public A(String moreInA, String string, int number, Integer integer, Long zahlInA, B b) {
+  public AResource(String string, int number, Integer integer, BResource b) {
     super();
-    this.moreInA = moreInA;
     this.string = string;
-    this.number = number;
     this.integer = integer;
-    this.zahlInA = zahlInA;
     this.b = b;
   }
 
@@ -72,7 +69,7 @@ public class A {
   /**
    * @return the b
    */
-  public B getB() {
+  public BResource getB() {
     return b;
   }
 
@@ -80,49 +77,49 @@ public class A {
    * @param b
    *        the b to set
    */
-  public void setB(B b) {
+  public void setB(BResource b) {
     this.b = b;
   }
 
   /**
-   * @return the moreInA
+   * @return the moreInAResource
    */
-  public String getMoreInA() {
-    return moreInA;
+  public String getMoreInAResource() {
+    return moreInAResource;
   }
 
   /**
-   * @param moreInA
-   *        the moreInA to set
+   * @param moreInAResource
+   *        the moreInAResource to set
    */
-  public void setMoreInA(String moreInA) {
-    this.moreInA = moreInA;
+  public void setMoreInAResource(String moreInAResource) {
+    this.moreInAResource = moreInAResource;
   }
 
   /**
-   * @return the zahlInA
+   * @return the zahlInAResource
    */
-  public Long getZahlInA() {
-    return zahlInA;
+  public Long getZahlInAResource() {
+    return zahlInAResource;
   }
 
   /**
-   * @param zahlInA
-   *        the zahlInA to set
+   * @param zahlInAResource
+   *        the zahlInAResource to set
    */
-  public void setZahlInA(Long zahlInA) {
-    this.zahlInA = zahlInA;
+  public void setZahlInAResource(Long zahlInAResource) {
+    this.zahlInAResource = zahlInAResource;
   }
 
   /*
    * (non-Javadoc)
-   *
+   * 
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
-    return "A [moreInA=" + moreInA + ", string=" + string + ", number=" + number + ", integer=" + integer + ", zahlInA="
-        + zahlInA + ", b=" + b + "]";
+    return "AResource [moreInAResource=" + moreInAResource + ", string=" + string + ", number=" + number + ", integer="
+        + integer + ", zahlInAResource=" + zahlInAResource + ", b=" + b + "]";
   }
 
 }

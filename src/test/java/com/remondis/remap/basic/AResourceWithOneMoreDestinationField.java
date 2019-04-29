@@ -1,4 +1,4 @@
-package com.remondis.remap;
+package com.remondis.remap.basic;
 
 public class AResourceWithOneMoreDestinationField {
 

@@ -1,13 +1,13 @@
-package com.remondis.remap;
+package com.remondis.remap.basic;
 
-import static com.remondis.remap.MapperTest.B_INTEGER;
-import static com.remondis.remap.MapperTest.B_NUMBER;
-import static com.remondis.remap.MapperTest.B_STRING;
-import static com.remondis.remap.MapperTest.INTEGER;
-import static com.remondis.remap.MapperTest.MORE_IN_A;
-import static com.remondis.remap.MapperTest.NUMBER;
-import static com.remondis.remap.MapperTest.STRING;
-import static com.remondis.remap.MapperTest.ZAHL_IN_A;
+import static com.remondis.remap.basic.MapperTest.B_INTEGER;
+import static com.remondis.remap.basic.MapperTest.B_NUMBER;
+import static com.remondis.remap.basic.MapperTest.B_STRING;
+import static com.remondis.remap.basic.MapperTest.INTEGER;
+import static com.remondis.remap.basic.MapperTest.MORE_IN_A;
+import static com.remondis.remap.basic.MapperTest.NUMBER;
+import static com.remondis.remap.basic.MapperTest.STRING;
+import static com.remondis.remap.basic.MapperTest.ZAHL_IN_A;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -16,6 +16,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+
+import com.remondis.remap.Mapper;
+import com.remondis.remap.Mapping;
 
 public class MapIterableTest {
 

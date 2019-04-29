@@ -1,4 +1,4 @@
-package com.remondis.remap;
+package com.remondis.remap.basic;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
@@ -13,6 +13,9 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import com.remondis.remap.Mapper;
+import com.remondis.remap.Mapping;
+import com.remondis.remap.MappingException;
 import com.remondis.remap.test.MapperTests.PersonWithAddress;
 import com.remondis.remap.test.MapperTests.PersonWithFoo;
 
