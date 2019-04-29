@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import com.remondis.remap.B;
-import com.remondis.remap.BResource;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.remap.MappingException;
+import com.remondis.remap.basic.B;
+import com.remondis.remap.basic.BResource;
 
 public class MapsTest {
 

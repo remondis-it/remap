@@ -3,7 +3,7 @@ package com.remondis.remap.maps;
 import java.util.Hashtable;
 import java.util.Map;
 
-import com.remondis.remap.B;
+import com.remondis.remap.basic.B;
 
 public class A {
 

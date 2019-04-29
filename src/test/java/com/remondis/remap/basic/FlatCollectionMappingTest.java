@@ -1,6 +1,5 @@
-package com.remondis.remap;
+package com.remondis.remap.basic;
 
-import static com.remondis.remap.AssertMapping.DIFFERENT_NULL_STRATEGY;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
@@ -13,11 +12,14 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
+import com.remondis.remap.AssertMapping;
+import com.remondis.remap.Mapper;
+import com.remondis.remap.Mapping;
 import com.remondis.remap.flatCollectionMapping.Destination;
 import com.remondis.remap.flatCollectionMapping.Id;
 import com.remondis.remap.flatCollectionMapping.Source;
 
-public class FlatCollectionMapping {
+public class FlatCollectionMappingTest {
 
   @Test
   public void shouldMapCollectionByFunction() {
@@ -138,7 +140,8 @@ public class FlatCollectionMapping {
           .andSkipWhenNull()
           .ensure();
     }).isInstanceOf(AssertionError.class)
-        .hasMessageContaining(DIFFERENT_NULL_STRATEGY)
+        .hasMessageContaining(
+            "The replace transformation specified by the mapper has a different null value strategy than the expected transformation:")
         .hasNoCause();
   }
 

@@ -50,7 +50,7 @@ public class BidirectionalMapper<S, D> {
    * @param source The source object to map to a new destination object.
    * @return Returns a newly created destination object.
    */
-  public <Source extends S> D map(Source source) {
+  public D map(S source) {
     return to.map(source);
   }
 

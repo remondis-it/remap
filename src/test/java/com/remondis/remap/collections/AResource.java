@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.remondis.remap.BResource;
+import com.remondis.remap.basic.BResource;
 
 public class AResource {
 
