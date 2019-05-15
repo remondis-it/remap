@@ -44,7 +44,7 @@ class InvocationSensor<T> {
           // handler.
           return invokeMethodProxySafe(method, this, args);
         } else {
-          throw MappingException.notAGetter(method);
+          return nullOrDefaultValue(method.getReturnType());
         }
       }
 
