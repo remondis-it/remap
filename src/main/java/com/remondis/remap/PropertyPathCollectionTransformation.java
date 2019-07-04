@@ -56,8 +56,8 @@ public class PropertyPathCollectionTransformation<RS, X, RD> extends Transformat
     Class<RS> genericSourceType = (Class<RS>) ReassignTransformation
         .findGenericTypeFromMethod(sourceProperty.getReadMethod());
     return Getter.newFor(genericSourceType)
-        .evaluateAnd(propertyPath)
-        .apply(transformation);
+        .evaluate(propertyPath)
+        .andApply(transformation);
   }
 
   @Override
