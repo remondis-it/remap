@@ -49,8 +49,8 @@ public class PropertyPathTransformation<RS, X, RD> extends Transformation {
   private Get<RS, RD, ?> createGetterAndApply(PropertyDescriptor sourceProperty, PropertyPath<X, RS, ?> propertyPath,
       Function<X, RD> transformation) {
     return Getter.newFor((Class<RS>) sourceProperty.getPropertyType())
-        .evaluateAnd(propertyPath)
-        .apply(transformation);
+        .evaluate(propertyPath)
+        .andApply(transformation);
   }
 
   @SuppressWarnings("unchecked")
