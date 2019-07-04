@@ -464,7 +464,7 @@ Mapper<A, B> mapper = Mapping
     .mapper();
 ```
 
-Assume you don't have a source field to map to `B.age`. In this case the `set` operation specifies the static value `24` that is used during the mapping. 
+Assume you don't have a source field to map to `B.age`. In this case the `set` operation specifies the static value `24` that is used during the mapping.
 
 The value for the mapping can be provided by either a static value, a `java.util.function.Supplier` or a `java.util.function.Function`.
 
@@ -508,7 +508,7 @@ Mapper<B, BResource> bMapper = Mapping.from(B.class)
 
 ### Tests
 
-ReMap provides an easy way to assert the mapping specification for a mapper instance. These assertions should be used in unit tests to provide regression tests for your mapping configuration. 
+ReMap provides an easy way to assert the mapping specification for a mapper instance. These assertions should be used in unit tests to provide regression tests for your mapping configuration.
 
 For every mapping operation ReMap supports, an assert can be specified. Since there are a lot of mapping features please have a look at the JavaDoc of `com.remondis.remap.AssertMapping` for a documentation and further explanations.
 
@@ -641,6 +641,12 @@ This bug was fixed in `net.minidev:accessors-smart:1.2` but is still present in 
 This workaround was tested and should work for most cases. Please file an issue if you are experiencing problems.
 
 # Migration guide
+
+## Sidenote for updating to 4.1.14
+
+The integration of the library propertypath (https://github.com/remondis-it/propertypath) was updated to version 0.1.0.
+This version introduced changes that are not backwards-compatible. If you update to ReMap 4.1.14 you will have to migrate to propertypath 0.1.0 as well - the changes are minimal ;)
+
 
 ## Migration from 3.x.x to 4.x.x
 
