@@ -1,6 +1,8 @@
 package com.remondis.remap.spring;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.IOException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +26,7 @@ public class SpringExampleTest {
   Mapper<Human, Person> mapper2;
 
   @Test
-  public void testPersonHumanMapper() {
+  public void testPersonHumanMapper() throws IOException {
     Person person = new Person("Bob");
     Human human = mapper1.map(person);
     assertThat(human.getName()).isEqualTo("Bob");
