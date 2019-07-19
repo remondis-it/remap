@@ -659,7 +659,7 @@ public class Mapping<S, D> {
   private void _useMapper(InternalMapper<?, ?> interalMapper) {
     Projection<?, ?> projection = interalMapper.getProjection();
     if (mappers.containsKey(projection)) {
-      throw MappingException.duplicateMapper(source, destination);
+      throw MappingException.duplicateMapper(projection.getSource(), projection.getDestination());
     } else {
       mappers.put(projection, interalMapper);
     }
