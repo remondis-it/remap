@@ -676,12 +676,13 @@ public class Mapping<S, D> {
    * @return Returns the registered mapper.
    */
   @SuppressWarnings("unchecked")
-  <S1, D1> InternalMapper<S1, D1> getMapperFor(Class<S1> sourceType, Class<D1> destinationType) {
+  <S1, D1> InternalMapper<S1, D1> getMapperFor(PropertyDescriptor sourceProperty, Class<S1> sourceType,
+      PropertyDescriptor destinationProperty, Class<D1> destinationType) {
     Projection<?, ?> projection = new Projection<>(sourceType, destinationType);
     if (mappers.containsKey(projection)) {
       return (InternalMapper<S1, D1>) mappers.get(projection);
     } else {
-      throw MappingException.noMapperFound(sourceType, destinationType);
+      throw MappingException.noMapperFound(sourceProperty, sourceType, destinationProperty, destinationType);
     }
   }
 
