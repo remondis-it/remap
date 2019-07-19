@@ -84,8 +84,8 @@ public class MappingException extends RuntimeException {
       PropertyDescriptor destinationProperty, Class<?> destinationType) {
     return new MappingException(String.format(
         "No mapper found for type mapping from %s to %s.\nFor example used by the property mapping from "
-            + asStringWithType(sourceProperty) + " to " + asStringWithType(destinationProperty),
-        sourceType.getName(), destinationType.getName()));
+            + asString(sourceProperty) + " to " + asString(destinationProperty),
+        sourceType.getName(), destinationType.getName()) + ".");
   }
 
   static MappingException duplicateMapper(Class<?> source, Class<?> destination) {
