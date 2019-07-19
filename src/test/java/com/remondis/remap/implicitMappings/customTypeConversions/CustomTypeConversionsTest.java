@@ -23,11 +23,6 @@ public class CustomTypeConversionsTest {
 
   @Test
   public void errorHandling() {
-
-    Mapping.from(A.class)
-        .to(AResource.class)
-        .mapper();
-
     assertThatThrownBy(() -> Mapping.from(A.class)
         .to(AResource.class)
         .mapper()).isInstanceOf(MappingException.class)
