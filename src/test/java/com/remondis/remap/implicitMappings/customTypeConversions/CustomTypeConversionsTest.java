@@ -26,25 +26,22 @@ public class CustomTypeConversionsTest {
     assertThatThrownBy(() -> Mapping.from(A.class)
         .to(AResource.class)
         .mapper()).isInstanceOf(MappingException.class)
-            .hasMessage(
-                "No mapper found for type mapping from java.lang.CharSequence to java.lang.String.\nFor example used by the property mapping from Property 'forename' (java.lang.CharSequence) in A to Property 'forename' (java.lang.String) in AResource");
+            .hasMessage("No mapper found for type mapping from java.lang.CharSequence to java.lang.String.\n"
+                + "For example used by the property mapping from Property 'addresses' in A to Property 'addresses' in AResource.");
   }
 
   @Test
   public void mappingImplicitNullValues() {
-    A a = new A(null, null);
+    A a = new A(null);
     AResource aResource = mapper().map(a);
-    assertNull(aResource.getForename());
     assertNull(aResource.getAddresses());
   }
 
   @Test
   public void mappingImplicit() {
     List<CharSequence> charSeqs = asList((CharSequence) "Address 1", (CharSequence) "Address 2");
-    CharSequence charSeq = "Forename";
-    A a = new A(charSeq, charSeqs);
+    A a = new A(charSeqs);
     AResource aResource = mapper().map(a);
-    assertNotNull(aResource.getForename());
     List<String> addresses = aResource.getAddresses();
     assertNotNull(addresses);
     assertEquals(2, addresses.size());
