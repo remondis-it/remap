@@ -52,14 +52,16 @@ public class ReassignTransformation extends Transformation {
       // Primitive types can be set without any conversion, because we checked type
       // compatibility before.
       if (hasMapperFor(sourceType, destinationType)) {
-        InternalMapper mapper = getMapperFor(sourceType, destinationType);
+        InternalMapper mapper = getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
         destinationValue = mapper.map(sourceValue, destinationValue);
       } else if (isCollection(sourceType)) {
         Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
         Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
-        destinationValue = convertCollection(sourceValue, sourceCollectionType, destinationCollectionType);
+        destinationValue = convertCollection(sourceProperty, sourceValue, sourceCollectionType, destinationProperty,
+            destinationCollectionType);
       } else {
-        destinationValue = convertValue(sourceValue, sourceType, destination, destinationType);
+        destinationValue = convertValue(sourceProperty, sourceValue, sourceType, destinationProperty, destination,
+            destinationType);
       }
 
       writeOrFail(destinationProperty, destination, destinationValue);
@@ -69,16 +71,18 @@ public class ReassignTransformation extends Transformation {
   @SuppressWarnings({
       "unchecked", "rawtypes"
   })
-  private Object convertCollection(Object sourceValue, Class<?> sourceCollectionType,
-      Class<?> destinationCollectionType) {
+  private Object convertCollection(PropertyDescriptor sourceProperty, Object sourceValue, Class<?> sourceCollectionType,
+      PropertyDescriptor destinationProperty, Class<?> destinationCollectionType) {
     Collection collection = Collection.class.cast(sourceValue);
     Collector collector = getCollector(collection);
     return collection.stream()
         .map(o -> {
           if (isCollection(o)) {
-            return convertCollection(o, sourceCollectionType, destinationCollectionType);
+            return convertCollection(sourceProperty, o, sourceCollectionType, destinationProperty,
+                destinationCollectionType);
           } else {
-            return convertValue(o, sourceCollectionType, destinationCollectionType);
+            return convertValue(sourceProperty, o, sourceCollectionType, destinationProperty,
+                destinationCollectionType);
           }
         })
         .collect(collector);
@@ -87,12 +91,13 @@ public class ReassignTransformation extends Transformation {
   @SuppressWarnings({
       "unchecked", "rawtypes"
   })
-  Object convertValue(Object sourceValue, Class<?> sourceType, Class<?> destinationType) {
+  Object convertValue(PropertyDescriptor sourceProperty, Object sourceValue, Class<?> sourceType,
+      PropertyDescriptor destinationProperty, Class<?> destinationType) {
     if (isReferenceMapping(sourceType, destinationType)) {
       return sourceValue;
     } else {
       // Object types must be mapped by a registered mapper before setting the value.
-      InternalMapper delegateMapper = getMapperFor(sourceType, destinationType);
+      InternalMapper delegateMapper = getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
       return delegateMapper.map(sourceValue);
     }
   }
@@ -100,12 +105,13 @@ public class ReassignTransformation extends Transformation {
   @SuppressWarnings({
       "unchecked", "rawtypes"
   })
-  Object convertValue(Object sourceValue, Class<?> sourceType, Object destinationValue, Class<?> destinationType) {
+  Object convertValue(PropertyDescriptor sourceProperty, Object sourceValue, Class<?> sourceType,
+      PropertyDescriptor destinationProperty, Object destinationValue, Class<?> destinationType) {
     if (isReferenceMapping(sourceType, destinationType)) {
       return sourceValue;
     } else {
       // Object types must be mapped by a registered mapper before setting the value.
-      InternalMapper delegateMapper = getMapperFor(sourceType, destinationType);
+      InternalMapper delegateMapper = getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
       Object destinationValueMapped = readOrFail(destinationProperty, destinationValue);
       return delegateMapper.map(sourceValue, destinationValueMapped);
     }
@@ -151,18 +157,20 @@ public class ReassignTransformation extends Transformation {
     if (isCollection(sourceType)) {
       Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
       Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
-      validateTypeMapping(sourceCollectionType, destinationCollectionType);
+      validateTypeMapping(getSourceProperty(), sourceCollectionType, getDestinationProperty(),
+          destinationCollectionType);
     } else {
       Class<?> destinationType = getDestinationType();
-      validateTypeMapping(sourceType, destinationType);
+      validateTypeMapping(getSourceProperty(), sourceType, getDestinationProperty(), destinationType);
     }
   }
 
-  private void validateTypeMapping(Class<?> sourceType, Class<?> destinationType) {
+  private void validateTypeMapping(PropertyDescriptor sourceProperty, Class<?> sourceType,
+      PropertyDescriptor destinationProperty, Class<?> destinationType) {
 
     if (!isReferenceMapping(sourceType, destinationType)) {
       // Check if there is a registered mapper if required.
-      getMapperFor(sourceType, destinationType);
+      getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
     }
   }
 

@@ -97,8 +97,9 @@ abstract class Transformation {
    * @return Returns a mapper for the specified mapping if one was registered. Otherwise a {@link MappingException} is
    *         thrown.
    */
-  <S, T> InternalMapper<S, T> getMapperFor(Class<S> sourceType, Class<T> destinationType) {
-    return this.mapping.getMapperFor(sourceType, destinationType);
+  <S, T> InternalMapper<S, T> getMapperFor(PropertyDescriptor sourceProperty, Class<S> sourceType,
+      PropertyDescriptor destinationProperty, Class<T> destinationType) {
+    return this.mapping.getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
   }
 
   /**

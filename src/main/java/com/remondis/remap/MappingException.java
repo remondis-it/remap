@@ -80,9 +80,12 @@ public class MappingException extends RuntimeException {
     return new MappingException(createUnmappedMessage(unmapped));
   }
 
-  static MappingException noMapperFound(Class<?> sourceType, Class<?> destinationType) {
-    return new MappingException(String.format("No mapper found for type mapping from %s to %s.", sourceType.getName(),
-        destinationType.getName()));
+  static MappingException noMapperFound(PropertyDescriptor sourceProperty, Class<?> sourceType,
+      PropertyDescriptor destinationProperty, Class<?> destinationType) {
+    return new MappingException(String.format(
+        "No mapper found for type mapping from %s to %s.\nFor example used by the property mapping from "
+            + asString(sourceProperty) + " to " + asString(destinationProperty),
+        sourceType.getName(), destinationType.getName()) + ".");
   }
 
   static MappingException duplicateMapper(Class<?> source, Class<?> destination) {
