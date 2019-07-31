@@ -57,41 +57,32 @@ public class ReassignTransformation extends Transformation {
       } else if (isCollection(sourceType)) {
         Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
         Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
-        destinationValue = convertCollection(sourceProperty, sourceValue, sourceCollectionType, destinationProperty,
-            destinationCollectionType);
+        destinationValue = convertCollection(sourceValue, sourceCollectionType, destinationCollectionType);
       } else {
-        destinationValue = convertValue(sourceProperty, sourceValue, sourceType, destinationProperty, destination,
-            destinationType);
+        destinationValue = convertValue(sourceValue, sourceType, destination, destinationType);
       }
 
       writeOrFail(destinationProperty, destination, destinationValue);
     }
   }
 
-  @SuppressWarnings({
-      "unchecked", "rawtypes"
-  })
-  private Object convertCollection(PropertyDescriptor sourceProperty, Object sourceValue, Class<?> sourceCollectionType,
-      PropertyDescriptor destinationProperty, Class<?> destinationCollectionType) {
-    return _convertCollection(sourceProperty, sourceValue, sourceCollectionType, destinationProperty,
-        destinationCollectionType, 0);
+  private Object convertCollection(Object sourceValue, Class<?> sourceCollectionType,
+      Class<?> destinationCollectionType) {
+    return _convertCollection(sourceValue, sourceCollectionType, destinationCollectionType, 0);
 
   }
 
-  private Object _convertCollection(PropertyDescriptor sourceProperty, Object sourceValue,
-      Class<?> sourceCollectionType, PropertyDescriptor destinationProperty, Class<?> destinationCollectionType,
-      int genericParameterDepth) {
+  private Object _convertCollection(Object sourceValue, Class<?> sourceCollectionType,
+      Class<?> destinationCollectionType, int genericParameterDepth) {
     Collection collection = Collection.class.cast(sourceValue);
     Class<?> collectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod(), genericParameterDepth);
     Collector collector = getCollector(collectionType);
     return collection.stream()
         .map(o -> {
           if (isCollection(o)) {
-            return _convertCollection(sourceProperty, o, sourceCollectionType, destinationProperty,
-                destinationCollectionType, genericParameterDepth + 1);
+            return _convertCollection(o, sourceCollectionType, destinationCollectionType, genericParameterDepth + 1);
           } else {
-            return convertValue(sourceProperty, o, sourceCollectionType, destinationProperty,
-                destinationCollectionType);
+            return convertValue(o, sourceCollectionType, destinationCollectionType);
           }
         })
         .collect(collector);
@@ -100,8 +91,7 @@ public class ReassignTransformation extends Transformation {
   @SuppressWarnings({
       "unchecked", "rawtypes"
   })
-  Object convertValue(PropertyDescriptor sourceProperty, Object sourceValue, Class<?> sourceType,
-      PropertyDescriptor destinationProperty, Class<?> destinationType) {
+  Object convertValue(Object sourceValue, Class<?> sourceType, Class<?> destinationType) {
     if (isReferenceMapping(sourceType, destinationType)) {
       return sourceValue;
     } else {
@@ -114,8 +104,7 @@ public class ReassignTransformation extends Transformation {
   @SuppressWarnings({
       "unchecked", "rawtypes"
   })
-  Object convertValue(PropertyDescriptor sourceProperty, Object sourceValue, Class<?> sourceType,
-      PropertyDescriptor destinationProperty, Object destinationValue, Class<?> destinationType) {
+  Object convertValue(Object sourceValue, Class<?> sourceType, Object destinationValue, Class<?> destinationType) {
     if (isReferenceMapping(sourceType, destinationType)) {
       return sourceValue;
     } else {
