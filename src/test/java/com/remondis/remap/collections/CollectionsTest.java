@@ -105,6 +105,13 @@ public class CollectionsTest {
     assertEquals(b2Integer, b2.getInteger());
     assertEquals(b2Integer, br2Actual.getInteger());
 
+    // Assert before mapping (paranoia check)
+    List<Set<B>> nestedListsBefore = a.getNestedLists();
+    assertThat(nestedListsBefore).isInstanceOf(List.class);
+    assertThat(nestedListsBefore.iterator()
+        .next()).isInstanceOf(Set.class);
+
+    // Assert after mapping (collections should be nested with according to the destination types)
     Set<List<BResource>> nestedLists = ar.getNestedLists();
     assertThat(nestedLists).isInstanceOf(Set.class);
     assertThat(nestedLists.iterator()
