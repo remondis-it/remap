@@ -1,5 +1,6 @@
 package com.remondis.remap.collections;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -104,6 +105,10 @@ public class CollectionsTest {
     assertEquals(b2Integer, b2.getInteger());
     assertEquals(b2Integer, br2Actual.getInteger());
 
+    Set<List<BResource>> nestedLists = ar.getNestedLists();
+    assertThat(nestedLists).isInstanceOf(Set.class);
+    assertThat(nestedLists.iterator()
+        .next()).isInstanceOf(List.class);
   }
 
   @SuppressWarnings("unchecked")

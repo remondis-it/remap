@@ -73,13 +73,22 @@ public class ReassignTransformation extends Transformation {
   })
   private Object convertCollection(PropertyDescriptor sourceProperty, Object sourceValue, Class<?> sourceCollectionType,
       PropertyDescriptor destinationProperty, Class<?> destinationCollectionType) {
+    return _convertCollection(sourceProperty, sourceValue, sourceCollectionType, destinationProperty,
+        destinationCollectionType, 0);
+
+  }
+
+  private Object _convertCollection(PropertyDescriptor sourceProperty, Object sourceValue,
+      Class<?> sourceCollectionType, PropertyDescriptor destinationProperty, Class<?> destinationCollectionType,
+      int genericParameterDepth) {
     Collection collection = Collection.class.cast(sourceValue);
-    Collector collector = getCollector(collection);
+    Class<?> collectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod(), genericParameterDepth);
+    Collector collector = getCollector(collectionType);
     return collection.stream()
         .map(o -> {
           if (isCollection(o)) {
-            return convertCollection(sourceProperty, o, sourceCollectionType, destinationProperty,
-                destinationCollectionType);
+            return _convertCollection(sourceProperty, o, sourceCollectionType, destinationProperty,
+                destinationCollectionType, genericParameterDepth + 1);
           } else {
             return convertValue(sourceProperty, o, sourceCollectionType, destinationProperty,
                 destinationCollectionType);
@@ -136,6 +145,36 @@ public class ReassignTransformation extends Transformation {
       }
     }
     return (Class<?>) type;
+  }
+
+  /**
+   * Finds the generic return type of a method in nested generics. For example this method returns {@link String} when
+   * called on a method like <code>List&lt;List&lt;Set&lt;String&gt;&gt;&gt; get();</code>.
+   *
+   * @param method The method to analyze.
+   * @return Returns the inner generic type.
+   */
+  static Class<?> findGenericTypeFromMethod(Method method, int genericParameterDepth) {
+    ParameterizedType parameterizedType = (ParameterizedType) method.getGenericReturnType();
+    if (genericParameterDepth == 0) {
+      return (Class<?>) parameterizedType.getRawType();
+    }
+    Type type = null;
+    int i = 1;
+    while (parameterizedType != null && i <= genericParameterDepth) {
+      type = parameterizedType.getActualTypeArguments()[0];
+      if (type instanceof ParameterizedType) {
+        parameterizedType = (ParameterizedType) type;
+      } else {
+        parameterizedType = null;
+      }
+      i++;
+    }
+    if (parameterizedType == null) {
+      return (Class<?>) type;
+    } else {
+      return (Class<?>) parameterizedType.getRawType();
+    }
   }
 
   static boolean isCollection(Class<?> type) {

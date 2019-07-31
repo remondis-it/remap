@@ -12,7 +12,7 @@ public class AResource {
   private Set<String> strings;
   private List<BResource> bs;
 
-  private List<List<BResource>> nestedLists;
+  private Set<List<BResource>> nestedLists;
 
   public AResource() {
     super();
@@ -29,7 +29,7 @@ public class AResource {
   /**
    * @return the nestedLists
    */
-  public List<List<BResource>> getNestedLists() {
+  public Set<List<BResource>> getNestedLists() {
     return nestedLists;
   }
 
@@ -37,7 +37,7 @@ public class AResource {
    * @param nestedLists
    *        the nestedLists to set
    */
-  public void setNestedLists(List<List<BResource>> nestedLists) {
+  public void setNestedLists(Set<List<BResource>> nestedLists) {
     this.nestedLists = nestedLists;
   }
 
