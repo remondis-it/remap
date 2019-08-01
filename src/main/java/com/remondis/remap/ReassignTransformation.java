@@ -49,20 +49,25 @@ public class ReassignTransformation extends Transformation {
       Class<?> destinationType = getDestinationType();
 
       Object destinationValue = null;
-      if (hasMapperFor(sourceType, destinationType)) {
-        InternalMapper mapper = getMapperFor(getSourceProperty(), sourceType, getDestinationProperty(),
-            destinationType);
-        destinationValue = mapper.map(sourceValue, null);
-      } else if (isCollection(sourceType)) {
-        Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
-        Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
-        destinationValue = convertCollection(sourceCollectionType, sourceValue, destinationCollectionType);
-      } else {
-        destinationValue = convertValueMapOver(sourceType, sourceValue, destinationType, destination);
-      }
+      destinationValue = _convert(sourceType, sourceValue, destinationType, destination);
 
       writeOrFail(destinationProperty, destination, destinationValue);
     }
+  }
+
+  private Object _convert(Class<?> sourceType, Object sourceValue, Class<?> destinationType, Object destination) {
+    Object destinationValue;
+    if (hasMapperFor(sourceType, destinationType)) {
+      InternalMapper mapper = getMapperFor(this.sourceProperty, sourceType, this.destinationProperty, destinationType);
+      destinationValue = mapper.map(sourceValue, null);
+    } else if (isCollection(sourceType)) {
+      Class<?> sourceCollectionType = findGenericTypeFromMethod(this.sourceProperty.getReadMethod());
+      Class<?> destinationCollectionType = findGenericTypeFromMethod(this.destinationProperty.getReadMethod());
+      destinationValue = convertCollection(sourceCollectionType, sourceValue, destinationCollectionType);
+    } else {
+      destinationValue = convertValueMapOver(sourceType, sourceValue, destinationType, destination);
+    }
+    return destinationValue;
   }
 
   private Object convertCollection(Class<?> sourceCollectionType, Object sourceValue,
