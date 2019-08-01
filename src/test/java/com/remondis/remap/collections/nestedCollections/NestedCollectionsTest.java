@@ -15,6 +15,7 @@ import com.remondis.remap.basic.B;
 import com.remondis.remap.basic.BResource;
 
 public class NestedCollectionsTest {
+  @SuppressWarnings("unchecked")
   @Test
   public void shouldMapNestedCollections() {
 
@@ -25,10 +26,6 @@ public class NestedCollectionsTest {
         .to(AResource.class)
         .useMapper(bMapper)
         .mapper();
-
-    String[] stringsArr = new String[] {
-        "A", "B", "C", "D"
-    };
 
     String b1String = "b1String";
     int b1Number = 101;
