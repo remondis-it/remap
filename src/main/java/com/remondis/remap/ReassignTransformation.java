@@ -44,41 +44,34 @@ public class ReassignTransformation extends Transformation {
     Object sourceValue = readOrFail(sourceProperty, source);
     // Only if the source value is not null we have to perform the mapping
     if (sourceValue != null) {
-      Object destinationValue = null;
 
       Class<?> sourceType = getSourceType();
       Class<?> destinationType = getDestinationType();
 
-      // Primitive types can be set without any conversion, because we checked type
-      // compatibility before.
-      destinationValue = _convert(destination, sourceValue, destinationValue, sourceType, destinationType);
+      Object destinationValue = null;
+      if (hasMapperFor(sourceType, destinationType)) {
+        InternalMapper mapper = getMapperFor(getSourceProperty(), sourceType, getDestinationProperty(),
+            destinationType);
+        destinationValue = mapper.map(sourceValue, null);
+      } else if (isCollection(sourceType)) {
+        Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
+        Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
+        destinationValue = convertCollection(sourceCollectionType, sourceValue, destinationCollectionType);
+      } else {
+        destinationValue = convertValueMapOver(sourceType, sourceValue, destinationType, destination);
+      }
 
       writeOrFail(destinationProperty, destination, destinationValue);
     }
   }
 
-  private Object _convert(Object destination, Object sourceValue, Object destinationValue, Class<?> sourceType,
-      Class<?> destinationType) {
-    if (hasMapperFor(sourceType, destinationType)) {
-      InternalMapper mapper = getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
-      destinationValue = mapper.map(sourceValue, destinationValue);
-    } else if (isCollection(sourceType)) {
-      Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
-      Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
-      destinationValue = convertCollection(sourceValue, sourceCollectionType, destinationCollectionType);
-    } else {
-      destinationValue = convertValue(sourceValue, sourceType, destination, destinationType);
-    }
-    return destinationValue;
-  }
-
-  private Object convertCollection(Object sourceValue, Class<?> sourceCollectionType,
+  private Object convertCollection(Class<?> sourceCollectionType, Object sourceValue,
       Class<?> destinationCollectionType) {
-    return _convertCollection(sourceValue, sourceCollectionType, destinationCollectionType, 0);
+    return _convertCollection(sourceCollectionType, sourceValue, destinationCollectionType, 0);
 
   }
 
-  private Object _convertCollection(Object sourceValue, Class<?> sourceCollectionType,
+  private Object _convertCollection(Class<?> sourceCollectionType, Object sourceValue,
       Class<?> destinationCollectionType, int genericParameterDepth) {
     Collection collection = Collection.class.cast(sourceValue);
     Class<?> collectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod(), genericParameterDepth);
@@ -86,9 +79,9 @@ public class ReassignTransformation extends Transformation {
     return collection.stream()
         .map(o -> {
           if (isCollection(o)) {
-            return _convertCollection(o, sourceCollectionType, destinationCollectionType, genericParameterDepth + 1);
+            return _convertCollection(sourceCollectionType, o, destinationCollectionType, genericParameterDepth + 1);
           } else {
-            return convertValue(o, sourceCollectionType, destinationCollectionType);
+            return convertValue(sourceCollectionType, o, destinationCollectionType);
           }
         })
         .collect(collector);
@@ -97,7 +90,7 @@ public class ReassignTransformation extends Transformation {
   @SuppressWarnings({
       "unchecked", "rawtypes"
   })
-  Object convertValue(Object sourceValue, Class<?> sourceType, Class<?> destinationType) {
+  Object convertValue(Class<?> sourceType, Object sourceValue, Class<?> destinationType) {
     if (isReferenceMapping(sourceType, destinationType)) {
       return sourceValue;
     } else {
@@ -110,7 +103,8 @@ public class ReassignTransformation extends Transformation {
   @SuppressWarnings({
       "unchecked", "rawtypes"
   })
-  Object convertValue(Object sourceValue, Class<?> sourceType, Object destinationValue, Class<?> destinationType) {
+  Object convertValueMapOver(Class<?> sourceType, Object sourceValue, Class<?> destinationType,
+      Object destinationValue) {
     if (isReferenceMapping(sourceType, destinationType)) {
       return sourceValue;
     } else {
