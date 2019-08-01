@@ -44,28 +44,23 @@ public class ReassignTransformation extends Transformation {
     Object sourceValue = readOrFail(sourceProperty, source);
     // Only if the source value is not null we have to perform the mapping
     if (sourceValue != null) {
-
-      Class<?> sourceType = getSourceType();
-      Class<?> destinationType = getDestinationType();
-
-      Object destinationValue = null;
-      destinationValue = _convert(sourceType, sourceValue, destinationType, destination);
-
+      Object destinationValue = _convert(sourceValue, destination);
       writeOrFail(destinationProperty, destination, destinationValue);
     }
   }
 
-  private Object _convert(Class<?> sourceType, Object sourceValue, Class<?> destinationType, Object destination) {
+  private Object _convert(Object sourceValue, Object destination) {
     Object destinationValue;
-    if (hasMapperFor(sourceType, destinationType)) {
-      InternalMapper mapper = getMapperFor(this.sourceProperty, sourceType, this.destinationProperty, destinationType);
+    if (hasMapperFor(getSourceType(), getDestinationType())) {
+      InternalMapper mapper = getMapperFor(this.sourceProperty, getSourceType(), this.destinationProperty,
+          getDestinationType());
       destinationValue = mapper.map(sourceValue, null);
-    } else if (isCollection(sourceType)) {
+    } else if (isCollection(getSourceType())) {
       Class<?> sourceCollectionType = findGenericTypeFromMethod(this.sourceProperty.getReadMethod());
       Class<?> destinationCollectionType = findGenericTypeFromMethod(this.destinationProperty.getReadMethod());
       destinationValue = convertCollection(sourceCollectionType, sourceValue, destinationCollectionType);
     } else {
-      destinationValue = convertValueMapOver(sourceType, sourceValue, destinationType, destination);
+      destinationValue = convertValueMapOver(getSourceType(), sourceValue, getDestinationType(), destination);
     }
     return destinationValue;
   }
