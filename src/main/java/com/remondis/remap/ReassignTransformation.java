@@ -51,19 +51,25 @@ public class ReassignTransformation extends Transformation {
 
       // Primitive types can be set without any conversion, because we checked type
       // compatibility before.
-      if (hasMapperFor(sourceType, destinationType)) {
-        InternalMapper mapper = getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
-        destinationValue = mapper.map(sourceValue, destinationValue);
-      } else if (isCollection(sourceType)) {
-        Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
-        Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
-        destinationValue = convertCollection(sourceValue, sourceCollectionType, destinationCollectionType);
-      } else {
-        destinationValue = convertValue(sourceValue, sourceType, destination, destinationType);
-      }
+      destinationValue = _convert(destination, sourceValue, destinationValue, sourceType, destinationType);
 
       writeOrFail(destinationProperty, destination, destinationValue);
     }
+  }
+
+  private Object _convert(Object destination, Object sourceValue, Object destinationValue, Class<?> sourceType,
+      Class<?> destinationType) {
+    if (hasMapperFor(sourceType, destinationType)) {
+      InternalMapper mapper = getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
+      destinationValue = mapper.map(sourceValue, destinationValue);
+    } else if (isCollection(sourceType)) {
+      Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
+      Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
+      destinationValue = convertCollection(sourceValue, sourceCollectionType, destinationCollectionType);
+    } else {
+      destinationValue = convertValue(sourceValue, sourceType, destination, destinationType);
+    }
+    return destinationValue;
   }
 
   private Object convertCollection(Object sourceValue, Class<?> sourceCollectionType,
