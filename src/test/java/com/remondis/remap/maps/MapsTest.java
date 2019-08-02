@@ -12,32 +12,48 @@ import org.junit.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
-import com.remondis.remap.MappingException;
+import com.remondis.remap.TypeMapping;
 import com.remondis.remap.basic.B;
 import com.remondis.remap.basic.BResource;
 
 public class MapsTest {
 
-  /**
-   * Since maps are not supported out-of-the-box, the mapper should deny automatic
-   * mapping of maps. A workaround should be to add a replace-operator.
-   */
-  @Test(expected = MappingException.class)
-  public void shouldDenyImplicitMappingOfMaps() {
+  @Test
+  public void shouldMapMapsUsingMappers() {
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
         .mapper();
-    Mapping.from(A.class)
+    Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
+        .useMapper(TypeMapping.from(Integer.class)
+            .to(String.class)
+            .applying(String::valueOf))
         .useMapper(bMapper)
         .mapper();
+
+    B b1 = new B("String1", 1, new Integer(101));
+    B b2 = new B("String2", 2, new Integer(102));
+    B b3 = new B("String3", 3, new Integer(103));
+
+    BResource expectedBmapped1 = new BResource("String1", 1, new Integer(101));
+    BResource expectedBmapped2 = new BResource("String2", 2, new Integer(102));
+    BResource expectedBmapped3 = new BResource("String3", 3, new Integer(103));
+
+    A a = new A();
+    a.addB(1, b1);
+    a.addB(2, b2);
+    a.addB(3, b3);
+
+    AResource aMapped = mapper.map(a);
+    Map<String, BResource> bmap = aMapped.getBmap();
+    assertEquals(3, bmap.size());
+
+    assertEquals(expectedBmapped1, bmap.get("1"));
+    assertEquals(expectedBmapped2, bmap.get("2"));
+    assertEquals(expectedBmapped3, bmap.get("3"));
+
   }
 
-  /**
-   * Since maps are not supported out-of-the-box, the mapper should support
-   * mapping transformation via
-   * {@link Mapping#replace(com.remondis.remap.TypedSelector, com.remondis.remap.TypedSelector)}.
-   */
   @Test
   public void shouldWorkaroundMappingOfMaps() {
     Mapper<B, BResource> bMapper = Mapping.from(B.class)

@@ -7,9 +7,11 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * The reassign operation maps a field to another field while the field names may differ. A reassign operation is only
@@ -35,56 +37,72 @@ public class ReassignTransformation extends Transformation {
         || ReflectionUtil.isWrapper(destinationType, sourceType);
   }
 
-  @SuppressWarnings({
-      "unchecked", "rawtypes"
-  })
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
     // Only if the source value is not null we have to perform the mapping
     if (sourceValue != null) {
-      Object destinationValue = _convert(sourceValue, destination);
+      Object destinationValue = _convert(getSourceType(), sourceValue, getDestinationType(), destination, 0);
       writeOrFail(destinationProperty, destination, destinationValue);
     }
   }
 
-  private Object _convert(Object sourceValue, Object destination) {
+  private Object _convert(Class<?> sourceType, Object sourceValue, Class<?> destinationType, Object destination,
+      int genericParameterDepth) {
     Object destinationValue;
-    if (hasMapperFor(getSourceType(), getDestinationType())) {
-      InternalMapper mapper = getMapperFor(this.sourceProperty, getSourceType(), this.destinationProperty,
-          getDestinationType());
+    if (hasMapperFor(sourceType, destinationType)) {
+      InternalMapper mapper = getMapperFor(this.sourceProperty, sourceType, this.destinationProperty, destinationType);
       destinationValue = mapper.map(sourceValue, null);
-    } else if (isCollection(getSourceType())) {
-      Class<?> sourceCollectionType = findGenericTypeFromMethod(this.sourceProperty.getReadMethod());
-      Class<?> destinationCollectionType = findGenericTypeFromMethod(this.destinationProperty.getReadMethod());
-      destinationValue = convertCollection(sourceCollectionType, sourceValue, destinationCollectionType);
+    } else if (isMap(sourceValue)) {
+      return convertMap(sourceValue, genericParameterDepth);
+    } else if (isCollection(sourceValue)) {
+      destinationValue = convertCollection(sourceValue, genericParameterDepth);
     } else {
-      destinationValue = convertValueMapOver(getSourceType(), sourceValue, getDestinationType(), destination);
+      destinationValue = convertValueMapOver(sourceType, sourceValue, destinationType, destination);
     }
     return destinationValue;
   }
 
-  private Object convertCollection(Class<?> sourceCollectionType, Object sourceValue,
-      Class<?> destinationCollectionType) {
-    return _convertCollection(sourceCollectionType, sourceValue, destinationCollectionType, 0);
-
-  }
-
-  private Object _convertCollection(Class<?> sourceCollectionType, Object sourceValue,
-      Class<?> destinationCollectionType, int genericParameterDepth) {
+  private Object convertCollection(Object sourceValue, int genericParameterDepth) {
+    Class<?> sourceCollectionType = findGenericTypeFromMethod(this.sourceProperty.getReadMethod(),
+        genericParameterDepth, 0);
+    Class<?> destinationCollectionType = findGenericTypeFromMethod(this.destinationProperty.getReadMethod(),
+        genericParameterDepth, 0);
     Collection collection = Collection.class.cast(sourceValue);
-    Class<?> collectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod(), genericParameterDepth);
-    Collector collector = getCollector(collectionType);
+    Collector collector = getCollector(destinationCollectionType);
     return collection.stream()
         .map(o -> {
-          if (isCollection(o)) {
-            return _convertCollection(sourceCollectionType, o, destinationCollectionType, genericParameterDepth + 1);
-          } else {
-            return convertValue(sourceCollectionType, o, destinationCollectionType);
-          }
+          Class<?> sourceElementType = findGenericTypeFromMethod(this.sourceProperty.getReadMethod(),
+              genericParameterDepth + 1, 0);
+          Class<?> destinationElementType = findGenericTypeFromMethod(this.destinationProperty.getReadMethod(),
+              genericParameterDepth + 1, 0);
+
+          return _convert(sourceElementType, o, destinationElementType, null, genericParameterDepth + 1);
         })
         .collect(collector);
+  }
+
+  private Object convertMap(Object sourceValue, int genericParameterDepth) {
+    Class<?> sourceMapKeyType = findGenericTypeFromMethod(sourceProperty.getReadMethod(), genericParameterDepth + 1, 0);
+    Class<?> destinationMapKeyType = findGenericTypeFromMethod(destinationProperty.getReadMethod(),
+        genericParameterDepth + 1, 0);
+    Class<?> sourceMapValueType = findGenericTypeFromMethod(sourceProperty.getReadMethod(), genericParameterDepth + 1,
+        1);
+    Class<?> destinationMapValueType = findGenericTypeFromMethod(destinationProperty.getReadMethod(),
+        genericParameterDepth + 1, 1);
+    Map<?, ?> map = Map.class.cast(sourceValue);
+    return map.entrySet()
+        .stream()
+        .map(o -> {
+          Object key = o.getKey();
+          Object value = o.getValue();
+          Object mappedKey = _convert(sourceMapKeyType, key, destinationMapKeyType, null, genericParameterDepth);
+          Object mappedValue = _convert(sourceMapValueType, value, destinationMapValueType, null,
+              genericParameterDepth);
+          return new AbstractMap.SimpleEntry(mappedKey, mappedValue);
+        })
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
   @SuppressWarnings({
@@ -122,11 +140,11 @@ public class ReassignTransformation extends Transformation {
    * @param method The method to analyze.
    * @return Returns the inner generic type.
    */
-  static Class<?> findGenericTypeFromMethod(Method method) {
+  static Class<?> findGenericTypeFromMethod(Method method, int genericParameterIndex) {
     ParameterizedType parameterizedType = (ParameterizedType) method.getGenericReturnType();
     Type type = null;
     while (parameterizedType != null) {
-      type = parameterizedType.getActualTypeArguments()[0];
+      type = parameterizedType.getActualTypeArguments()[genericParameterIndex];
       if (type instanceof ParameterizedType) {
         parameterizedType = (ParameterizedType) type;
       } else {
@@ -143,7 +161,7 @@ public class ReassignTransformation extends Transformation {
    * @param method The method to analyze.
    * @return Returns the inner generic type.
    */
-  static Class<?> findGenericTypeFromMethod(Method method, int genericParameterDepth) {
+  static Class<?> findGenericTypeFromMethod(Method method, int genericParameterDepth, int genericParameterIndex) {
     ParameterizedType parameterizedType = (ParameterizedType) method.getGenericReturnType();
     if (genericParameterDepth == 0) {
       return (Class<?>) parameterizedType.getRawType();
@@ -151,7 +169,7 @@ public class ReassignTransformation extends Transformation {
     Type type = null;
     int i = 1;
     while (parameterizedType != null && i <= genericParameterDepth) {
-      type = parameterizedType.getActualTypeArguments()[0];
+      type = parameterizedType.getActualTypeArguments()[genericParameterIndex];
       if (type instanceof ParameterizedType) {
         parameterizedType = (ParameterizedType) type;
       } else {
@@ -180,11 +198,16 @@ public class ReassignTransformation extends Transformation {
     // if this transformation performs an object mapping, check for known mappers
     Class<?> sourceType = getSourceType();
     if (isMap(sourceType)) {
-      throw MappingException.denyReassignOnMaps(getSourceProperty(), getDestinationProperty());
+      Class<?> sourceMapKeyType = findGenericTypeFromMethod(sourceProperty.getReadMethod(), 0);
+      Class<?> destinationMapKeyType = findGenericTypeFromMethod(destinationProperty.getReadMethod(), 0);
+      Class<?> sourceMapValueType = findGenericTypeFromMethod(sourceProperty.getReadMethod(), 1);
+      Class<?> destinationMapValueType = findGenericTypeFromMethod(destinationProperty.getReadMethod(), 1);
+      validateTypeMapping(getSourceProperty(), sourceMapKeyType, getDestinationProperty(), destinationMapKeyType);
+      validateTypeMapping(getSourceProperty(), sourceMapValueType, getDestinationProperty(), destinationMapValueType);
     }
     if (isCollection(sourceType)) {
-      Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod());
-      Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod());
+      Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod(), 0);
+      Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod(), 0);
       validateTypeMapping(getSourceProperty(), sourceCollectionType, getDestinationProperty(),
           destinationCollectionType);
     } else {
@@ -202,8 +225,12 @@ public class ReassignTransformation extends Transformation {
     }
   }
 
-  private boolean isMap(Class<?> sourceType) {
+  private static boolean isMap(Class<?> sourceType) {
     return Map.class.isAssignableFrom(sourceType);
+  }
+
+  private static boolean isMap(Object object) {
+    return (object instanceof Map);
   }
 
   @Override

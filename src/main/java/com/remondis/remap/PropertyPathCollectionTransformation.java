@@ -45,7 +45,7 @@ public class PropertyPathCollectionTransformation<RS, X, RD> extends Transformat
   @SuppressWarnings("unchecked")
   private Get<RS, RD, ?> createGetter(PropertyDescriptor sourceProperty, PropertyPath<RD, RS, ?> propertyPath) {
     Class<RS> genericSourceType = (Class<RS>) ReassignTransformation
-        .findGenericTypeFromMethod(sourceProperty.getReadMethod());
+        .findGenericTypeFromMethod(sourceProperty.getReadMethod(), 0);
     return Getter.newFor(genericSourceType)
         .evaluate(propertyPath);
   }
@@ -54,7 +54,7 @@ public class PropertyPathCollectionTransformation<RS, X, RD> extends Transformat
   private Get<RS, RD, ?> createGetterAndApply(PropertyDescriptor sourceProperty, PropertyPath<X, RS, ?> propertyPath,
       Function<X, RD> transformation) {
     Class<RS> genericSourceType = (Class<RS>) ReassignTransformation
-        .findGenericTypeFromMethod(sourceProperty.getReadMethod());
+        .findGenericTypeFromMethod(sourceProperty.getReadMethod(), 0);
     return Getter.newFor(genericSourceType)
         .evaluate(propertyPath)
         .andApply(transformation);

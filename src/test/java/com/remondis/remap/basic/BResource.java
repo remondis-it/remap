@@ -64,12 +64,46 @@ public class BResource {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
     return "BResource [string=" + string + ", number=" + number + ", integer=" + integer + "]";
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((integer == null) ? 0 : integer.hashCode());
+    result = prime * result + number;
+    result = prime * result + ((string == null) ? 0 : string.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    BResource other = (BResource) obj;
+    if (integer == null) {
+      if (other.integer != null)
+        return false;
+    } else if (!integer.equals(other.integer))
+      return false;
+    if (number != other.number)
+      return false;
+    if (string == null) {
+      if (other.string != null)
+        return false;
+    } else if (!string.equals(other.string))
+      return false;
+    return true;
   }
 
 }
