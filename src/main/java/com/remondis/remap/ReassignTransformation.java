@@ -43,63 +43,69 @@ public class ReassignTransformation extends Transformation {
     Object sourceValue = readOrFail(sourceProperty, source);
     // Only if the source value is not null we have to perform the mapping
     if (sourceValue != null) {
-      Object destinationValue = _convert(getSourceType(), sourceValue, getDestinationType(), destination, 0);
+      GenericParameterContext sourceCtx = new GenericParameterContext(sourceProperty.getReadMethod());
+      GenericParameterContext destinationCtx = new GenericParameterContext(destinationProperty.getReadMethod());
+      Object destinationValue = _convert(sourceCtx.getCurrentType(), sourceValue, destinationCtx.getCurrentType(),
+          destination, sourceCtx, destinationCtx);
       writeOrFail(destinationProperty, destination, destinationValue);
     }
   }
 
   private Object _convert(Class<?> sourceType, Object sourceValue, Class<?> destinationType, Object destination,
-      int genericParameterDepth) {
+      GenericParameterContext sourceCtx, GenericParameterContext destinationCtx) {
     Object destinationValue;
     if (hasMapperFor(sourceType, destinationType)) {
       InternalMapper mapper = getMapperFor(this.sourceProperty, sourceType, this.destinationProperty, destinationType);
       destinationValue = mapper.map(sourceValue, null);
     } else if (isMap(sourceValue)) {
-      return convertMap(sourceValue, genericParameterDepth);
+      return convertMap(sourceValue, sourceCtx, destinationCtx);
     } else if (isCollection(sourceValue)) {
-      destinationValue = convertCollection(sourceValue, genericParameterDepth);
+      destinationValue = convertCollection(sourceValue, sourceCtx, destinationCtx);
     } else {
       destinationValue = convertValueMapOver(sourceType, sourceValue, destinationType, destination);
     }
     return destinationValue;
   }
 
-  private Object convertCollection(Object sourceValue, int genericParameterDepth) {
-    Class<?> sourceCollectionType = findGenericTypeFromMethod(this.sourceProperty.getReadMethod(),
-        genericParameterDepth, 0);
-    Class<?> destinationCollectionType = findGenericTypeFromMethod(this.destinationProperty.getReadMethod(),
-        genericParameterDepth, 0);
+  private Object convertCollection(Object sourceValue, GenericParameterContext sourceCtx,
+      GenericParameterContext destinationCtx) {
+    Class<?> sourceCollectionType = sourceCtx.getCurrentType();
+    Class<?> destinationCollectionType = destinationCtx.getCurrentType();
     Collection collection = Collection.class.cast(sourceValue);
     Collector collector = getCollector(destinationCollectionType);
     return collection.stream()
         .map(o -> {
-          Class<?> sourceElementType = findGenericTypeFromMethod(this.sourceProperty.getReadMethod(),
-              genericParameterDepth + 1, 0);
-          Class<?> destinationElementType = findGenericTypeFromMethod(this.destinationProperty.getReadMethod(),
-              genericParameterDepth + 1, 0);
-
-          return _convert(sourceElementType, o, destinationElementType, null, genericParameterDepth + 1);
+          GenericParameterContext newSourceCtx = sourceCtx.goInto(0);
+          Class<?> sourceElementType = newSourceCtx.getCurrentType();
+          GenericParameterContext newDestCtx = destinationCtx.goInto(0);
+          Class<?> destinationElementType = newDestCtx.getCurrentType();
+          return _convert(sourceElementType, o, destinationElementType, null, newSourceCtx, newDestCtx);
         })
         .collect(collector);
   }
 
-  private Object convertMap(Object sourceValue, int genericParameterDepth) {
-    Class<?> sourceMapKeyType = findGenericTypeFromMethod(sourceProperty.getReadMethod(), genericParameterDepth + 1, 0);
-    Class<?> destinationMapKeyType = findGenericTypeFromMethod(destinationProperty.getReadMethod(),
-        genericParameterDepth + 1, 0);
-    Class<?> sourceMapValueType = findGenericTypeFromMethod(sourceProperty.getReadMethod(), genericParameterDepth + 1,
-        1);
-    Class<?> destinationMapValueType = findGenericTypeFromMethod(destinationProperty.getReadMethod(),
-        genericParameterDepth + 1, 1);
+  private Object convertMap(Object sourceValue, GenericParameterContext sourceCtx,
+      GenericParameterContext destinationCtx) {
+
+    GenericParameterContext sourceKeyContext = sourceCtx.goInto(0);
+    Class<?> sourceMapKeyType = sourceKeyContext.getCurrentType();
+    GenericParameterContext destKeyContext = destinationCtx.goInto(0);
+    Class<?> destinationMapKeyType = destKeyContext.getCurrentType();
+    GenericParameterContext sourceValueContext = sourceCtx.goInto(1);
+    Class<?> sourceMapValueType = sourceValueContext.getCurrentType();
+    GenericParameterContext destValueContext = destinationCtx.goInto(1);
+    Class<?> destinationMapValueType = destValueContext.getCurrentType();
+
     Map<?, ?> map = Map.class.cast(sourceValue);
     return map.entrySet()
         .stream()
         .map(o -> {
           Object key = o.getKey();
           Object value = o.getValue();
-          Object mappedKey = _convert(sourceMapKeyType, key, destinationMapKeyType, null, genericParameterDepth);
-          Object mappedValue = _convert(sourceMapValueType, value, destinationMapValueType, null,
-              genericParameterDepth);
+          Object mappedKey = _convert(sourceMapKeyType, key, destinationMapKeyType, null, sourceKeyContext,
+              destKeyContext);
+          Object mappedValue = _convert(sourceMapValueType, value, destinationMapValueType, null, sourceValueContext,
+              destValueContext);
           return new AbstractMap.SimpleEntry(mappedKey, mappedValue);
         })
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -152,36 +158,6 @@ public class ReassignTransformation extends Transformation {
       }
     }
     return (Class<?>) type;
-  }
-
-  /**
-   * Finds the generic return type of a method in nested generics. For example this method returns {@link String} when
-   * called on a method like <code>List&lt;List&lt;Set&lt;String&gt;&gt;&gt; get();</code>.
-   *
-   * @param method The method to analyze.
-   * @return Returns the inner generic type.
-   */
-  static Class<?> findGenericTypeFromMethod(Method method, int genericParameterDepth, int genericParameterIndex) {
-    ParameterizedType parameterizedType = (ParameterizedType) method.getGenericReturnType();
-    if (genericParameterDepth == 0) {
-      return (Class<?>) parameterizedType.getRawType();
-    }
-    Type type = null;
-    int i = 1;
-    while (parameterizedType != null && i <= genericParameterDepth) {
-      type = parameterizedType.getActualTypeArguments()[genericParameterIndex];
-      if (type instanceof ParameterizedType) {
-        parameterizedType = (ParameterizedType) type;
-      } else {
-        parameterizedType = null;
-      }
-      i++;
-    }
-    if (parameterizedType == null) {
-      return (Class<?>) type;
-    } else {
-      return (Class<?>) parameterizedType.getRawType();
-    }
   }
 
   static boolean isCollection(Class<?> type) {
