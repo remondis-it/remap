@@ -94,7 +94,9 @@ public class GenericParameterContext {
    * @return Return the type after traversing one step.
    */
   public GenericParameterContext goInto(int genericParameterIndex) {
-    GenericParameterContext newCtx = new GenericParameterContext(stack, finished, currentType, method);
+    Stack<ParameterizedType> newStack = new Stack<>();
+    newStack.addAll(stack);
+    GenericParameterContext newCtx = new GenericParameterContext(newStack, finished, currentType, method);
     newCtx.findNextGenericTypeFromMethod(genericParameterIndex);
     return newCtx;
   }
