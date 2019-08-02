@@ -6,9 +6,9 @@ import java.util.Set;
 
 public class AMapped {
 
-  private List<Set<Map<String, BMapped>>> list;
+  private List<Set<Map<BMapped, CMapped>>> list;
 
-  public AMapped(List<Set<Map<String, BMapped>>> list) {
+  public AMapped(List<Set<Map<BMapped, CMapped>>> list) {
     super();
     this.list = list;
   }
@@ -17,11 +17,11 @@ public class AMapped {
     super();
   }
 
-  public List<Set<Map<String, BMapped>>> getList() {
+  public List<Set<Map<BMapped, CMapped>>> getList() {
     return list;
   }
 
-  public void setList(List<Set<Map<String, BMapped>>> list) {
+  public void setList(List<Set<Map<BMapped, CMapped>>> list) {
     this.list = list;
   }
 

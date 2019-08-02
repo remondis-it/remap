@@ -6,18 +6,22 @@ import java.util.Set;
 
 public class A {
 
-  private List<Set<Map<String, B>>> list;
+  private List<Set<Map<B, C>>> list;
 
-  public A(List<Set<Map<String, B>>> list) {
+  public A(List<Set<Map<B, C>>> list) {
     super();
     this.list = list;
   }
 
-  public List<Set<Map<String, B>>> getList() {
+  public A() {
+    super();
+  }
+
+  public List<Set<Map<B, C>>> getList() {
     return list;
   }
 
-  public void setList(List<Set<Map<String, B>>> list) {
+  public void setList(List<Set<Map<B, C>>> list) {
     this.list = list;
   }
 
