@@ -2,6 +2,7 @@ package com.remondis.remap.maps.nested;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Hashtable;
 import java.util.List;
@@ -11,8 +12,48 @@ import org.junit.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import com.remondis.remap.MappingException;
 
 public class MapsTest {
+
+  @Test
+  public void shouldDoMapperValidation() {
+    Mapper<A1, A1Mapped> a1Mapper = Mapping.from(A1.class)
+        .to(A1Mapped.class)
+        .mapper();
+
+    Mapper<A2, A2Mapped> a2Mapper = Mapping.from(A2.class)
+        .to(A2Mapped.class)
+        .mapper();
+
+    Mapper<A3, A3Mapped> a3Mapper = Mapping.from(A3.class)
+        .to(A3Mapped.class)
+        .mapper();
+
+    assertThatThrownBy(() -> Mapping.from(A.class)
+        .to(AMapped.class)
+        .useMapper(a2Mapper)
+        .useMapper(a3Mapper)
+        .mapper()).isInstanceOf(MappingException.class)
+            .hasMessageContaining(
+                "No mapper found for type mapping from com.remondis.remap.maps.nested.A1 to com.remondis.remap.maps.nested.A1Mapped.");
+
+    assertThatThrownBy(() -> Mapping.from(A.class)
+        .to(AMapped.class)
+        .useMapper(a1Mapper)
+        .useMapper(a3Mapper)
+        .mapper()).isInstanceOf(MappingException.class)
+            .hasMessageContaining(
+                "No mapper found for type mapping from com.remondis.remap.maps.nested.A2 to com.remondis.remap.maps.nested.A2Mapped.");
+
+    assertThatThrownBy(() -> Mapping.from(A.class)
+        .to(AMapped.class)
+        .useMapper(a1Mapper)
+        .useMapper(a2Mapper)
+        .mapper()).isInstanceOf(MappingException.class)
+            .hasMessageContaining(
+                "No mapper found for type mapping from com.remondis.remap.maps.nested.A3 to com.remondis.remap.maps.nested.A3Mapped.");
+  }
 
   @Test
   public void shouldMapNestedKeyValues() {

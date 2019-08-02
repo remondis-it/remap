@@ -1,6 +1,7 @@
 package com.remondis.remap.collections.nestedCollections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -11,10 +12,22 @@ import org.junit.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import com.remondis.remap.MappingException;
 import com.remondis.remap.basic.B;
 import com.remondis.remap.basic.BResource;
 
 public class NestedCollectionsTest {
+
+  @Test
+  public void shouldDoMapperValidation() {
+    assertThatThrownBy(() -> Mapping.from(A.class)
+        .to(AResource.class)
+        .mapper()).isInstanceOf(MappingException.class)
+            .hasMessageContaining(
+                "No mapper found for type mapping from com.remondis.remap.basic.B to com.remondis.remap.basic.BResource.");
+
+  }
+
   @SuppressWarnings("unchecked")
   @Test
   public void shouldMapNestedCollections() {
