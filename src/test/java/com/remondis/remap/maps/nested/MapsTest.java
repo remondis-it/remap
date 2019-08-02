@@ -1,8 +1,10 @@
 package com.remondis.remap.maps.nested;
 
 import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -47,7 +49,43 @@ public class MapsTest {
 
     AMapped mapped = mapper.map(a);
 
-    System.out.println(mapped);
+    assertThat(mapped.getMap()).isInstanceOf(Map.class);
+    assertThat(mapped.getMap()
+        .entrySet()
+        .iterator()
+        .next()
+        .getKey()).isInstanceOf(List.class);
+    assertThat(mapped.getMap()
+        .entrySet()
+        .iterator()
+        .next()
+        .getKey()
+        .iterator()
+        .next()).isInstanceOf(A1Mapped.class);
+    assertThat(mapped.getMap()
+        .entrySet()
+        .iterator()
+        .next()
+        .getValue()).isInstanceOf(Map.class);
+    assertThat(mapped.getMap()
+        .entrySet()
+        .iterator()
+        .next()
+        .getValue()
+        .entrySet()
+        .iterator()
+        .next()
+        .getKey()).isInstanceOf(A2Mapped.class);
+    assertThat(mapped.getMap()
+        .entrySet()
+        .iterator()
+        .next()
+        .getValue()
+        .entrySet()
+        .iterator()
+        .next()
+        .getValue()).isInstanceOf(A3Mapped.class);
+
   }
 
   private Map<A2, A3> asMap(A2 key, A3 value) {
