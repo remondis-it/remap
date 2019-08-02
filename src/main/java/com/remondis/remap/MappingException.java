@@ -138,18 +138,46 @@ public class MappingException extends RuntimeException {
             .getName()));
   }
 
-  static MappingException denyReassignOnMaps(PropertyDescriptor source, PropertyDescriptor dest) {
-    return new MappingException(String
-        .format("The implicit mapping of maps is not supported. Use a replace operation for properties holding maps."
-            + " Invalid reassign was:\n%s\n->%s", asStringWithType(source), asStringWithType(dest)));
-  }
-
   static MappingException denyMappingOfNull() {
     return new MappingException("Mapper cannot map null object.");
   }
 
   static MappingException unsupportedCollection(Class<?> collectionType) {
     return new MappingException(String.format("The collection type %s is unsupported.", collectionType.getName()));
+  }
+
+  static MappingException incompatibleCollectionMapping(PropertyDescriptor sourceProperty,
+      GenericParameterContext sourceCtx, PropertyDescriptor destinationProperty, GenericParameterContext destCtx) {
+    GenericParameterContext rootSrcCtx = new GenericParameterContext(sourceProperty.getReadMethod());
+    GenericParameterContext rootDestCtx = new GenericParameterContext(destinationProperty.getReadMethod());
+    StringBuilder builder = new StringBuilder("Incompatible nested collections found mapping\n\t");
+    builder.append(asString(sourceProperty))
+        .append(" to ~>\n\t")
+        .append(asString(destinationProperty))
+        .append("\nCannot map ")
+        .append(sourceCtx.getCurrentType()
+            .getSimpleName())
+        .append(" to ")
+        .append(destCtx.getCurrentType()
+            .getSimpleName())
+        .append(".\n")
+        .append("Use replace for manual mapping!\n")
+        .append("\nType nesting is\n\t")
+        .append("-> in source type: ")
+        .append("\n\t")
+        .append(rootSrcCtx.get()
+            .toString())
+        .append("\n\t-> in destination type: ")
+        .append("\n\t")
+        .append(rootDestCtx.get()
+            .toString())
+        .append("\n\tcannot map \n\t")
+        .append(sourceCtx.get()
+            .toString())
+        .append("\n\tto\n\t")
+        .append(destCtx.get()
+            .toString());
+    return new MappingException(builder.toString());
   }
 
 }

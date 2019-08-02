@@ -190,7 +190,16 @@ public class ReassignTransformation extends Transformation {
     // Travers nested types here and check for equal map/collection and existing type mapping.
     Class<?> sourceType = sourceCtx.getCurrentType();
     Class<?> destinationType = destCtx.getCurrentType();
-    if (isMap(sourceType) && isMap(destinationType)) {
+    boolean incompatibleCollecion = (isMap(sourceType) && isCollection(destinationType))
+        || (isCollection(sourceType) && isMap(destinationType))
+        || (noCollectionOrMap(sourceType) && isCollectionOrMap(destinationType))
+        || (isCollectionOrMap(sourceType) && noCollectionOrMap(destinationType));
+
+    if (incompatibleCollecion) {
+      throw MappingException.incompatibleCollectionMapping(getSourceProperty(), sourceCtx, getDestinationProperty(),
+          destCtx);
+    }
+    if (isMap(sourceType)) {
       GenericParameterContext sourceKeyContext = sourceCtx.goInto(0);
       GenericParameterContext destKeyContext = destCtx.goInto(0);
 
@@ -200,13 +209,21 @@ public class ReassignTransformation extends Transformation {
       _validateTransformation(sourceKeyContext, destKeyContext);
       _validateTransformation(sourceValueContext, destValueContext);
     }
-    if (isCollection(sourceType) && isCollection(destinationType)) {
+    if (isCollection(sourceType)) {
       GenericParameterContext sourceElemType = sourceCtx.goInto(0);
       GenericParameterContext destElemType = destCtx.goInto(0);
       _validateTransformation(sourceElemType, destElemType);
     } else {
       validateTypeMapping(getSourceProperty(), sourceType, getDestinationProperty(), destinationType);
     }
+  }
+
+  private static boolean noCollectionOrMap(Class<?> type) {
+    return !isMap(type) && !isCollection(type);
+  }
+
+  private static boolean isCollectionOrMap(Class<?> type) {
+    return !noCollectionOrMap(type);
   }
 
   private void validateTypeMapping(PropertyDescriptor sourceProperty, Class<?> sourceType,
