@@ -56,15 +56,14 @@ public class ReassignTransformation extends Transformation {
     Object destinationValue;
     if (hasMapperFor(sourceType, destinationType)) {
       InternalMapper mapper = getMapperFor(this.sourceProperty, sourceType, this.destinationProperty, destinationType);
-      destinationValue = mapper.map(sourceValue, null);
+      return mapper.map(sourceValue, null);
     } else if (isMap(sourceValue)) {
       return convertMap(sourceValue, sourceCtx, destinationCtx);
     } else if (isCollection(sourceValue)) {
-      destinationValue = convertCollection(sourceValue, sourceCtx, destinationCtx);
+      return convertCollection(sourceValue, sourceCtx, destinationCtx);
     } else {
-      destinationValue = convertValueMapOver(sourceType, sourceValue, destinationType, destination);
+      return convertValueMapOver(sourceType, sourceValue, destinationType, destination);
     }
-    return destinationValue;
   }
 
   private Object convertCollection(Object sourceValue, GenericParameterContext sourceCtx,

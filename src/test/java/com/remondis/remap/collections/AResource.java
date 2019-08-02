@@ -1,84 +1,58 @@
 package com.remondis.remap.collections;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.remondis.remap.basic.BResource;
 
 public class AResource {
 
-  private Set<String> strings;
   private List<BResource> bs;
-
-  private Set<List<BResource>> nestedLists;
 
   public AResource() {
     super();
-  }
-
-  public void addStrings(String... strings) {
-    this.strings = new HashSet<>(Arrays.asList(strings));
   }
 
   public void addBs(BResource... bs) {
     this.bs = Arrays.asList(bs);
   }
 
-  /**
-   * @return the nestedLists
-   */
-  public Set<List<BResource>> getNestedLists() {
-    return nestedLists;
-  }
-
-  /**
-   * @param nestedLists
-   *        the nestedLists to set
-   */
-  public void setNestedLists(Set<List<BResource>> nestedLists) {
-    this.nestedLists = nestedLists;
-  }
-
-  /**
-   * @return the strings
-   */
-  public Set<String> getStrings() {
-    return strings;
-  }
-
-  /**
-   * @param strings
-   *        the strings to set
-   */
-  public void setStrings(Set<String> strings) {
-    this.strings = strings;
-  }
-
-  /**
-   * @return the bs
-   */
   public List<BResource> getBs() {
     return bs;
   }
 
-  /**
-   * @param bs
-   *        the bs to set
-   */
   public void setBs(List<BResource> bs) {
     this.bs = bs;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#toString()
-   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((bs == null) ? 0 : bs.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    AResource other = (AResource) obj;
+    if (bs == null) {
+      if (other.bs != null)
+        return false;
+    } else if (!bs.equals(other.bs))
+      return false;
+    return true;
+  }
+
   @Override
   public String toString() {
-    return "A [strings=" + strings + ", bs=" + bs + "]";
+    return "AResource [bs=" + bs + "]";
   }
 
 }
