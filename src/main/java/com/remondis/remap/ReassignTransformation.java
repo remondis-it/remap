@@ -171,7 +171,18 @@ public class ReassignTransformation extends Transformation {
   protected void validateTransformation() throws MappingException {
     // we have to check that all required mappers are known for nested mapping
     // if this transformation performs an object mapping, check for known mappers
-    Class<?> sourceType = getSourceType();
+
+    GenericParameterContext sourceCtx = new GenericParameterContext(getSourceProperty().getReadMethod());
+    GenericParameterContext destCtx = new GenericParameterContext(getDestinationProperty().getReadMethod());
+
+    _validateTransformation(sourceCtx, destCtx);
+
+  }
+
+  private void _validateTransformation(GenericParameterContext sourceCtx, GenericParameterContext destCtx) {
+    // TODO: Travers nested types here and check for equal map/collection and existing type mapping.
+    Class<?> sourceType = sourceCtx.getCurrentType();
+    Class<?> destinationType = destCtx.getCurrentType();
     if (isMap(sourceType)) {
       Class<?> sourceMapKeyType = findGenericTypeFromMethod(sourceProperty.getReadMethod(), 0);
       Class<?> destinationMapKeyType = findGenericTypeFromMethod(destinationProperty.getReadMethod(), 0);
@@ -186,7 +197,6 @@ public class ReassignTransformation extends Transformation {
       validateTypeMapping(getSourceProperty(), sourceCollectionType, getDestinationProperty(),
           destinationCollectionType);
     } else {
-      Class<?> destinationType = getDestinationType();
       validateTypeMapping(getSourceProperty(), sourceType, getDestinationProperty(), destinationType);
     }
   }
