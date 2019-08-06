@@ -51,9 +51,11 @@ public class ReassignTransformation extends Transformation {
     }
   }
 
+  @SuppressWarnings({
+      "unchecked", "rawtypes"
+  })
   private Object _convert(Class<?> sourceType, Object sourceValue, Class<?> destinationType, Object destination,
       GenericParameterContext sourceCtx, GenericParameterContext destinationCtx) {
-    Object destinationValue;
     if (hasMapperFor(sourceType, destinationType)) {
       InternalMapper mapper = getMapperFor(this.sourceProperty, sourceType, this.destinationProperty, destinationType);
       return mapper.map(sourceValue, null);
@@ -66,9 +68,11 @@ public class ReassignTransformation extends Transformation {
     }
   }
 
+  @SuppressWarnings({
+      "unchecked", "rawtypes"
+  })
   private Object convertCollection(Object sourceValue, GenericParameterContext sourceCtx,
       GenericParameterContext destinationCtx) {
-    Class<?> sourceCollectionType = sourceCtx.getCurrentType();
     Class<?> destinationCollectionType = destinationCtx.getCurrentType();
     Collection collection = Collection.class.cast(sourceValue);
     Collector collector = getCollector(destinationCollectionType);
@@ -83,6 +87,9 @@ public class ReassignTransformation extends Transformation {
         .collect(collector);
   }
 
+  @SuppressWarnings({
+      "rawtypes", "unchecked"
+  })
   private Object convertMap(Object sourceValue, GenericParameterContext sourceCtx,
       GenericParameterContext destinationCtx) {
 
@@ -171,24 +178,52 @@ public class ReassignTransformation extends Transformation {
   protected void validateTransformation() throws MappingException {
     // we have to check that all required mappers are known for nested mapping
     // if this transformation performs an object mapping, check for known mappers
-    Class<?> sourceType = getSourceType();
+
+    GenericParameterContext sourceCtx = new GenericParameterContext(getSourceProperty().getReadMethod());
+    GenericParameterContext destCtx = new GenericParameterContext(getDestinationProperty().getReadMethod());
+
+    _validateTransformation(sourceCtx, destCtx);
+
+  }
+
+  private void _validateTransformation(GenericParameterContext sourceCtx, GenericParameterContext destCtx) {
+    // Travers nested types here and check for equal map/collection and existing type mapping.
+    Class<?> sourceType = sourceCtx.getCurrentType();
+    Class<?> destinationType = destCtx.getCurrentType();
+    boolean incompatibleCollecion = (isMap(sourceType) && isCollection(destinationType))
+        || (isCollection(sourceType) && isMap(destinationType))
+        || (noCollectionOrMap(sourceType) && isCollectionOrMap(destinationType))
+        || (isCollectionOrMap(sourceType) && noCollectionOrMap(destinationType));
+
+    if (incompatibleCollecion) {
+      throw MappingException.incompatibleCollectionMapping(getSourceProperty(), sourceCtx, getDestinationProperty(),
+          destCtx);
+    }
     if (isMap(sourceType)) {
-      Class<?> sourceMapKeyType = findGenericTypeFromMethod(sourceProperty.getReadMethod(), 0);
-      Class<?> destinationMapKeyType = findGenericTypeFromMethod(destinationProperty.getReadMethod(), 0);
-      Class<?> sourceMapValueType = findGenericTypeFromMethod(sourceProperty.getReadMethod(), 1);
-      Class<?> destinationMapValueType = findGenericTypeFromMethod(destinationProperty.getReadMethod(), 1);
-      validateTypeMapping(getSourceProperty(), sourceMapKeyType, getDestinationProperty(), destinationMapKeyType);
-      validateTypeMapping(getSourceProperty(), sourceMapValueType, getDestinationProperty(), destinationMapValueType);
+      GenericParameterContext sourceKeyContext = sourceCtx.goInto(0);
+      GenericParameterContext destKeyContext = destCtx.goInto(0);
+
+      GenericParameterContext sourceValueContext = sourceCtx.goInto(1);
+      GenericParameterContext destValueContext = destCtx.goInto(1);
+
+      _validateTransformation(sourceKeyContext, destKeyContext);
+      _validateTransformation(sourceValueContext, destValueContext);
     }
     if (isCollection(sourceType)) {
-      Class<?> sourceCollectionType = findGenericTypeFromMethod(sourceProperty.getReadMethod(), 0);
-      Class<?> destinationCollectionType = findGenericTypeFromMethod(destinationProperty.getReadMethod(), 0);
-      validateTypeMapping(getSourceProperty(), sourceCollectionType, getDestinationProperty(),
-          destinationCollectionType);
+      GenericParameterContext sourceElemType = sourceCtx.goInto(0);
+      GenericParameterContext destElemType = destCtx.goInto(0);
+      _validateTransformation(sourceElemType, destElemType);
     } else {
-      Class<?> destinationType = getDestinationType();
       validateTypeMapping(getSourceProperty(), sourceType, getDestinationProperty(), destinationType);
     }
+  }
+
+  private static boolean noCollectionOrMap(Class<?> type) {
+    return !isMap(type) && !isCollection(type);
+  }
+
+  private static boolean isCollectionOrMap(Class<?> type) {
+    return !noCollectionOrMap(type);
   }
 
   private void validateTypeMapping(PropertyDescriptor sourceProperty, Class<?> sourceType,

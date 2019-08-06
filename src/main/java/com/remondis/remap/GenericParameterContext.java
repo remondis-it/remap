@@ -79,7 +79,7 @@ public class GenericParameterContext {
    *
    * @return Returns the current parameterized type.
    */
-  private ParameterizedType get() {
+  public ParameterizedType get() {
     return stack.peek();
   }
 
