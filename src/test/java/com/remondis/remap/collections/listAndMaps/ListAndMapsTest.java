@@ -57,12 +57,11 @@ public class ListAndMapsTest {
     assertThat(nestedLists.iterator()
         .next()).isInstanceOf(Map.class);
 
-    // TODO: After implementing map support, uncomment this.
-    // assertThat(nestedLists.iterator()
-    // .next()
-    // .entrySet()
-    // .iterator()
-    // .next()
-    // .getValue()).isInstanceOf(BResource.class);
+    assertThat(nestedLists.iterator()
+        .next()
+        .entrySet()
+        .iterator()
+        .next()
+        .getValue()).isInstanceOf(BResource.class);
   }
 }
