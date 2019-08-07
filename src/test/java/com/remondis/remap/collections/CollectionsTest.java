@@ -2,10 +2,7 @@ package com.remondis.remap.collections;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 
@@ -16,24 +13,6 @@ import com.remondis.remap.basic.B;
 import com.remondis.remap.basic.BResource;
 
 public class CollectionsTest {
-  @Test
-  public void shouldReassignCollections() {
-    A a = new A();
-    a.addStrings("a", "b", "c");
-    Set<String> expectedSet = a.getStrings();
-
-    Mapper<A, ReassignBean> mapper = Mapping.from(A.class)
-        .to(ReassignBean.class)
-        .reassign(A::getStrings)
-        .to(ReassignBean::getAnotherName)
-        .omitOtherSourceProperties()
-        .mapper();
-
-    ReassignBean b = mapper.map(a);
-
-    assertEquals(expectedSet, b.getAnotherName());
-
-  }
 
   /**
    * There was a bug in collection mappings. It was possible to declare a
@@ -47,7 +26,6 @@ public class CollectionsTest {
         .mapper();
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void shouldMapNestedCollections() {
 
@@ -58,10 +36,6 @@ public class CollectionsTest {
         .to(AResource.class)
         .useMapper(bMapper)
         .mapper();
-
-    String[] stringsArr = new String[] {
-        "A", "B", "C", "D"
-    };
 
     String b1String = "b1String";
     int b1Number = 101;
@@ -74,15 +48,9 @@ public class CollectionsTest {
     B b2 = new B(b2String, b2Number, b2Integer);
 
     A a = new A();
-    a.addStrings(stringsArr);
     a.addBs(b1, b2);
 
-    Set<B> firstList = new HashSet<>(Arrays.asList(b1));
-    Set<B> secondList = new HashSet<>(Arrays.asList(b2));
-    a.addNestedLists(firstList, secondList);
-
     AResource ar = aMapper.map(a);
-    assertEquals(a.getStrings(), ar.getStrings());
     List<B> bs = a.getBs();
     List<BResource> brs = ar.getBs();
     assertEquals(bs.size(), brs.size());
@@ -106,7 +74,6 @@ public class CollectionsTest {
 
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void shouldMapCollections() {
 
@@ -116,13 +83,7 @@ public class CollectionsTest {
     Mapper<A, AResource> aMapper = Mapping.from(A.class)
         .to(AResource.class)
         .useMapper(bMapper)
-        .omitInSource(A::getNestedLists)
-        .omitInDestination(AResource::getNestedLists)
         .mapper();
-
-    String[] stringsArr = new String[] {
-        "A", "B", "C", "D"
-    };
 
     String b1String = "b1String";
     int b1Number = 101;
@@ -135,15 +96,9 @@ public class CollectionsTest {
     B b2 = new B(b2String, b2Number, b2Integer);
 
     A a = new A();
-    a.addStrings(stringsArr);
     a.addBs(b1, b2);
 
-    Set<B> firstList = new HashSet<>(Arrays.asList(b1));
-    Set<B> secondList = new HashSet<>(Arrays.asList(b2));
-    a.addNestedLists(firstList, secondList);
-
     AResource ar = aMapper.map(a);
-    assertEquals(a.getStrings(), ar.getStrings());
     List<B> bs = a.getBs();
     List<BResource> brs = ar.getBs();
     assertEquals(bs.size(), brs.size());
