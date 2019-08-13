@@ -6,8 +6,8 @@
 
 # Table of Contents
 1. [Long story short](#long-story-short)
-2. [Great News](#great-news)
-3. [About ReMap](#about-remap)
+2. [About ReMap](#about-remap)
+3. [Great News](#great-news)
 4. [Mapping operations](#mapping-operations)
 5. [Validation](#validation)
 6. [Features](#features)
@@ -62,6 +62,13 @@ The resulting mapper does the following:
 
 You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/demo/DemoTest.java)
 
+## About ReMap
+
+ReMap is a library that simplifies conversion of objects field by field. It was developed to make conversion of database entities to DTOs (data transfer objects) easier. The use of ReMap makes converter classes and unit tests for converters obsolete: ReMap only needs a specification of what fields are to be mapped, but the amount of code that actually performs the assignments and transformations is minimized. Therefore the code that must be unit-tested is also minimized.
+
+ReMap maps a objects of a source to a destination type. As per default ReMap tries to map all fields from the source to the destination object if the fields have equal name and equal types or equal name and a mapper was registered to perform the type mapping. __Only differences between the source type and the target type must be specified when creating a mapper.__
+
+
 ## Great news
 
 ### Now mapping of Maps is supported
@@ -94,12 +101,6 @@ All properties are mapped!
 ```
 
 This may give you a better overview when trying to understand especially older mapping configurations.
-
-## About ReMap
-
-ReMap is a library that simplifies conversion of objects field by field. It was developed to make conversion of database entities to DTOs (data transfer objects) easier. The use of ReMap makes converter classes and unit tests for converters obsolete: ReMap only needs a specification of what fields are to be mapped, but the amount of code that actually performs the assignments and transformations is minimized. Therefore the code that must be unit-tested is also minimized.
-
-ReMap maps a objects of a source to a destination type. As per default ReMap tries to map all fields from the source to the destination object if the fields have equal name and equal types or equal name and a mapper was registered to perform the type mapping. __Only differences between the source type and the target type must be specified when creating a mapper.__
 
 ## Mapping operations
 
