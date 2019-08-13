@@ -316,6 +316,8 @@ ReMap converts the `java.util.List` to a `java.util.Set` vice-versa. But note __
 
 This also works in conjunction with `java.util.Map` on any generic nesting level.
 
+Note: ReMap only converts matching collection types. The conversion from `List` to `Map` is not supported.
+
 ### Mapping fields with a custom mapping function
 
 Sometimes you want to perform the mapping of fields with a custom function. ReMap supports custom mapping functions with the `replace` operation.
