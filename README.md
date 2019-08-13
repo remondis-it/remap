@@ -6,35 +6,35 @@
 
 # Table of Contents
 1. [Long story short](#long-story-short)
-1. [Hot Tip](#hot-tip)
-2. [About ReMap](#about-remap)
-3. [Mapping operations](#mapping-operations)
-4. [Validation](#validation)
-5. [Features](#features)
-6. [Limitations](#limitations)
-7. [The mapping cookbook](#the-mapping-cookbook)
+2. [Great News](#great-news)
+3. [About ReMap](#about-remap)
+4. [Mapping operations](#mapping-operations)
+5. [Validation](#validation)
+6. [Features](#features)
+7. [Limitations](#limitations)
+8. [The mapping cookbook](#the-mapping-cookbook)
    1. [Implicit Mappings](#implicit-mappings)
    2. [Mapping fields of the same type](#mapping-fields-of-the-same-type)
    3. [Mapping fields using another mapper](#mapping-fields-using-another-mapper)
-   4. [Mapping fields with different names with another mapper](#mapping-fields-with-different-names-with-another-mapper)
-   5. [Mapping fields with a custom mapping function](#mapping-fields-with-a-custom-mapping-function)
-   6. [Transforming collections with a custom mapping function](#transforming-collections-with-a-custom-mapping-function)
-   7. [Type mappings](#type-mappings)
-   8. [Mapping with property paths](#mapping-with-property-paths)
-   9. [Mapping other values to a field](#mapping-other-values-to-a-field)
-   10. [Mapping maps](#mapping-maps)
-   11. [Tests](#tests)
-8. [Spring integration](#spring-integration)
+   4. [Mapping fields with different names using another mapper](#mapping-fields-with-different-names-using-another-mapper)
+   5. [Conversion of collections](#conversion-of-collections)
+   6. [Mapping fields with a custom mapping function](#mapping-fields-with-a-custom-mapping-function)
+   7. [Transforming collections with a custom mapping function](#transforming-collections-with-a-custom-mapping-function)
+   8. [Type mappings](#type-mappings)
+   9. [Mapping with property paths](#mapping-with-property-paths)
+   10. [Mapping other values to a field](#mapping-other-values-to-a-field)
+   11. [Mapping maps](#mapping-maps)
+   12. [Tests](#tests)
+9. [Spring integration](#spring-integration)
    1. [Spring Boot Issue](#spring-boot-issue)
-9. [Migration guide](#migration-guide)
-10. [How to contribute](#how-to-contribute)
+10. [Migration guide](#migration-guide)
+11. [How to contribute](#how-to-contribute)
 
 ## Long story short
 
 ReMap is a library that simplifies conversion of objects field by field and greatly reduces the efforts for unit testing mapper classes. You can get this library via Maven Central using the following coordinates
 
 ReMap is available through [![Maven Central](https://img.shields.io/maven-central/v/com.remondis/remap.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.remondis%22%20AND%20a:%22remap%22) and [JCenter](https://bintray.com/schuettec/maven/com.remondis%3Aremap/_latestVersion)
-
 
 
 The following code snippet shows how to map a source type to a destination type:
@@ -62,7 +62,15 @@ The resulting mapper does the following:
 
 You can find this demo and the involved classes [here](src/test/java/com/remondis/remap/demo/DemoTest.java)
 
-### Hot Tip
+## Great news
+
+### Now mapping of Maps is supported
+
+Since version `4.1.16` ReMap supports the mapping of maps as well as mapping of generic nesting of collections/maps as long as the collection types (collection or map) match on source and destination fields.
+
+See [Conversion of collections](#conversion-of-collections) for more information.
+
+#### Visualize your mapping
 
 You can call `Mapper.toString()` to get an overview of what the mapper does. Since the first version of ReMap the mapping configuration can be visualized this way but only a few people now that.
 
@@ -141,10 +149,9 @@ ReMap supports
 * type inheritance
 * fields holding non-Java Bean types can be mapped using a specific type mapping.
 * mapping object references to fields
-* restrictive visibilities
 * mapping from interface to Java Bean type
-* mapping of nested collections (Attention: maps are not collections!)
-* mapping of maps using `replace` and a transformation function that maps key and values
+* mapping of nested collections
+* mapping of nested maps
 * unit testing of mapping specifications
 * mapping without invasively changing code of involved objects
 * overwrite fields in an instance by specifying the target instance for the mapping
@@ -191,7 +198,7 @@ Mapper<A, B> mapper = Mapping
 
 Sometimes fields have the same type but different names. In this case ReMap will not create implicit mappings. In this case use a `reassign` operation.
 
-__This also works for collections!__
+__This also works for collections and maps!__
 
 The following example shows how to map properties with the same type but differing field names.
 
@@ -219,7 +226,7 @@ Mapper<A, B> mapper = Mapping
 
 ReMap supports the reuse of mappers. If you want to map fields for whose type conversions a mapper was already defined, you can register the mapper in the mapping configuration and use it.
 
-__This also works for collections!__
+__This also works for collections and maps!__
 
 ```java
 public class A {
@@ -249,11 +256,11 @@ As you can see, the mapping of the fields with name `someBean` are performed aut
 
 __If the field names differ you can simply use a `reassign` operation to specify the new field name!__
 
-### Mapping fields with different names with another mapper
+### Mapping fields with different names using another mapper
 
 Assuming the field names differ but you want to map fields for whose type conversions a mapper was already defined, you can register the mapper in the mapping configuration and use it in conjunction with a `reassign` operation.
 
-__This also works for collections!__
+__This also works for collections and maps!__
 
 ```java
 public class A {
@@ -283,6 +290,31 @@ Mapper<A, B> mapper = Mapping
 
 As you can see, you only have to configure the different field names. The type conversion is performed automatically because the required mapper was registered.
 
+### Conversion of collections
+
+ReMap supports the mapping of collection types. If the types (collection or map) match for source and destination field on each level of nesting, the conversion of the collection is performed automatically.
+
+Example:
+
+A Java Bean with the following field
+
+```
+public class A {
+  private List<Set<B>> nestedLists;
+}
+```
+
+can be mapped automatically to
+
+```
+public class AResource {
+  private Set<List<BResource>> nestedLists;
+}
+```
+
+ReMap converts the `java.util.List` to a `java.util.Set` vice-versa. But note __this operation removes duplicates due to the behaviour of Set__.
+
+This also works in conjunction with `java.util.Map` on any generic nesting level.
 
 ### Mapping fields with a custom mapping function
 
@@ -318,8 +350,7 @@ The above example maps the `name` property in `A` to the `nameLength` property i
 
 ### Transforming collections with a custom mapping function
 
-When performing a `replace` operation on collections in earlier versions of ReMap you had to manually iterate over the collection to apply the conversion. Since ReMap version `1.0.0` you can use the operation `replaceCollection` to apply the transformation function automatically on the collection items.
-
+When a mapping of collection items should be performed you can use the operation `replaceCollection` to apply the transformation function automatically on the collection items.
 
 The following code snippet shows how to use `replaceCollection`:
 
@@ -478,33 +509,30 @@ __Do not mix up the `set`- and `replace`-operations:__ Sometimes you can write a
 
 ### Mapping maps
 
-As mentioned above ReMap does not directly support the mapping of `java.util.Map`. The following example maps a map in `A` to a map of different key-value-types in `AResource`. The field `bmap` in `A` is a map that may look like this `Map<Integer, B>` while the target field `bmap` in `AResource` is a map of type `Map<String, BResource>`. For this mapping we need a function that transforms the map into another map of the specified type and a mapper to map `B` to `BResource`.
+Since version `4.1.16` ReMap supports mapping of nested collections and maps. The generic type nesting of a source field
+is mapped to the desired type nesting declared by the destination field using type mappings and registered mappers.
 
-Use the following code snippet to map maps using the `replace` operation:
+Example:
 
-```java
-Mapper<B, BResource> bMapper = Mapping.from(B.class)
-    .to(BResource.class)
-    .mapper();
-
- Mapper<A, AResource> mapper = Mapping.from(A.class)
-    .to(AResource.class)
-    // specify a replace operation involving the source and the destination field holding the map
-    .replace(A::getBmap, AResource::getBmap)
-        // specify a transformation function (Map<Integer, B>) -> Map<String, BResource>
-        .with(iToBMap -> {
-          return iToBMap.entrySet()
-            .stream()
-            .map(e -> {
-              // Perform the type conversion while iterating over the entry set
-              return new AbstractMap.SimpleEntry<String, BResource>(String.valueOf(e.getKey()),
-                  bMapper.map(e.getValue()));
-            })
-            .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-        })
-    .useMapper(bMapper)
-    .mapper();
 ```
+public class A {
+  private Map<List<A1>, Map<A2, A3>> map;
+}
+```
+
+can be mapped automatically to
+
+```
+public class AMapped {
+  private Map<List<A1Mapped>, Map<A2Mapped, A3Mapped>> map;
+}
+```
+
+if the following mappers were registered on the mapping:
+- `A1` to `A1Mapped`
+- `A2` to `A2Mapped`
+- `A3` to `A3Mapped`
+
 
 ### Tests
 
