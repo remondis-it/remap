@@ -106,6 +106,27 @@ public class Mapping<S, D> {
   }
 
   /**
+   * Creates a new {@link Mapping} while copying everything from the parent {@link Mapping} except the
+   * source/destination types.
+   *
+   * @param derivedSource The new source type.
+   * @param derivedDestination The new destination type.
+   * @param parentMapping The parent mapping to copy settings from.
+   */
+  Mapping(Class<S> derivedSource, Class<D> derivedDestination, Mapping<? super S, ? super D> parentMapping) {
+    this.source = derivedSource;
+    this.destination = derivedDestination;
+    this.mappers = new Hashtable<>(parentMapping.mappers);
+    this.mappings = new HashSet<>(parentMapping.mappings);
+    this.mappedSourceProperties = new HashSet<>(parentMapping.mappedSourceProperties);
+    this.mappedDestinationProperties = new HashSet<>(parentMapping.mappedDestinationProperties);
+    this.omitOtherSourceProperties = parentMapping.omitOtherSourceProperties;
+    this.omitOtherDestinationProperties = parentMapping.omitOtherDestinationProperties;
+    this.noImplicitMappings = parentMapping.noImplicitMappings;
+
+  }
+
+  /**
    * Specifies the source data type to map from.
    *
    * @param source
