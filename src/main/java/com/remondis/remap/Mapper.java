@@ -145,10 +145,14 @@ public class Mapper<S, D> {
    * <ul>
    * <li>all registered mappers and type mappings</li>
    * <li>all mapping transformations</li>
+   * <li>setting for suppressing generation of implicit mappings</li>
+   * </ul>
+   *
+   * <h2>What is not copied from parent mapper?</h2>
+   * The following settings must be repeated on the derived mapping to ensure that the behaviour is wanted.
+   * <ul>
    * <li>setting for omitting all source fields</li>
    * <li>setting for omitting all destination fields</li>
-   * <li>setting for suppressing generation of implicit mappings</li>
-   *
    * </ul>
    *
    * @param <SD> The new source type. Must be a subclass of the source type used by this {@link Mapper}.
@@ -160,7 +164,7 @@ public class Mapper<S, D> {
    */
   public <SD extends S, DD extends D> Mapping<SD, DD> derive(Class<SD> derivedSourceType,
       Class<DD> derivedDestinationType) {
-    return new Mapping<>(derivedSourceType, derivedDestinationType, this.mapping);
+    return new DerivedMapping<>(derivedSourceType, derivedDestinationType, this.mapping);
   }
 
 }

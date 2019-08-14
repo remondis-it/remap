@@ -37,6 +37,17 @@ public class ReuseMapperTest {
   }
 
   @Test
+  public void shouldModifyMappingOfParentFields() {
+    Mapper<Child, ChildMapped> modifyParentMapper = mapper.derive(Child.class, ChildMapped.class)
+        .replace(Child::getParent, ChildMapped::getLength)
+        .withSkipWhenNull(str -> 1000)
+        .reassign(Child::getChildString)
+        .to(ChildMapped::getChildInt)
+        .mapper();
+
+  }
+
+  @Test
   public void shouldComplainAboutUnmappedChildPropertiesWhenDeriveFromParentMapper() {
     assertThatThrownBy(() -> mapper.derive(Child.class, ChildMapped.class)
         .mapper()).isInstanceOf(MappingException.class)
