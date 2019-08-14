@@ -134,4 +134,37 @@ public class Mapper<S, D> {
     return mapping.toString();
   }
 
+  /**
+   * Creates a new {@link Mapping} for derived source/destination classes. The mapping configuration of this
+   * {@link Mapper} is used for the resulting {@link Mapping}. <b>Note: Mapping for additional fields within the
+   * derived source/destination classes must be declared on the returned {@link Mapper} in order to get a valid
+   * mapping.</b>
+   *
+   * <h2>What is copied from parent mapper?</h2>
+   * The resulting {@link Mapping} has the same settings like the parent mapping and they can be reused.
+   * <ul>
+   * <li>all registered mappers and type mappings</li>
+   * <li>all mapping transformations</li>
+   * <li>setting for suppressing generation of implicit mappings</li>
+   * </ul>
+   *
+   * <h2>What is not copied from parent mapper?</h2>
+   * The following settings must be repeated on the derived mapping to ensure that the behaviour is wanted.
+   * <ul>
+   * <li>setting for omitting all source fields</li>
+   * <li>setting for omitting all destination fields</li>
+   * </ul>
+   *
+   * @param <SD> The new source type. Must be a subclass of the source type used by this {@link Mapper}.
+   * @param <DD> The new destination type. Must be a subclass of the destination type used by this {@link Mapper}.
+   * @param derivedSourceType The new source type. Must be a subclass of the source type used by this {@link Mapper}.
+   * @param derivedDestinationType The new destination type. Must be a subclass of the destination type used by this
+   *        {@link Mapper}.
+   * @return Returns a new {@link Mapping} that uses the parent mapping configuration for the mapping of subclasses.
+   */
+  public <SD extends S, DD extends D> Mapping<SD, DD> derive(Class<SD> derivedSourceType,
+      Class<DD> derivedDestinationType) {
+    return new DerivedMapping<>(derivedSourceType, derivedDestinationType, this.mapping);
+  }
+
 }

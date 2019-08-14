@@ -7,7 +7,6 @@ import static com.remondis.remap.MappingException.notAProperty;
 import static com.remondis.remap.MappingException.zeroInteractions;
 import static com.remondis.remap.Properties.createUnmappedMessage;
 import static com.remondis.remap.ReflectionUtil.newInstance;
-import static java.util.Objects.nonNull;
 
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
@@ -55,46 +54,46 @@ public class Mapping<S, D> {
   static final String OMIT_FIELD_DEST = "omit in destination";
   static final String OMIT_FIELD_SOURCE = "omit in source";
 
-  private Class<S> source;
-  private Class<D> destination;
+  protected Class<S> source;
+  protected Class<D> destination;
 
   /**
    * Holds the list of mappers registered for hierarchical mapping.
    */
-  private Map<Projection<?, ?>, InternalMapper<?, ?>> mappers;
+  protected Map<Projection<?, ?>, InternalMapper<?, ?>> mappers;
 
   /**
    * Holds the list of mapping operations.
    */
-  private Set<Transformation> mappings;
+  protected Set<Transformation> mappings;
 
   /**
    * This set keeps track of the mapped source properties.
    */
-  private Set<PropertyDescriptor> mappedSourceProperties;
+  protected Set<PropertyDescriptor> mappedSourceProperties;
 
   /**
    * This set keeps track of the mapped destination properties.
    */
-  private Set<PropertyDescriptor> mappedDestinationProperties;
+  protected Set<PropertyDescriptor> mappedDestinationProperties;
 
   /**
    * This flag indicates that all other source properties that are not part of the mapping should be omitted. Attention:
    * Do not omit implicit mappings.
    */
-  private boolean omitOtherSourceProperties;
+  protected boolean omitOtherSourceProperties;
 
   /**
    * This flag indicates that all other destination properties that are not part of the mapping should be omitted.
    * Attention:
    * Do not omit implicit mappings.
    */
-  private boolean omitOtherDestinationProperties;
+  protected boolean omitOtherDestinationProperties;
 
   /**
    * This flag indicates that the creation of implicit mappings should be disabled.
    */
-  private boolean noImplicitMappings;
+  protected boolean noImplicitMappings;
 
   Mapping(Class<S> source, Class<D> destination) {
     this.source = source;
@@ -103,6 +102,27 @@ public class Mapping<S, D> {
     this.mappedSourceProperties = new HashSet<>();
     this.mappedDestinationProperties = new HashSet<>();
     this.mappers = new Hashtable<>();
+  }
+
+  /**
+   * Creates a new {@link Mapping} while copying everything from the parent {@link Mapping} except the
+   * source/destination types.
+   *
+   * @param derivedSource The new source type.
+   * @param derivedDestination The new destination type.
+   * @param parentMapping The parent mapping to copy settings from.
+   */
+  Mapping(Class<S> derivedSource, Class<D> derivedDestination, Mapping<? super S, ? super D> parentMapping) {
+    this.source = derivedSource;
+    this.destination = derivedDestination;
+    this.mappers = new Hashtable<>(parentMapping.mappers);
+    this.mappings = new HashSet<>(parentMapping.mappings);
+    this.mappedSourceProperties = new HashSet<>(parentMapping.mappedSourceProperties);
+    this.mappedDestinationProperties = new HashSet<>(parentMapping.mappedDestinationProperties);
+    this.omitOtherSourceProperties = false;
+    this.omitOtherDestinationProperties = false;
+    this.noImplicitMappings = parentMapping.noImplicitMappings;
+
   }
 
   /**
@@ -324,12 +344,12 @@ public class Mapping<S, D> {
   protected void addMapping(PropertyDescriptor sourceProperty, PropertyDescriptor destProperty,
       Transformation transformation) {
     // check if the property descriptor is already mapped
-    denyAlreadyOmittedProperty(sourceProperty);
     denyAlreadyMappedProperty(mappedDestinationProperties, destProperty);
     // mark the property as mapped in destination
     mappedSourceProperties.add(sourceProperty);
     mappedDestinationProperties.add(destProperty);
-    // create omit transformation object
+
+    // Add the actual transformation
     mappings.add(transformation);
   }
 
@@ -339,21 +359,6 @@ public class Mapping<S, D> {
     mappedDestinationProperties.add(destProperty);
     // create omit transformation object
     mappings.add(setTransformation);
-  }
-
-  private void denyAlreadyOmittedProperty(PropertyDescriptor sourceProperty) {
-    if (mappedSourceProperties.contains(sourceProperty)) {
-      // Search for omit-Operations
-      mappings.stream()
-          .forEach(t -> {
-            PropertyDescriptor omitSourceProperty = t.getSourceProperty();
-            // If omitSourceProperty is null, then the mapping is an OmitInDestination-Operation.
-            if (t instanceof OmitTransformation && nonNull(omitSourceProperty)
-                && omitSourceProperty.equals(sourceProperty)) {
-              throw alreadyMappedProperty(sourceProperty);
-            }
-          });
-    }
   }
 
   /**
@@ -656,7 +661,7 @@ public class Mapping<S, D> {
     return noImplicitMappings;
   }
 
-  private void _useMapper(InternalMapper<?, ?> interalMapper) {
+  protected void _useMapper(InternalMapper<?, ?> interalMapper) {
     Projection<?, ?> projection = interalMapper.getProjection();
     if (mappers.containsKey(projection)) {
       throw MappingException.duplicateMapper(projection.getSource(), projection.getDestination());
