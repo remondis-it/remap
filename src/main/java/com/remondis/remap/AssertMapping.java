@@ -349,8 +349,7 @@ public class AssertMapping<S, D> {
             // Check if the configured replace transformation has the same skip-null configuration than the asserted
             // one and throw if not
             if (replace.isSkipWhenNull() != assertedReplaceTransformation.isSkipWhenNull()) {
-              throw new AssertionError(
-                  DIFFERENT_NULL_STRATEGY + replace.toString() + "\n" + assertedTransformations.toString());
+              throw new AssertionError(DIFFERENT_NULL_STRATEGY + replace.toString());
             }
           }
         });
