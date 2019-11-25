@@ -32,7 +32,7 @@ public class ReassignTransformation extends Transformation {
     return sourceType.equals(destinationType);
   }
 
-  private boolean isReferenceMapping(Class<?> sourceType, Class<?> destinationType) {
+  protected static boolean isReferenceMapping(Class<?> sourceType, Class<?> destinationType) {
     return isEqualTypes(sourceType, destinationType) || ReflectionUtil.isWrapper(sourceType, destinationType)
         || ReflectionUtil.isWrapper(destinationType, sourceType);
   }
