@@ -170,14 +170,6 @@ public class ReassignTransformation extends Transformation {
     return (Class<?>) type;
   }
 
-  static boolean isCollection(Class<?> type) {
-    return Collection.class.isAssignableFrom(type);
-  }
-
-  static boolean isCollection(Object collection) {
-    return collection instanceof Collection;
-  }
-
   @Override
   protected void validateTransformation() throws MappingException {
     // we have to check that all required mappers are known for nested mapping
@@ -239,12 +231,20 @@ public class ReassignTransformation extends Transformation {
     }
   }
 
-  private static boolean isMap(Class<?> sourceType) {
+  static boolean isMap(Class<?> sourceType) {
     return Map.class.isAssignableFrom(sourceType);
   }
 
-  private static boolean isMap(Object object) {
+  static boolean isMap(Object object) {
     return (object instanceof Map);
+  }
+
+  static boolean isCollection(Class<?> type) {
+    return Collection.class.isAssignableFrom(type);
+  }
+
+  static boolean isCollection(Object collection) {
+    return collection instanceof Collection;
   }
 
   @Override
