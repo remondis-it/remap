@@ -121,12 +121,14 @@ public class ReassignTransformation extends Transformation {
       "unchecked", "rawtypes"
   })
   Object convertValue(Class<?> sourceType, Object sourceValue, Class<?> destinationType) {
-    if (isReferenceMapping(sourceType, destinationType)) {
-      return sourceValue;
-    } else {
+    if (hasMapperFor(sourceType, destinationType)) {
       // Object types must be mapped by a registered mapper before setting the value.
       InternalMapper delegateMapper = getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
       return delegateMapper.map(sourceValue);
+    } else if (isReferenceMapping(sourceType, destinationType)) {
+      return sourceValue;
+    } else {
+      throw MappingException.noMapperFound(sourceProperty, sourceType, destinationProperty, destinationType);
     }
   }
 
@@ -135,13 +137,15 @@ public class ReassignTransformation extends Transformation {
   })
   Object convertValueMapOver(Class<?> sourceType, Object sourceValue, Class<?> destinationType,
       Object destinationValue) {
-    if (isReferenceMapping(sourceType, destinationType)) {
-      return sourceValue;
-    } else {
+    if (hasMapperFor(sourceType, destinationType)) {
       // Object types must be mapped by a registered mapper before setting the value.
       InternalMapper delegateMapper = getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
       Object destinationValueMapped = readOrFail(destinationProperty, destinationValue);
       return delegateMapper.map(sourceValue, destinationValueMapped);
+    } else if (isReferenceMapping(sourceType, destinationType)) {
+      return sourceValue;
+    } else {
+      throw MappingException.noMapperFound(sourceProperty, sourceType, destinationProperty, destinationType);
     }
   }
 

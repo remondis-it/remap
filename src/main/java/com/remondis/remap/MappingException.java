@@ -76,8 +76,8 @@ public class MappingException extends RuntimeException {
             propertyDescriptor.getName(), getPropertyClass(propertyDescriptor)));
   }
 
-  static MappingException unmappedProperties(Set<PropertyDescriptor> unmapped) {
-    return new MappingException(createUnmappedMessage(unmapped));
+  static MappingException unmappedProperties(Class<?> source, Class<?> dest, Set<PropertyDescriptor> unmapped) {
+    return new MappingException(createUnmappedMessage(source, dest, unmapped));
   }
 
   static MappingException noMapperFound(PropertyDescriptor sourceProperty, Class<?> sourceType,

@@ -83,8 +83,13 @@ class Properties {
    * @param unmapped The set of unmapped properties.
    * @return Returns the message.
    */
-  static String createUnmappedMessage(Set<PropertyDescriptor> unmapped) {
-    StringBuilder msg = new StringBuilder("The following properties are unmapped:\n");
+  static String createUnmappedMessage(Class<?> source, Class<?> dest, Set<PropertyDescriptor> unmapped) {
+    StringBuilder msg = new StringBuilder("The following properties are unmapped in the mapping from:\n");
+    msg.append("-> ")
+        .append(source.getName())
+        .append("\n-> to ")
+        .append(dest.getName())
+        .append("\n");
     for (PropertyDescriptor pd : unmapped) {
       String getter = pd.getReadMethod()
           .getName();

@@ -276,8 +276,32 @@ class ReflectionUtil {
    * @return Returns <code>true</code> if the above expectations apply, <code>false</code> otherwise.
    */
   public static boolean isWrapper(Class<?> type1, Class<?> type2) {
-    return type1.isPrimitive() && wrapperMap.get(type1)
+    return isPrimitive(type1) && wrapperMap.get(type1)
         .equals(type2);
+  }
+
+  /**
+   * @param propertyType The type to check.
+   * @return Returns <code>true</code> if the specified type is a primitive type, otherwise <code>false</code>
+   *         is returned.
+   */
+  public static boolean isPrimitive(Class<?> propertyType) {
+    return propertyType.isPrimitive();
+  }
+
+  /**
+   * @param type The type to check.
+   * @return Returns <code>true</code> if the specified type is a Java Bean (has a parameterless default constructor),
+   *         otherwise <code>false</code>
+   *         is returned.
+   */
+  public static boolean isBean(Class<?> type) {
+    try {
+      type.getConstructor();
+    } catch (NoSuchMethodException e) {
+      return false;
+    }
+    return !isBuildInType(type);
   }
 
 }

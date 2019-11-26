@@ -447,7 +447,7 @@ public class Mapping<S, D> {
     // check for unmapped properties
     Set<PropertyDescriptor> unmapped = getUnmappedProperties();
     if (!unmapped.isEmpty()) {
-      throw MappingException.unmappedProperties(unmapped);
+      throw MappingException.unmappedProperties(source, destination, unmapped);
     }
 
     // check if all mappers are available to perform nested mapping
@@ -781,7 +781,7 @@ public class Mapping<S, D> {
     if (unmappedProperties.isEmpty()) {
       b.append("All properties are mapped!");
     } else {
-      b.append(createUnmappedMessage(unmappedProperties));
+      b.append(createUnmappedMessage(source, destination, unmappedProperties));
     }
     return b.toString();
   }

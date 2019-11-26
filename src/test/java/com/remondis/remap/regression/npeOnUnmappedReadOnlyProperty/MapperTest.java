@@ -13,6 +13,6 @@ public class MapperTest {
       Mapping.from(A.class)
           .to(B.class)
           .mapper();
-    }).hasMessageStartingWith("The following properties are unmapped:");
+    }).hasMessageStartingWith("The following properties are unmapped in the mapping from:");
   }
 }
