@@ -21,12 +21,12 @@ import com.remondis.propertypath.api.PropertyPath;
  */
 public class PropertyPathAndApplyCollectionBuilder<S, D, RD, X, RS, E extends Exception> {
 
-  private Mapping<S, D> mapping;
+  private MappingConfiguration<S, D> mapping;
   private TypedPropertyDescriptor<Collection<RS>> sourceProperty;
   private TypedPropertyDescriptor<Collection<RD>> destProperty;
   private PropertyPath<X, RS, E> propertyPath;
 
-  PropertyPathAndApplyCollectionBuilder(Mapping<S, D> mapping, TypedPropertyDescriptor<Collection<RS>> sourceProperty,
+  PropertyPathAndApplyCollectionBuilder(MappingConfiguration<S, D> mapping, TypedPropertyDescriptor<Collection<RS>> sourceProperty,
       TypedPropertyDescriptor<Collection<RD>> destProperty, PropertyPath<X, RS, E> propertyPath) {
     this.mapping = mapping;
     this.sourceProperty = sourceProperty;
@@ -39,9 +39,9 @@ public class PropertyPathAndApplyCollectionBuilder<S, D, RD, X, RS, E extends Ex
    * applied in case the property path evaluates to a non-null value.</b>
    *
    * @param transformation The function to transform the property path result value.
-   * @return Returns the {@link Mapping} instance.
+   * @return Returns the {@link MappingConfiguration} instance.
    */
-  public Mapping<S, D> apply(Function<X, RD> transformation) {
+  public MappingConfiguration<S, D> apply(Function<X, RD> transformation) {
     requireNonNull(transformation, "Transformation must not be null");
     PropertyPathCollectionTransformation<RS, X, RD> replace = new PropertyPathCollectionTransformation<RS, X, RD>(
         mapping, sourceProperty.property, destProperty.property, propertyPath, transformation);

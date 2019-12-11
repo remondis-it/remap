@@ -20,12 +20,12 @@ import com.remondis.propertypath.api.PropertyPath;
  */
 public class PropertyPathAndApplyBuilder<S, D, RD, X, RS, E extends Exception> {
 
-  private Mapping<S, D> mapping;
+  private MappingConfiguration<S, D> mapping;
   private TypedPropertyDescriptor<RS> sourceProperty;
   private TypedPropertyDescriptor<RD> destProperty;
   private PropertyPath<X, RS, E> propertyPath;
 
-  PropertyPathAndApplyBuilder(Mapping<S, D> mapping, TypedPropertyDescriptor<RS> sourceProperty,
+  PropertyPathAndApplyBuilder(MappingConfiguration<S, D> mapping, TypedPropertyDescriptor<RS> sourceProperty,
       TypedPropertyDescriptor<RD> destProperty, PropertyPath<X, RS, E> propertyPath) {
     this.mapping = mapping;
     this.sourceProperty = sourceProperty;
@@ -38,9 +38,9 @@ public class PropertyPathAndApplyBuilder<S, D, RD, X, RS, E extends Exception> {
    * applied in case the property path evaluates to a non-null value.</b>
    *
    * @param transformation The function to transform the property path result value.
-   * @return Returns the {@link Mapping} instance.
+   * @return Returns the {@link MappingConfiguration} instance.
    */
-  public Mapping<S, D> apply(Function<X, RD> transformation) {
+  public MappingConfiguration<S, D> apply(Function<X, RD> transformation) {
     requireNonNull(transformation, "Transformation must not be null");
     PropertyPathTransformation<RS, X, RD> replace = new PropertyPathTransformation<RS, X, RD>(mapping,
         sourceProperty.property, destProperty.property, propertyPath, transformation);

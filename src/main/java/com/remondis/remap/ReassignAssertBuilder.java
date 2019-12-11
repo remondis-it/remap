@@ -1,7 +1,7 @@
 package com.remondis.remap;
 
 import static com.remondis.remap.Lang.denyNull;
-import static com.remondis.remap.Mapping.getPropertyFromFieldSelector;
+import static com.remondis.remap.MappingConfiguration.getPropertyFromFieldSelector;
 
 import java.beans.PropertyDescriptor;
 
@@ -21,11 +21,11 @@ public class ReassignAssertBuilder<S, D, RS> {
 
   private PropertyDescriptor sourceProperty;
 
-  private AssertMapping<S, D> asserts;
+  private AssertConfiguration<S, D> asserts;
 
   private Class<D> destination;
 
-  ReassignAssertBuilder(PropertyDescriptor sourceProperty, Class<D> destination, AssertMapping<S, D> asserts) {
+  ReassignAssertBuilder(PropertyDescriptor sourceProperty, Class<D> destination, AssertConfiguration<S, D> asserts) {
     super();
     this.sourceProperty = sourceProperty;
     this.asserts = asserts;
@@ -38,9 +38,9 @@ public class ReassignAssertBuilder<S, D, RS> {
    * @param destinationSelector
    *        {@link TypedSelector} to select the destination field.
    *
-   * @return Returns the {@link Mapping} for further mapping configuration.
+   * @return Returns the {@link MappingConfiguration} for further mapping configuration.
    */
-  public AssertMapping<S, D> to(FieldSelector<D> destinationSelector) {
+  public AssertConfiguration<S, D> to(FieldSelector<D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
     PropertyDescriptor destinationProperty = getPropertyFromFieldSelector(Target.DESTINATION, ReassignBuilder.ASSIGN,
         this.destination, destinationSelector);

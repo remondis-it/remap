@@ -23,10 +23,10 @@ public class ReplaceBuilder<S, D, RD, RS> {
 
   private TypedPropertyDescriptor<RS> sourceProperty;
   private TypedPropertyDescriptor<RD> destProperty;
-  private Mapping<S, D> mapping;
+  private MappingConfiguration<S, D> mapping;
 
   ReplaceBuilder(TypedPropertyDescriptor<RS> sourceProperty, TypedPropertyDescriptor<RD> destProperty,
-      Mapping<S, D> mapping) {
+      MappingConfiguration<S, D> mapping) {
     super();
     this.sourceProperty = sourceProperty;
     this.destProperty = destProperty;
@@ -58,9 +58,9 @@ public class ReplaceBuilder<S, D, RD, RS> {
    * @param propertyPath A lambda function performing get calls on the specified object to declare the actual property
    *        path.
    *        <b>This is not a function operating on real object. So do not manipulate or calculate here!</b>
-   * @return Returns the {@link Mapping} for further mapping configuration.
+   * @return Returns the {@link MappingConfiguration} for further mapping configuration.
    */
-  public <E extends Exception> Mapping<S, D> withPropertyPath(PropertyPath<RD, RS, E> propertyPath) {
+  public <E extends Exception> MappingConfiguration<S, D> withPropertyPath(PropertyPath<RD, RS, E> propertyPath) {
     denyNull("propertyPath", propertyPath);
     PropertyPathTransformation<RS, RD, RD> replace = new PropertyPathTransformation<RS, RD, RD>(mapping,
         sourceProperty.property, destProperty.property, propertyPath);
@@ -92,9 +92,9 @@ public class ReplaceBuilder<S, D, RD, RS> {
    * #withSkipWhenNull(Function)} to skip on <code>null</code> input values.</b>
    *
    * @param transformation The transform function.
-   * @return Returns the {@link Mapping} for further mapping configuration.
+   * @return Returns the {@link MappingConfiguration} for further mapping configuration.
    */
-  public Mapping<S, D> with(Function<RS, RD> transformation) {
+  public MappingConfiguration<S, D> with(Function<RS, RD> transformation) {
     denyNull("tranformation", transformation);
     ReplaceTransformation<RS, RD> replace = new ReplaceTransformation<>(mapping, sourceProperty.property,
         destProperty.property, transformation, false);
@@ -107,9 +107,9 @@ public class ReplaceBuilder<S, D, RD, RS> {
    * skips the execution of the transform function if the source value is null.</b>
    *
    * @param transformation The transform function.
-   * @return Returns the {@link Mapping} for further mapping configuration.
+   * @return Returns the {@link MappingConfiguration} for further mapping configuration.
    */
-  public Mapping<S, D> withSkipWhenNull(Function<RS, RD> transformation) {
+  public MappingConfiguration<S, D> withSkipWhenNull(Function<RS, RD> transformation) {
     denyNull("tranformation", transformation);
     ReplaceTransformation<RS, RD> replace = new ReplaceTransformation<>(mapping, sourceProperty.property,
         destProperty.property, transformation, true);

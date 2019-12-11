@@ -1,7 +1,7 @@
 package com.remondis.remap;
 
 /**
- * Builder to assert a replace operation on a {@link Mapper} object using {@link AssertMapping}.
+ * Builder to assert a replace operation on a {@link Mapper} object using {@link AssertConfiguration}.
  *
  * @param <S> The source type
  * @param <D> The destination type
@@ -11,9 +11,9 @@ package com.remondis.remap;
 public class SetAssertBuilder<S, D, RD> {
 
   private TypedPropertyDescriptor<RD> destProperty;
-  private AssertMapping<S, D> asserts;
+  private AssertConfiguration<S, D> asserts;
 
-  SetAssertBuilder(TypedPropertyDescriptor<RD> destProperty, AssertMapping<S, D> asserts) {
+  SetAssertBuilder(TypedPropertyDescriptor<RD> destProperty, AssertConfiguration<S, D> asserts) {
     super();
     this.destProperty = destProperty;
     this.asserts = asserts;
@@ -22,9 +22,9 @@ public class SetAssertBuilder<S, D, RD> {
   /**
    * Expects a set-mapping with a function providing a value.
    *
-   * @return Returns the {@link AssertMapping} for further configuration.
+   * @return Returns the {@link AssertConfiguration} for further configuration.
    */
-  public AssertMapping<S, D> withFunction() {
+  public AssertConfiguration<S, D> withFunction() {
     SetTransformation<S, D, RD> replace = new SetTransformation<>(asserts.getMapping(), destProperty.property, null);
     asserts.addAssertion(replace);
     return asserts;
@@ -33,9 +33,9 @@ public class SetAssertBuilder<S, D, RD> {
   /**
    * Expects a set-mapping with a value supplier.
    *
-   * @return Returns the {@link AssertMapping} for further configuration.
+   * @return Returns the {@link AssertConfiguration} for further configuration.
    */
-  public AssertMapping<S, D> withSupplier() {
+  public AssertConfiguration<S, D> withSupplier() {
     SetSupplierTransformation<S, D, RD> replace = new SetSupplierTransformation<>(asserts.getMapping(),
         destProperty.property, null);
     asserts.addAssertion(replace);
@@ -45,9 +45,9 @@ public class SetAssertBuilder<S, D, RD> {
   /**
    * Expects a set-mapping with a value.
    *
-   * @return Returns the {@link AssertMapping} for further configuration.
+   * @return Returns the {@link AssertConfiguration} for further configuration.
    */
-  public AssertMapping<S, D> withValue() {
+  public AssertConfiguration<S, D> withValue() {
     SetValueTransformation<S, D, RD> replace = new SetValueTransformation<>(asserts.getMapping(), destProperty.property,
         null);
     asserts.addAssertion(replace);

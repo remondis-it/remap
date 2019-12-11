@@ -21,7 +21,7 @@ class SetTransformation<S, D, RD> extends Transformation {
 
   private Function<S, RD> transformation;
 
-  SetTransformation(Mapping<S, D> mapping, PropertyDescriptor destProperty, Function<S, RD> transformation) {
+  SetTransformation(MappingConfiguration<S, D> mapping, PropertyDescriptor destProperty, Function<S, RD> transformation) {
     super(mapping, null, destProperty);
     this.transformation = transformation;
   }
