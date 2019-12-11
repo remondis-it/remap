@@ -27,7 +27,8 @@ class OmitTransformation extends Transformation {
    * @param destinationProperty the property to omit in the destination
    * @return Returns a new {@link OmitTransformation}.
    */
-  static OmitTransformation omitDestination(MappingConfiguration<?, ?> mapping, PropertyDescriptor destinationProperty) {
+  static OmitTransformation omitDestination(MappingConfiguration<?, ?> mapping,
+      PropertyDescriptor destinationProperty) {
     denyNull("mapping", mapping);
     denyNull("destinationProperty", destinationProperty);
     return new OmitTransformation(mapping, null, destinationProperty);

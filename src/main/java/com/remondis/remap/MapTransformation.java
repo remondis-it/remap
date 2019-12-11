@@ -16,7 +16,8 @@ public class MapTransformation extends ReassignTransformation {
 
   private static final String MAP_MSG = "Map %s\n   to %s";
 
-  MapTransformation(MappingConfiguration<?, ?> mapping, PropertyDescriptor sourceProperty, PropertyDescriptor destinationProperty) {
+  MapTransformation(MappingConfiguration<?, ?> mapping, PropertyDescriptor sourceProperty,
+      PropertyDescriptor destinationProperty) {
     super(mapping, sourceProperty, destinationProperty);
     denyReassign(sourceProperty, destinationProperty);
   }

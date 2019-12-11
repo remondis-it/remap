@@ -26,8 +26,9 @@ public class PropertyPathAndApplyCollectionBuilder<S, D, RD, X, RS, E extends Ex
   private TypedPropertyDescriptor<Collection<RD>> destProperty;
   private PropertyPath<X, RS, E> propertyPath;
 
-  PropertyPathAndApplyCollectionBuilder(MappingConfiguration<S, D> mapping, TypedPropertyDescriptor<Collection<RS>> sourceProperty,
-      TypedPropertyDescriptor<Collection<RD>> destProperty, PropertyPath<X, RS, E> propertyPath) {
+  PropertyPathAndApplyCollectionBuilder(MappingConfiguration<S, D> mapping,
+      TypedPropertyDescriptor<Collection<RS>> sourceProperty, TypedPropertyDescriptor<Collection<RD>> destProperty,
+      PropertyPath<X, RS, E> propertyPath) {
     this.mapping = mapping;
     this.sourceProperty = sourceProperty;
     this.destProperty = destProperty;
