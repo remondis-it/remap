@@ -15,7 +15,7 @@ class OmitTransformation extends Transformation {
 
   private static final String OMITTING_MSG = "Omitting %s";
 
-  private OmitTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
+  private OmitTransformation(MappingConfiguration<?, ?> mapping, PropertyDescriptor sourceProperty,
       PropertyDescriptor destinationProperty) {
     super(mapping, sourceProperty, destinationProperty);
   }
@@ -27,7 +27,8 @@ class OmitTransformation extends Transformation {
    * @param destinationProperty the property to omit in the destination
    * @return Returns a new {@link OmitTransformation}.
    */
-  static OmitTransformation omitDestination(Mapping<?, ?> mapping, PropertyDescriptor destinationProperty) {
+  static OmitTransformation omitDestination(MappingConfiguration<?, ?> mapping,
+      PropertyDescriptor destinationProperty) {
     denyNull("mapping", mapping);
     denyNull("destinationProperty", destinationProperty);
     return new OmitTransformation(mapping, null, destinationProperty);
@@ -54,7 +55,7 @@ class OmitTransformation extends Transformation {
    * @param sourceProperty the property to omit in the source
    * @return Returns a new {@link OmitTransformation}.
    */
-  static OmitTransformation omitSource(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty) {
+  static OmitTransformation omitSource(MappingConfiguration<?, ?> mapping, PropertyDescriptor sourceProperty) {
     denyNull("mapping", mapping);
     denyNull("destinationProperty", sourceProperty);
     return new OmitTransformation(mapping, sourceProperty, null);
