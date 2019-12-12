@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.Test;
 
+import com.remondis.remap.AssertConfiguration;
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
@@ -357,7 +358,7 @@ public class AssertMappingTest {
         .useMapper(bMapper)
         .mapper();
 
-    AssertMapping<A, AResource> asserts = AssertMapping.of(mapper)
+    AssertConfiguration<A, AResource> asserts = AssertMapping.of(mapper)
         .expectReassign(A::getString)
         .to(AResource::getAnotherString)
         .expectReplace(A::getInteger, AResource::getIntegerAsString)
@@ -384,7 +385,7 @@ public class AssertMappingTest {
         .useMapper(bMapper)
         .mapper();
 
-    AssertMapping<A, AResource> asserts = AssertMapping.of(mapper)
+    AssertConfiguration<A, AResource> asserts = AssertMapping.of(mapper)
         .expectReassign(A::getString)
         .to(AResource::getAnotherString)
         .expectReplace(A::getInteger, AResource::getIntegerAsString)

@@ -7,7 +7,7 @@ import java.util.function.Function;
 import com.remondis.propertypath.api.PropertyPath;
 
 /**
- * Builder to assert a replace operation on a {@link Mapper} object using {@link AssertMapping}.
+ * Builder to assert a replace operation on a {@link Mapper} object using {@link AssertConfiguration}.
  *
  * @param <S> The source type
  * @param <D> The destination type
@@ -19,10 +19,10 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
 
   private TypedPropertyDescriptor<RS> sourceProperty;
   private TypedPropertyDescriptor<RD> destProperty;
-  private AssertMapping<S, D> asserts;
+  private AssertConfiguration<S, D> asserts;
 
   ReplaceAssertBuilder(TypedPropertyDescriptor<RS> sourceProperty, TypedPropertyDescriptor<RD> destProperty,
-      AssertMapping<S, D> asserts) {
+      AssertConfiguration<S, D> asserts) {
     super();
     this.sourceProperty = sourceProperty;
     this.destProperty = destProperty;
@@ -33,9 +33,9 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
    * Expects the mapping to evaluate the exact property path that was specified.
    *
    * @param propertyPath The expected property path.
-   * @return Returns the {@link AssertMapping} for further configuration.
+   * @return Returns the {@link AssertConfiguration} for further configuration.
    */
-  public <E extends Exception> AssertMapping<S, D> withPropertyPath(PropertyPath<RD, RS, E> propertyPath) {
+  public <E extends Exception> AssertConfiguration<S, D> withPropertyPath(PropertyPath<RD, RS, E> propertyPath) {
     denyNull("propertyPath", propertyPath);
     PropertyPathTransformation<RS, RD, RD> replace = new PropertyPathTransformation<RS, RD, RD>(asserts.getMapping(),
         sourceProperty.property, destProperty.property, propertyPath);
@@ -47,9 +47,9 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
    * Expects the mapping to evaluate the exact property path that was specified.
    *
    * @param propertyPath The expected property path.
-   * @return Returns the {@link AssertMapping} for further configuration.
+   * @return Returns the {@link AssertConfiguration} for further configuration.
    */
-  public AssertMapping<S, D> withPropertyPathAndTransformation(PropertyPath<?, RS, ?> propertyPath) {
+  public AssertConfiguration<S, D> withPropertyPathAndTransformation(PropertyPath<?, RS, ?> propertyPath) {
     denyNull("propertyPath", propertyPath);
     PropertyPathTransformation<RS, ?, ?> replace = new PropertyPathTransformation<>(asserts.getMapping(),
         sourceProperty.property, destProperty.property, propertyPath, Function.identity());
@@ -68,9 +68,9 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
    * </p>
    *
    * @param transformation The transformation to test.
-   * @return Returns the {@link AssertMapping} for further configuration.
+   * @return Returns the {@link AssertConfiguration} for further configuration.
    */
-  public AssertMapping<S, D> andTest(Function<RS, RD> transformation) {
+  public AssertConfiguration<S, D> andTest(Function<RS, RD> transformation) {
     denyNull("tranfromation", transformation);
     ReplaceTransformation<RS, RD> replace = new ReplaceTransformation<>(asserts.getMapping(), sourceProperty.property,
         destProperty.property, transformation, false);
@@ -81,9 +81,9 @@ public class ReplaceAssertBuilder<S, D, RD, RS> {
   /**
    * Expects the mapping to skip the transform function on <code>null</code> input.
    *
-   * @return Returns the {@link AssertMapping} for further configuration.
+   * @return Returns the {@link AssertConfiguration} for further configuration.
    */
-  public AssertMapping<S, D> andSkipWhenNull() {
+  public AssertConfiguration<S, D> andSkipWhenNull() {
     ReplaceTransformation<RD, RS> replace = new ReplaceTransformation<RD, RS>(asserts.getMapping(),
         sourceProperty.property, destProperty.property, null, true);
     asserts.addAssertion(replace);

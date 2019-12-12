@@ -19,14 +19,14 @@ import java.util.stream.StreamSupport;
  */
 public class Mapper<S, D> {
 
-  private Mapping<S, D> mapping;
+  private MappingConfiguration<S, D> mapping;
 
-  Mapper(Mapping<S, D> mapping) {
+  Mapper(MappingConfiguration<S, D> mapping) {
     super();
     this.mapping = mapping;
   }
 
-  Mapping<S, D> getMapping() {
+  MappingConfiguration<S, D> getMapping() {
     return mapping;
   }
 
