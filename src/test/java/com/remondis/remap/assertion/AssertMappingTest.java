@@ -1,4 +1,4 @@
-package com.remondis.remap.basic;
+package com.remondis.remap.assertion;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -7,10 +7,6 @@ import org.junit.Test;
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
-import com.remondis.remap.assertion.A;
-import com.remondis.remap.assertion.AResource;
-import com.remondis.remap.assertion.B;
-import com.remondis.remap.assertion.BResource;
 
 public class AssertMappingTest {
 
