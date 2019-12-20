@@ -26,13 +26,13 @@ public class PropertyPathTransformation<RS, X, RD> extends Transformation {
   private Get<RS, RD, ?> propertyPath;
   private boolean hasTransformation;
 
-  PropertyPathTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
+  PropertyPathTransformation(MappingConfiguration<?, ?> mapping, PropertyDescriptor sourceProperty,
       PropertyDescriptor destinationProperty, PropertyPath<RD, RS, ?> propertyPath) {
     super(mapping, sourceProperty, destinationProperty);
     this.propertyPath = createGetter(sourceProperty, propertyPath);
   }
 
-  PropertyPathTransformation(Mapping<?, ?> mapping, PropertyDescriptor sourceProperty,
+  PropertyPathTransformation(MappingConfiguration<?, ?> mapping, PropertyDescriptor sourceProperty,
       PropertyDescriptor destinationProperty, PropertyPath<X, RS, ?> propertyPath, Function<X, RD> transformation) {
     super(mapping, sourceProperty, destinationProperty);
     this.propertyPath = createGetterAndApply(sourceProperty, propertyPath, transformation);

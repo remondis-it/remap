@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import com.remondis.remap.MappingConfiguration;
 import com.remondis.remap.basic.B;
 import com.remondis.remap.basic.BResource;
 
@@ -64,12 +65,12 @@ public class MapperTest {
 
   @Test
   public void shouldReuseParentMapperConfig() {
-    Mapping<? extends Parent, ? extends ParentResource> parentMapping = Mapping.from(Parent.class)
+    MappingConfiguration<? extends Parent, ? extends ParentResource> parentMapping = Mapping.from(Parent.class)
         .to(ParentResource.class);
     parentMappingConfig(parentMapping);
     Mapper<? extends Parent, ? extends ParentResource> parentMapper = parentMapping.mapper();
 
-    Mapping<Child, ChildResource> childMapping = Mapping.from(Child.class)
+    MappingConfiguration<Child, ChildResource> childMapping = Mapping.from(Child.class)
         .to(ChildResource.class);
     parentMappingConfig(childMapping);
     Mapper<Child, ChildResource> childMapper = childMapping.mapper();
@@ -103,8 +104,8 @@ public class MapperTest {
 
   }
 
-  private Mapping<? extends Parent, ? extends ParentResource> parentMappingConfig(
-      Mapping<? extends Parent, ? extends ParentResource> mapping) {
+  private MappingConfiguration<? extends Parent, ? extends ParentResource> parentMappingConfig(
+      MappingConfiguration<? extends Parent, ? extends ParentResource> mapping) {
     return mapping.reassign(Parent::getMoreInParent)
         .to(ParentResource::getMoreInParentResource)
         .omitInSource(Parent::getShouldNotMap)

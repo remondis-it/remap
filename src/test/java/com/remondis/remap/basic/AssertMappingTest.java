@@ -1,12 +1,17 @@
-package com.remondis.remap.assertion;
+package com.remondis.remap.basic;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.Test;
 
+import com.remondis.remap.AssertConfiguration;
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import com.remondis.remap.assertion.A;
+import com.remondis.remap.assertion.AResource;
+import com.remondis.remap.assertion.B;
+import com.remondis.remap.assertion.BResource;
 
 public class AssertMappingTest {
 
@@ -353,14 +358,14 @@ public class AssertMappingTest {
         .useMapper(bMapper)
         .mapper();
 
-    AssertMapping.of(mapper)
+    AssertConfiguration<A, AResource> asserts = AssertMapping.of(mapper)
         .expectReassign(A::getString)
         .to(AResource::getAnotherString)
         .expectReplace(A::getInteger, AResource::getIntegerAsString)
         .andTest(String::valueOf)
         .expectOmitInSource(A::getOmitted)
-        .expectOmitInDestination(AResource::getOmitted)
-        .ensure();
+        .expectOmitInDestination(AResource::getOmitted);
+    asserts.ensure();
   }
 
   @Test(expected = AssertionError.class)
@@ -380,14 +385,14 @@ public class AssertMappingTest {
         .useMapper(bMapper)
         .mapper();
 
-    AssertMapping.of(mapper)
+    AssertConfiguration<A, AResource> asserts = AssertMapping.of(mapper)
         .expectReassign(A::getString)
         .to(AResource::getAnotherString)
         .expectReplace(A::getInteger, AResource::getIntegerAsString)
         .andSkipWhenNull()
         .expectOmitInSource(A::getOmitted)
-        .expectOmitInDestination(AResource::getOmitted)
-        .ensure();
+        .expectOmitInDestination(AResource::getOmitted);
+    asserts.ensure();
   }
 
   @Test

@@ -107,7 +107,7 @@ public final class DeepCopy {
   private static <T> Mapper<T, T> deepCopyMapperCached(Class<T> type, Map<Class<?>, TypeMapping<?, ?>> typeMappings,
       Map<Class<?>, Mapper<?, ?>> requiredMappers) {
 
-    Mapping<T, T> mapping = Mapping.from(type)
+    MappingConfiguration<T, T> mapping = Mapping.from(type)
         .to(type);
 
     Set<PropertyDescriptor> writableProperties = Properties.getProperties(type, Target.DESTINATION);
@@ -129,7 +129,7 @@ public final class DeepCopy {
     return mapping.mapper();
   }
 
-  private static <T> void findMapper(Mapping<T, T> mapping, Class<?> propertyType,
+  private static <T> void findMapper(MappingConfiguration<T, T> mapping, Class<?> propertyType,
       Map<Class<?>, TypeMapping<?, ?>> typeMappings, Map<Class<?>, Mapper<?, ?>> requiredMappers) {
     // Use customized copy function in precedence
     if (typeMappings.containsKey(propertyType)) {
@@ -147,7 +147,7 @@ public final class DeepCopy {
     }
   }
 
-  private static <T> void findNestedGenericTypes(Mapping<T, T> mapping, GenericParameterContext paramCtx,
+  private static <T> void findNestedGenericTypes(MappingConfiguration<T, T> mapping, GenericParameterContext paramCtx,
       Map<Class<?>, TypeMapping<?, ?>> typeMappings, Map<Class<?>, Mapper<?, ?>> requiredMappers) {
     Class<?> currentType = paramCtx.getCurrentType();
     if (isCollection(currentType) || isMap(currentType)) {
