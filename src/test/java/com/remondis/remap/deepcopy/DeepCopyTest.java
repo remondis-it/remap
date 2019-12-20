@@ -1,7 +1,6 @@
 package com.remondis.remap.deepcopy;
 
 import static java.util.Arrays.asList;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
@@ -43,13 +42,6 @@ public class DeepCopyTest {
     innerMap.put(new NonJavaBean("innerReadOnly"), new B(new BigDecimal(9999L)));
 
     this.a = new A(1, 101L, "string", new NonJavaBean("readOnlyString"), asList(b2, b3), map);
-  }
-
-  @Test
-  public void shouldThrowMappingException_dueToNonJavaBean() {
-    assertThatThrownBy(() -> DeepCopy.of(A.class)
-        .getMapper()).hasMessageStartingWith(
-            "Building a deep-copy mapper failed. Please check that copy functions were registered for all non-Java Bean types.");
   }
 
   @Test

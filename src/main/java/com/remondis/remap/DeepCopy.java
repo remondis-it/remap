@@ -111,6 +111,7 @@ public final class DeepCopy {
         .to(type);
 
     Set<PropertyDescriptor> writableProperties = Properties.getProperties(type, Target.DESTINATION);
+
     writableProperties.stream()
         .forEach(pd -> {
           Class<?> propertyType = pd.getPropertyType();
@@ -126,6 +127,8 @@ public final class DeepCopy {
         .stream()
         .map(Entry::getValue)
         .forEach(mapper -> mapping.useMapper(mapper));
+    mapping.omitOtherSourceProperties();
+
     return mapping.mapper();
   }
 
