@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Stack;
 
 /**
@@ -38,12 +39,16 @@ public class GenericParameterContext {
   }
 
   private void init() {
-    if (method.getGenericReturnType() instanceof ParameterizedType) {
-      ParameterizedType parameterizedType = (ParameterizedType) method.getGenericReturnType();
+    Type genericReturnType = method.getGenericReturnType();
+    if (genericReturnType instanceof ParameterizedType) {
+      ParameterizedType parameterizedType = (ParameterizedType) genericReturnType;
       add(parameterizedType);
       this.currentType = (Class<?>) parameterizedType.getRawType();
+    } else if (genericReturnType instanceof TypeVariable) {
+      this.currentType = Object.class;
+      finish();
     } else {
-      this.currentType = (Class<?>) method.getGenericReturnType();
+      this.currentType = (Class<?>) genericReturnType;
       finish();
     }
   }
