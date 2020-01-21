@@ -7,7 +7,6 @@ bin/
 
 # IntelliJ config files
 .idea/**/*
-!.idea/compiler.xml
 !.idea/checkstyle-idea.xml
 !.idea/inspectionProfiles/Project_Default.xml
 classes/**/*
