@@ -42,4 +42,19 @@ public final class Types<S> {
     return new MappingConfiguration<>(source, destination);
   }
 
+  /**
+   * Specifies the source data type to map from. Use this method to provide information about generic types by providing
+   * an instance of the object to map.
+   *
+   * @param destinationInstance
+   *        The source instance.
+   * @return Returns a {@link Types} object for further mapping configuration.
+   */
+  @SuppressWarnings("unchecked")
+  public <D> MappingConfiguration<S, D> to(D destinationInstance) {
+    denyNull("destination", destinationInstance);
+    denyNoDefaultConstructor(destinationInstance.getClass());
+    return new MappingConfiguration<>(source, (Class<D>) destinationInstance.getClass());
+  }
+
 }
