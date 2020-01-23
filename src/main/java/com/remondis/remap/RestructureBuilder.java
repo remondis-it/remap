@@ -17,7 +17,8 @@ public class RestructureBuilder<S, D, RD> {
   }
 
   public MappingConfiguration<S, D> implicitly() {
-    return applying(conf -> conf.omitOtherSourceProperties());
+    return applying(conf -> {
+    });
   }
 
   public MappingConfiguration<S, D> applying(Consumer<MappingConfiguration<S, RD>> restructureMappingConfiguration) {
@@ -26,6 +27,8 @@ public class RestructureBuilder<S, D, RD> {
     Map<Projection<?, ?>, InternalMapper<?, ?>> mappers = mappingConfiguration.getMappers();
     MappingConfiguration<S, RD> config = Mapping.from((Class<S>) mappingConfiguration.getSource())
         .to((Class<RD>) typedPropertyDescriptor.property.getPropertyType());
+    // Do not make all source properties mandatory
+    config.omitOtherSourceProperties();
     // Inherit registered mappers.
     mappers.entrySet()
         .stream()

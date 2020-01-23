@@ -29,9 +29,9 @@ import com.remondis.resample.Samples;
  * </p>
  */
 public class RestructureTest {
+
   @Test
   public void shouldRestructure_implicit_mapping_operations() {
-
     Mapper<Bean, RestructuredBean> mapper = Mapping.from(Bean.class)
         .to(RestructuredBean.class)
         .omitOtherSourceProperties()
@@ -49,7 +49,6 @@ public class RestructureTest {
         .getHouseNumber());
     assertSame(bean.getCity(), restructured.getAddress()
         .getCity());
-
   }
 
   @Test
@@ -59,8 +58,7 @@ public class RestructureTest {
         .to(RestructuredBean.class)
         .omitOtherSourceProperties()
         .restructure(RestructuredBean::getAddress)
-        .applying(config -> config.omitOtherSourceProperties()
-            .reassign(Bean::getHouseNumber)
+        .applying(config -> config.reassign(Bean::getHouseNumber)
             .to(Address::getHouseNumber)
             .reassign(Bean::getStreet)
             .to(Address::getStreet)
