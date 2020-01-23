@@ -16,7 +16,7 @@ abstract class Transformation {
 
   protected PropertyDescriptor sourceProperty;
   protected PropertyDescriptor destinationProperty;
-  private MappingConfiguration<?, ?> mapping;
+  protected MappingConfiguration<?, ?> mapping;
 
   Transformation(MappingConfiguration<?, ?> mapping, PropertyDescriptor sourceProperty,
       PropertyDescriptor destinationProperty) {

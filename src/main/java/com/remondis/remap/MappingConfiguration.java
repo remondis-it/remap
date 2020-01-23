@@ -44,10 +44,8 @@ import java.util.stream.Collectors;
  * thrown.
  * </p>
  *
- * @param <S>
- *        source type of the mapping
- * @param <D>
- *        destination type of the mapping
+ * @param <S> source type of the mapping
+ * @param <D> destination type of the mapping
  * @author schuettec
  */
 public class MappingConfiguration<S, D> {
@@ -109,8 +107,7 @@ public class MappingConfiguration<S, D> {
    * Marks a destination field as omitted. The mapping will not touch this field in the destination
    * object.
    *
-   * @param destinationSelector
-   *        The {@link FieldSelector} lambda that selects the field with invoking
+   * @param destinationSelector The {@link FieldSelector} lambda that selects the field with invoking
    *        the corresponding getter method.
    * @return Returns this object for method chaining.
    */
@@ -205,8 +202,7 @@ public class MappingConfiguration<S, D> {
   /**
    * Marks a source field as omitted. The mapping will not touch this field in the source object.
    *
-   * @param sourceSelector
-   *        The {@link FieldSelector} lambda that selects the field with invoking the
+   * @param sourceSelector The {@link FieldSelector} lambda that selects the field with invoking the
    *        corresponding getter method.
    * @return Returns this object for method chaining.
    */
@@ -223,8 +219,7 @@ public class MappingConfiguration<S, D> {
   /**
    * Reassigns a property from the source to the specified property of the destination object.
    *
-   * @param sourceSelector
-   *        The {@link FieldSelector}s selecting the source property with get-method
+   * @param sourceSelector The {@link FieldSelector}s selecting the source property with get-method
    *        invocation.
    * @return Returns a {@link ReassignBuilder} to specify the destination field.
    */
@@ -242,11 +237,9 @@ public class MappingConfiguration<S, D> {
    * library is designed to reduce the required client tests. Using this method requires the client
    * to test the transformation function!</b>
    *
-   * @param sourceSelector
-   *        The {@link FieldSelector}s selecting the source property with get-method
+   * @param sourceSelector The {@link FieldSelector}s selecting the source property with get-method
    *        invocation.
-   * @param destinationSelector
-   *        The {@link FieldSelector}s selecting the destination property with
+   * @param destinationSelector The {@link FieldSelector}s selecting the destination property with
    *        get-method invocation.
    * @return Returns {@link ReplaceBuilder} to specify the transform function and null-strategy.
    */
@@ -270,8 +263,7 @@ public class MappingConfiguration<S, D> {
    * library is designed to reduce the required client tests. Using this method requires the client
    * to test the supplier lambda function!</b>
    *
-   * @param destinationSelector
-   *        The {@link FieldSelector}s selecting the destination property with
+   * @param destinationSelector The {@link FieldSelector}s selecting the destination property with
    *        get-method invocation.
    * @return Returns {@link ReplaceBuilder} to specify the transform function and null-strategy.
    */
@@ -283,6 +275,13 @@ public class MappingConfiguration<S, D> {
     return builder;
   }
 
+  public <RD> RestructureBuilder<S, D, RD> restructure(TypedSelector<RD, D> destinationSelector) {
+    denyNull("destinationSelector", destinationSelector);
+    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
+        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector);
+    return new RestructureBuilder<S, D, RD>(this, destProperty);
+  }
+
   /**
    * Maps a property holding a collection from the source to the specified property holding a collection of the
    * destination object. The specified transform function will be applied on every item in the source value to convert
@@ -290,12 +289,10 @@ public class MappingConfiguration<S, D> {
    * library is designed to reduce the required client tests. Using this method requires the client
    * to test the transformation function!</b>
    *
-   * @param sourceSelector
-   *        The {@link FieldSelector}s selecting the source property holding a {@link Collection}.
-   * @param destinationSelector
-   *        The {@link FieldSelector}s selecting the destination property holding a {@link Collection}.
+   * @param sourceSelector The {@link FieldSelector}s selecting the source property holding a {@link Collection}.
+   * @param destinationSelector The {@link FieldSelector}s selecting the destination property holding a
+   *        {@link Collection}.
    * @return Returns {@link ReplaceBuilder} to specify the transform function and null-strategy.
-   *
    */
   public <RD, RS> ReplaceCollectionBuilder<S, D, RD, RS> replaceCollection(
       TypedSelector<Collection<RS>, S> sourceSelector, TypedSelector<Collection<RD>, D> destinationSelector) {
@@ -401,6 +398,7 @@ public class MappingConfiguration<S, D> {
     Set<String> unmappedDestinationPropertyNames = unmappedDestinationProperties.stream()
         .map(PropertyDescriptor::getName)
         .collect(Collectors.toSet());
+
     // Add a reassign for all properties of source that are unmapped properties in the destination
     getUnmappedSourceProperties().stream()
         .filter(pd -> unmappedDestinationPropertyNames.contains(pd.getName()))
@@ -466,10 +464,8 @@ public class MappingConfiguration<S, D> {
    * Returns all properties from the specified type, that were unmapped in the specified {@link Set}
    * of {@link PropertyDescriptor}s.
    *
-   * @param type
-   *        The type to check for unmapped properties.
-   * @param mappedSourceProperties
-   *        The set of mapped properties.
+   * @param type The type to check for unmapped properties.
+   * @param mappedSourceProperties The set of mapped properties.
    * @param target The type of mapping target.
    * @return Returns the {@link Set} of unmapped properties.
    */
@@ -485,15 +481,12 @@ public class MappingConfiguration<S, D> {
    * {@link PropertyDescriptor} of the property selected.
    *
    * @param target Defines if the properties are validated against source or target rules.
-   * @param configurationMethod
-   *        The configuration method this {@link PropertyDescriptor} is used for. Only needed for exception messages.
-   * @param sensorType
-   *        The type of sensor object.
-   * @param selector
-   *        The selector lambda.
+   * @param configurationMethod The configuration method this {@link PropertyDescriptor} is used for. Only needed for
+   *        exception messages.
+   * @param sensorType The type of sensor object.
+   * @param selector The selector lambda.
    * @return Returns the {@link PropertyDescriptor} selected by the lambda.
-   * @throws MappingException
-   *         if a property was specified for mapping but not invoked.
+   * @throws MappingException if a property was specified for mapping but not invoked.
    */
   static <R, T> TypedPropertyDescriptor<R> getTypedPropertyFromFieldSelector(Target target, String configurationMethod,
       Class<T> sensorType, TypedSelector<R, T> selector) {
@@ -524,16 +517,12 @@ public class MappingConfiguration<S, D> {
    * {@link PropertyDescriptor} of the property selected.
    *
    * @param target Defines if the properties are validated against source or target rules.
-   * @param configurationMethod
-   *        The configuration method this {@link PropertyDescriptor} is used
+   * @param configurationMethod The configuration method this {@link PropertyDescriptor} is used
    *        for. Only needed for exception messages.
-   * @param sensorType
-   *        The type of sensor object.
-   * @param selector
-   *        The selector lambda.
+   * @param sensorType The type of sensor object.
+   * @param selector The selector lambda.
    * @return Returns the {@link PropertyDescriptor} selected with the lambda.
-   * @throws MappingException
-   *         if a property was specified for mapping but not invoked.
+   * @throws MappingException if a property was specified for mapping but not invoked.
    */
   static <T> PropertyDescriptor getPropertyFromFieldSelector(Target target, String configurationMethod,
       Class<T> sensorType, FieldSelector<T> selector) {
@@ -560,10 +549,8 @@ public class MappingConfiguration<S, D> {
    * PropertyDescriptor}s.
    *
    * @param target Defines if the properties are validated against source or target rules.
-   * @param type
-   *        The inspected type.
-   * @param propertyName
-   *        The property name
+   * @param type The inspected type.
+   * @param propertyName The property name
    */
   static PropertyDescriptor getPropertyDescriptorOrFail(Target target, Class<?> type, String propertyName) {
     Optional<PropertyDescriptor> property;
@@ -598,14 +585,13 @@ public class MappingConfiguration<S, D> {
    * tries to map the specified types. <b>Note: Only one mapper can be added for a combination of
    * source and destination type!</b>
    *
-   * @param mapper
-   *        A mapper
+   * @param mapper A mapper
    * @return Returns this {@link MappingConfiguration} object for further configuration.
    */
   public MappingConfiguration<S, D> useMapper(Mapper<?, ?> mapper) {
     denyNull("mapper", mapper);
     InternalMapper<?, ?> interalMapper = new MapperAdapter<>(mapper);
-    _useMapper(interalMapper);
+    useInternalMapper(interalMapper);
     return this;
   }
 
@@ -615,13 +601,12 @@ public class MappingConfiguration<S, D> {
    * <b>Note: Only one mapper/type converter can be added for a combination of
    * source and destination type!</b>
    *
-   * @param typeMapping
-   *        A {@link TypeMapping}.
+   * @param typeMapping A {@link TypeMapping}.
    * @return Returns this {@link MappingConfiguration} object for further configuration.
    */
   public MappingConfiguration<S, D> useMapper(TypeMapping<?, ?> typeMapping) {
     denyNull("typeMapping", typeMapping);
-    _useMapper(typeMapping);
+    useInternalMapper(typeMapping);
     return this;
   }
 
@@ -645,7 +630,7 @@ public class MappingConfiguration<S, D> {
     return noImplicitMappings;
   }
 
-  private void _useMapper(InternalMapper<?, ?> interalMapper) {
+  protected void useInternalMapper(InternalMapper<?, ?> interalMapper) {
     Projection<?, ?> projection = interalMapper.getProjection();
     if (mappers.containsKey(projection)) {
       throw MappingException.duplicateMapper(projection.getSource(), projection.getDestination());
@@ -658,10 +643,8 @@ public class MappingConfiguration<S, D> {
    * Returns a registered mapper for hierarchical mapping. If the desired mapper was not found a
    * {@link MappingException} is thrown.
    *
-   * @param sourceType
-   *        The source type
-   * @param destinationType
-   *        The destination type
+   * @param sourceType The source type
+   * @param destinationType The destination type
    * @return Returns the registered mapper.
    */
   @SuppressWarnings("unchecked")
@@ -692,8 +675,7 @@ public class MappingConfiguration<S, D> {
   /**
    * Performs the actual mapping with iteration recursively through the object hierarchy.
    *
-   * @param source
-   *        The source object to map to a new destination object.
+   * @param source The source object to map to a new destination object.
    * @return Returns a newly created destination object.
    */
   D map(S source) {
@@ -704,10 +686,8 @@ public class MappingConfiguration<S, D> {
    * Performs the actual mapping with iteration recursively through the object hierarchy.
    * Warning, this feature is not provided for nested Collections instances, only for instances and nested instances
    *
-   * @param source
-   *        The source object to map to a new destination object.
-   * @param destination
-   *        The destination object to populate
+   * @param source The source object to map to a new destination object.
+   * @param destination The destination object to populate
    * @return Returns a newly created destination object.
    */
   D map(S source, D destination) {
@@ -775,4 +755,10 @@ public class MappingConfiguration<S, D> {
     return b.toString();
   }
 
+  /**
+   * @returns Returns the registered {@link Mapper}s.
+   */
+  protected Map<Projection<?, ?>, InternalMapper<?, ?>> getMappers() {
+    return new Hashtable<>(this.mappers);
+  }
 }
