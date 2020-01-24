@@ -12,13 +12,17 @@ class RestructureTransformation<S, D, RD> extends Transformation {
 
   private static final String MSG = "Restructure complex object for field %s using the following mapping\n%s.";
   private Optional<Supplier<RD>> objectCreator;
+  private boolean applyingSpecificConfiguration;
   private Mapper<S, RD> restructureMapper;
 
   RestructureTransformation(MappingConfiguration<?, ?> mapping, PropertyDescriptor sourceProperty,
-      PropertyDescriptor destinationProperty, Supplier<RD> objectCreator) {
+      PropertyDescriptor destinationProperty, Supplier<RD> objectCreator, boolean applyingSpecificConfiguration) {
     super(mapping, null, destinationProperty);
     this.objectCreator = Optional.ofNullable(objectCreator);
+    this.applyingSpecificConfiguration = applyingSpecificConfiguration;
   }
+
+
 
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
@@ -49,4 +53,14 @@ class RestructureTransformation<S, D, RD> extends Transformation {
     return String.format(MSG, asString(destinationProperty, detailed),
         (isNull(restructureMapper) ? "(mapper not available)" : restructureMapper.toString()));
   }
+
+   boolean isApplyingSpecificConfiguration() {
+    return applyingSpecificConfiguration;
+  }
+
+
+  public Mapper<S, RD> getRestructureMapper() {
+    return restructureMapper;
+  }
+
 }

@@ -17,13 +17,18 @@ public class RestructureBuilder<S, D, RD> {
   }
 
   public MappingConfiguration<S, D> implicitly() {
-    return applying(conf -> {
-    });
+    return createRestructure(conf -> {
+    }, false);
   }
 
   public MappingConfiguration<S, D> applying(Consumer<MappingConfiguration<S, RD>> restructureMappingConfiguration) {
     denyNull("restructureMappingConfiguration", restructureMappingConfiguration);
+    boolean applyingSpecificConfiguration = true;
+    return createRestructure(restructureMappingConfiguration, applyingSpecificConfiguration);
+  }
 
+  private MappingConfiguration<S, D> createRestructure(
+      Consumer<MappingConfiguration<S, RD>> restructureMappingConfiguration, boolean applyingSpecificConfiguration) {
     Map<Projection<?, ?>, InternalMapper<?, ?>> mappers = mappingConfiguration.getMappers();
     MappingConfiguration<S, RD> config = Mapping.from((Class<S>) mappingConfiguration.getSource())
         .to((Class<RD>) typedPropertyDescriptor.property.getPropertyType());
@@ -40,7 +45,7 @@ public class RestructureBuilder<S, D, RD> {
         });
     restructureMappingConfiguration.accept(config);
     Transformation restructureTransformation = new RestructureTransformation<>(config, null,
-        typedPropertyDescriptor.property, null);
+        typedPropertyDescriptor.property, null, applyingSpecificConfiguration);
     mappingConfiguration.addDestinationMapping(typedPropertyDescriptor.property, restructureTransformation);
     return mappingConfiguration;
   }

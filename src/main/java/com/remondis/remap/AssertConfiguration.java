@@ -1,5 +1,7 @@
 package com.remondis.remap;
 
+import org.springframework.util.ConcurrentReferenceHashMap;
+
 import static com.remondis.remap.Lang.denyNull;
 import static com.remondis.remap.MappingConfiguration.OMIT_FIELD_DEST;
 import static com.remondis.remap.MappingConfiguration.OMIT_FIELD_SOURCE;
@@ -11,10 +13,7 @@ import static com.remondis.remap.ReassignBuilder.ASSIGN;
 import static com.remondis.remap.ReplaceBuilder.TRANSFORM;
 
 import java.beans.PropertyDescriptor;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -66,11 +65,13 @@ public class AssertConfiguration<S, D> {
   private Object expectN;
 
   private boolean expectNoImplicitMappings;
+  private List<AssertVerification> verificaions;
 
   AssertConfiguration(Mapper<S, D> mapper) {
     denyNull("mapper", mapper);
     this.mapper = mapper;
     this.assertedTransformations = new HashSet<>();
+    this.verificaions = new LinkedList<>();
   }
 
   /**
@@ -117,7 +118,7 @@ public class AssertConfiguration<S, D> {
    *
    * @param destinationSelector
    *        The destination field selector.
-   * @return Returns a {@link ReplaceAssertBuilder} for further configuration.
+   * @return Returns a {@link SetAssertBuilder} for further configuration.
    */
   public <RD> SetAssertBuilder<S, D, RD> expectSet(TypedSelector<RD, D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
@@ -125,6 +126,22 @@ public class AssertConfiguration<S, D> {
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION, TRANSFORM,
         getMapping().getDestination(), destinationSelector);
     SetAssertBuilder<S, D, RD> builder = new SetAssertBuilder<>(destProperty, this);
+    return builder;
+  }
+
+  /**
+   * Specifies an assertion for a restructure operation.
+   *
+   * @param destinationSelector
+   *        The destination field selector.
+   * @return Returns a {@link RestructureAssertBuilder} for further configuration.
+   */
+  public <RD> RestructureAssertBuilder<S, D, RD> expectRestructure(TypedSelector<RD, D> destinationSelector) {
+    denyNull("destinationSelector", destinationSelector);
+
+    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION, TRANSFORM,
+            getMapping().getDestination(), destinationSelector);
+    RestructureAssertBuilder<S, D, RD> builder = new RestructureAssertBuilder<>(destProperty, this);
     return builder;
   }
 
@@ -247,8 +264,14 @@ public class AssertConfiguration<S, D> {
   public void ensure() throws AssertionError {
     checkImplicitMappingStrategy();
     checkReplaceTransformations();
+
+    checkVerifications();
     checkTransformations();
     checkReplaceFunctions();
+  }
+
+  private void checkVerifications() {
+    verificaions.stream().forEach(AssertVerification::verify);
   }
 
   private void checkImplicitMappingStrategy() {
@@ -419,4 +442,11 @@ public class AssertConfiguration<S, D> {
     return mapper.getMapping();
   }
 
+  /**
+   * Method to add custom verifications, that cannot be performed by a comparision of {@link Transformation} using equals.
+   */
+   void addVerification(AssertVerification verification) {
+    denyNull("verification", verification);
+    this.verificaions.add(verification);
+  }
 }
