@@ -1,6 +1,5 @@
 package com.remondis.remap;
 
-
 /**
  * Interface to implement custom verification tasks evaluated by {@link AssertConfiguration#ensure()}. Use this method
  * for verifications of mapping operations that cannot be performed using {@link Transformation#equals(Object)}.

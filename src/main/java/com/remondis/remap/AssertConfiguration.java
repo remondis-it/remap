@@ -140,7 +140,7 @@ public class AssertConfiguration<S, D> {
     denyNull("destinationSelector", destinationSelector);
 
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION, TRANSFORM,
-            getMapping().getDestination(), destinationSelector);
+        getMapping().getDestination(), destinationSelector);
     RestructureAssertBuilder<S, D, RD> builder = new RestructureAssertBuilder<>(destProperty, this);
     return builder;
   }
@@ -271,7 +271,8 @@ public class AssertConfiguration<S, D> {
   }
 
   private void checkVerifications() {
-    verificaions.stream().forEach(AssertVerification::verify);
+    verificaions.stream()
+        .forEach(AssertVerification::verify);
   }
 
   private void checkImplicitMappingStrategy() {
@@ -443,9 +444,10 @@ public class AssertConfiguration<S, D> {
   }
 
   /**
-   * Method to add custom verifications, that cannot be performed by a comparision of {@link Transformation} using equals.
+   * Method to add custom verifications, that cannot be performed by a comparision of {@link Transformation} using
+   * equals.
    */
-   void addVerification(AssertVerification verification) {
+  void addVerification(AssertVerification verification) {
     denyNull("verification", verification);
     this.verificaions.add(verification);
   }

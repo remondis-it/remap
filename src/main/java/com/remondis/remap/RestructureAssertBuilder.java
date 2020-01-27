@@ -42,7 +42,8 @@ public class RestructureAssertBuilder<S, D, RD> {
    * @param restructureMappingAssertions The assertions made about the mapper used for restructuring.
    * @return Returns the {@link AssertConfiguration} for further configuration.
    */
-  public AssertConfiguration<S, D> applying(Consumer<RestructuringAssertConfiguration<S, RD>> restructureMappingAssertions) {
+  public AssertConfiguration<S, D> applying(
+      Consumer<RestructuringAssertConfiguration<S, RD>> restructureMappingAssertions) {
     denyNull("restructureMappingAssertions", restructureMappingAssertions);
     return _assertRestructure(restructureMappingAssertions);
   }
@@ -61,15 +62,11 @@ public class RestructureAssertBuilder<S, D, RD> {
         // inherits equals/hashCode from Transformation.
         .findFirst();
     if (restructureTransformation.isPresent()) {
-      asserts.addVerification(
-          new RestructureVerification(restructureTransformation.get(), restructureMappingAssertions));
-      asserts.addAssertion(new RestructureTransformation<>(asserts.getMapping(), null,
-              destProperty.property, null, nonNull(restructureMappingAssertions)));
-    } else {
-      throw new AssertionError(String.format(
-          "The expected restructure operation for destination field %s was not found on the specified mapping.",
-          asString(destProperty.property)));
+      asserts
+          .addVerification(new RestructureVerification(restructureTransformation.get(), restructureMappingAssertions));
     }
+    asserts.addAssertion(new RestructureTransformation<>(asserts.getMapping(), null, destProperty.property, null,
+        nonNull(restructureMappingAssertions)));
     return asserts;
   }
 

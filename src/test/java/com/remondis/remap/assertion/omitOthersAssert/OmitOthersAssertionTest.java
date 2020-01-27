@@ -9,28 +9,32 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class OmitOthersAssertionTest {
 
-    @Test
-    public void shouldComplainAboutUnexpectedOmitsForDestination() {
-        Mapper<BeanEmpty, BeanWithFields> mapper = Mapping.from(BeanEmpty.class).to(BeanWithFields.class)
-                .omitOtherDestinationProperties()
-                .mapper();
+  @Test
+  public void shouldComplainAboutUnexpectedOmitsForDestination() {
+    Mapper<BeanEmpty, BeanWithFields> mapper = Mapping.from(BeanEmpty.class)
+        .to(BeanWithFields.class)
+        .omitOtherDestinationProperties()
+        .mapper();
 
-        assertThatThrownBy(() -> AssertMapping.of(mapper)
-                .ensure()).hasMessage("The following unexpected transformation were specified on the mapping:\n"
+    assertThatThrownBy(() -> AssertMapping.of(mapper)
+        .ensure())
+            .hasMessage("The following unexpected transformation were specified on the mapping:\n"
                 + "- Omitting Property 'number' in BeanWithFields\n"
                 + "- Omitting Property 'string' in BeanWithFields\n");
-    }
+  }
 
-    @Test
-    public void shouldComplainAboutUnexpectedOmitsForSource() {
-        Mapper<BeanWithFields, BeanEmpty> mapper = Mapping.from(BeanWithFields.class).to(BeanEmpty.class)
-                .omitOtherSourceProperties()
-                .mapper();
+  @Test
+  public void shouldComplainAboutUnexpectedOmitsForSource() {
+    Mapper<BeanWithFields, BeanEmpty> mapper = Mapping.from(BeanWithFields.class)
+        .to(BeanEmpty.class)
+        .omitOtherSourceProperties()
+        .mapper();
 
-        assertThatThrownBy(() -> AssertMapping.of(mapper)
-                .ensure()).hasMessage("The following unexpected transformation were specified on the mapping:\n" +
-                "- Omitting Property 'number' in BeanWithFields\n" +
-                "- Omitting Property 'string' in BeanWithFields\n");
-    }
+    assertThatThrownBy(() -> AssertMapping.of(mapper)
+        .ensure())
+            .hasMessage("The following unexpected transformation were specified on the mapping:\n"
+                + "- Omitting Property 'number' in BeanWithFields\n"
+                + "- Omitting Property 'string' in BeanWithFields\n");
+  }
 
 }

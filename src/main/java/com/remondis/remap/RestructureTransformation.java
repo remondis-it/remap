@@ -10,7 +10,9 @@ import static java.util.Objects.isNull;
 
 class RestructureTransformation<S, D, RD> extends Transformation {
 
-  private static final String MSG = "Restructure complex object for field %s using the following mapping\n%s.";
+  private static final String MSG_MAPPING = "Restructure complex object for field %s using the following mapping\n%s.";
+  private static final String MSG_NO_MAPPING = "Restructure complex object for field %s.";
+
   private Optional<Supplier<RD>> objectCreator;
   private boolean applyingSpecificConfiguration;
   private Mapper<S, RD> restructureMapper;
@@ -21,8 +23,6 @@ class RestructureTransformation<S, D, RD> extends Transformation {
     this.objectCreator = Optional.ofNullable(objectCreator);
     this.applyingSpecificConfiguration = applyingSpecificConfiguration;
   }
-
-
 
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
@@ -50,14 +50,16 @@ class RestructureTransformation<S, D, RD> extends Transformation {
 
   @Override
   public String toString(boolean detailed) {
-    return String.format(MSG, asString(destinationProperty, detailed),
-        (isNull(restructureMapper) ? "(mapper not available)" : restructureMapper.toString()));
+    if (isNull(restructureMapper)) {
+      return String.format(MSG_NO_MAPPING, asString(destinationProperty, detailed));
+    } else {
+      return String.format(MSG_MAPPING, asString(destinationProperty, detailed), restructureMapper.toString());
+    }
   }
 
-   boolean isApplyingSpecificConfiguration() {
+  boolean isApplyingSpecificConfiguration() {
     return applyingSpecificConfiguration;
   }
-
 
   public Mapper<S, RD> getRestructureMapper() {
     return restructureMapper;

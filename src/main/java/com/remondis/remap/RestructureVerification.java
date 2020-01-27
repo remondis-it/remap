@@ -30,7 +30,7 @@ public class RestructureVerification<S, RD> implements AssertVerification {
     if (expected != actual) {
       PropertyDescriptor destinationProperty = restructureTransformation.getDestinationProperty();
       throw new AssertionError(String.format(
-          "Mapping from source type %s used for restructuring of field %s was configured to %s but was expected to %s.",
+          "The mapping from source type %s\nused for restructuring of field %s\nwas configured to %s but was expected to %s.",
           mapper.getMapping()
               .getSource()
               .getName(),
@@ -53,7 +53,7 @@ public class RestructureVerification<S, RD> implements AssertVerification {
     } catch (AssertionError assertionError) {
       PropertyDescriptor destinationProperty = restructureTransformation.getDestinationProperty();
       throw new AssertionError(String.format(
-          "Mapping from source type %s used for restructuring of field in %s did not meet assertions:\n%s\n",
+          "The mapping from source type %s\nused for restructuring of field in %s\ndid not meet assertions:\n%s",
           mapper.getMapping()
               .getSource()
               .getName(),
