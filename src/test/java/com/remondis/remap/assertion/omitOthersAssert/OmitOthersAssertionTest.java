@@ -1,11 +1,12 @@
 package com.remondis.remap.assertion.omitOthersAssert;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import org.junit.Test;
+
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
-import org.junit.Test;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class OmitOthersAssertionTest {
 
@@ -17,10 +18,9 @@ public class OmitOthersAssertionTest {
         .mapper();
 
     assertThatThrownBy(() -> AssertMapping.of(mapper)
-        .ensure())
-            .hasMessage("The following unexpected transformation were specified on the mapping:\n"
-                + "- Omitting Property 'number' in BeanWithFields\n"
-                + "- Omitting Property 'string' in BeanWithFields\n");
+        .ensure()).hasMessageContaining("The following unexpected transformation were specified on the mapping:\n")
+            .hasMessageContaining("- Omitting Property 'number' in BeanWithFields\n")
+            .hasMessageContaining("- Omitting Property 'string' in BeanWithFields\n");
   }
 
   @Test
@@ -31,10 +31,9 @@ public class OmitOthersAssertionTest {
         .mapper();
 
     assertThatThrownBy(() -> AssertMapping.of(mapper)
-        .ensure())
-            .hasMessage("The following unexpected transformation were specified on the mapping:\n"
-                + "- Omitting Property 'number' in BeanWithFields\n"
-                + "- Omitting Property 'string' in BeanWithFields\n");
+        .ensure()).hasMessageContaining("The following unexpected transformation were specified on the mapping:\n")
+            .hasMessageContaining("- Omitting Property 'number' in BeanWithFields\n")
+            .hasMessageContaining("- Omitting Property 'string' in BeanWithFields\n");
   }
 
 }
