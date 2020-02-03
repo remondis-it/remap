@@ -23,8 +23,9 @@
    8. [Type mappings](#type-mappings)
    9. [Mapping with property paths](#mapping-with-property-paths)
    10. [Mapping other values to a field](#mapping-other-values-to-a-field)
-   11. [Mapping maps](#mapping-maps)
-   12. [Tests](#tests)
+   11. [Restructure a complex object in the destination}(#restructure-a-complex-object-in-the-destination)
+   12. [Mapping maps](#mapping-maps)
+   13. [Tests](#tests)
 9. [Spring integration](#spring-integration)
    1. [Spring Boot Issue](#spring-boot-issue)
 10. [Migration guide](#migration-guide)
@@ -510,6 +511,64 @@ The function gets the reference to the source object and returns a value used fo
 
 __Do not mix up the `set`- and `replace`-operations:__ Sometimes you can write a `replace`- as a `set`-operation. As a result you often have to perform a get-call yourself instead of having ReMap handling the get-call and the optional null-checks. __Don't use set, if you can use `replace`.__
 
+### Restructure a complex object in the destination
+
+Consider you have a flat data structure and you want to map this to a more structured complex object. An example for a flat person structure is the following:
+
+```
+public class PersonFlat {
+    private String forename;
+    private String name;
+
+    private String street;
+    private String houseNumber;
+
+    // Constructors, getter/setter...
+}
+```
+
+You can use the restructure operation to define mappings that build complex objects from the fields of `PersonFlat`.
+We want to map the `PersonFlat` into the following object hierarchy:
+
+```
+public class Family {
+    private Person dad;
+}
+
+public class Person {
+    private String forename;
+    private String name;
+    private Address address;
+}
+
+public class Address {
+    private String street;
+    private String houseNumber;
+}
+```
+In the past you might have use a set operation using a function to create all these objects to achieve this.
+Since ReMap 4.2.2 you can use mappers for this:
+
+```
+    Mapper<PersonFlat, Family> mapper = Mapping.from(PersonFlat.class)
+        .to(Family.class)
+        .omitOtherSourceProperties()
+        .restructure(Family::getDad) // Build a Person instance out of PersonFlat
+        .applying(flat2PersonMapping -> flat2PersonMapping.restructure(Person::getAddress) // Build an Address instance out of PersonFlat.
+            .implicitly())
+        .mapper();
+```
+
+As you can see, you can tell the mapper to restructure the field `Dad` which is a `Person`. After defining the restructure operation on the mapper
+`PersonFlat` to `Family` we can specify a mapping configuration for the mapping `PersonFlat` to `Person` using `applying(...)`.
+Due to the fact that the mapper does not create restructure-mappings explicitly, we have to apply a mapping configuration
+telling the mapper to restructure the field `address` in `Person`. Since this is a mapping from `PersonFlat` to `Address`
+the mapping of the fields `street` and `houseNumber` can be performed implicitly.
+
+Of course you can test your mapping with the Assertion API of ReMap. For a more detailed example see [RestructuringDemoTest](src/test/java/com/remondis/remap/restructure/demo/RestructurionDemoTest.java)
+
+__Note: The restructure operation creates an `omitOtherSourceProperties` on the mapper.__ This was done because most of the time you do not need all source fields to restructure a destination object.
+
 ### Mapping maps
 
 Since version `4.1.16` ReMap supports mapping of nested collections and maps. The generic type nesting of a source field
@@ -591,12 +650,6 @@ The following bean configuration creates mappers to convert a `Person` into `Hum
 ```java
 @Configuration
 static class TestConfiguration {
-  @Bean
-  BidirectionalMapper<Person, Human> bidiPersonHumanMapper(Mapper<Person, Human> personHumanMapper,
-                                                           Mapper<Human, Person> humanPersonMapper) {
-    return BidirectionalMapper.of(personHumanMapper, humanPersonMapper);
-  }
-
   @Bean
   Mapper<Person, Human> personHumanMapper(){
     return Mapping.from(Person.class)

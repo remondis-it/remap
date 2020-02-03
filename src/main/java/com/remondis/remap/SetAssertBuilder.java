@@ -1,7 +1,7 @@
 package com.remondis.remap;
 
 /**
- * Builder to assert a replace operation on a {@link Mapper} object using {@link AssertConfiguration}.
+ * Builder to assert a set operation on a {@link Mapper} object using {@link AssertConfiguration}.
  *
  * @param <S> The source type
  * @param <D> The destination type
