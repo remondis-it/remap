@@ -1,7 +1,5 @@
 package com.remondis.remap.restructure.demo;
 
-import org.junit.AfterClass;
-
 public class PersonFlat {
   private String forename;
   private String name;
