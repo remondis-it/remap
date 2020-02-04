@@ -1,7 +1,7 @@
 package com.remondis.remap.demo.v2;
 
-import static java.time.LocalDate.now;
 import static java.time.Period.between;
+import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDate;
 
@@ -24,7 +24,7 @@ public class MapPersonTest {
         .to(PersonView::getSurname)
         // Optional field (may be null)
         .replace(Person::getBirthday, PersonView::getAge)
-        .withSkipWhenNull(birthday -> between(birthday, now()).getYears())
+        .withSkipWhenNull(birthday -> between(birthday, LocalDate.of(2019, 10, 9)).getYears())
         // Optional field (may be null)
         .replace(Person::getAddress, PersonView::getEmail)
         .withSkipWhenNull(Address::getEmail)
@@ -33,7 +33,10 @@ public class MapPersonTest {
         .mapper();
 
     PersonView personView = mapper.map(person);
-    // Maps to: PersonView [forname=Max, surname=Mustermann, age=30, email=max.mustermann@example.org]
+    assertEquals("Max", personView.getForname());
+    assertEquals("Mustermann", personView.getSurname());
+    assertEquals(31, personView.getAge());
+    assertEquals("max.mustermann@example.org", personView.getEmail());
   }
 
 }

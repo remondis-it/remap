@@ -17,7 +17,7 @@ public class MethodCallsInConstructorTest {
         .with(Function.identity())
         .mapper();
 
-    A mapped = mapper.map(new A("AString"));
+    mapper.map(new A("AString"));
 
   }
 
