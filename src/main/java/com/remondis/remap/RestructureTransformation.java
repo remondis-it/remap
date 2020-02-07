@@ -1,13 +1,20 @@
 package com.remondis.remap;
 
-import java.beans.PropertyDescriptor;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import static com.remondis.remap.Properties.asString;
 import static java.util.Objects.isNull;
 
+import java.beans.PropertyDescriptor;
+import java.util.Optional;
+import java.util.function.Supplier;
+
+/**
+ * The restructure transformation is used to build a destination object using a mapper root->destination.
+ *
+ * @param <S> The source type of mapping.
+ * @param <D> The destination type of mapping.
+ * @param <RD> The type of the destination field.
+ * @author schuettec
+ */
 class RestructureTransformation<S, D, RD> extends Transformation {
 
   private static final String MSG_MAPPING = "Restructure complex object for field %s using the following mapping\n%s.";
@@ -24,6 +31,7 @@ class RestructureTransformation<S, D, RD> extends Transformation {
     this.applyingSpecificConfiguration = applyingSpecificConfiguration;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
@@ -38,6 +46,7 @@ class RestructureTransformation<S, D, RD> extends Transformation {
     writeOrFail(destinationProperty, destination, destinationValue);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   protected void validateTransformation() throws MappingException {
     try {
@@ -57,11 +66,18 @@ class RestructureTransformation<S, D, RD> extends Transformation {
     }
   }
 
+  /**
+   * @return Returns <code>true</code> if the restructure transformation applies further mapping configurations,
+   *         otherwise <code>false</code> is returned. Used for {@link RestructureAssertBuilder}.
+   */
   boolean isApplyingSpecificConfiguration() {
     return applyingSpecificConfiguration;
   }
 
-  public Mapper<S, RD> getRestructureMapper() {
+  /**
+   * @return Returns the {@link Mapper} used to restructure the destination field.
+   */
+  Mapper<S, RD> getRestructureMapper() {
     return restructureMapper;
   }
 

@@ -756,7 +756,7 @@ public class MappingConfiguration<S, D> {
   }
 
   /**
-   * @returns Returns the registered {@link Mapper}s.
+   * @return Returns the registered {@link Mapper}s.
    */
   protected Map<Projection<?, ?>, InternalMapper<?, ?>> getMappers() {
     return new Hashtable<>(this.mappers);

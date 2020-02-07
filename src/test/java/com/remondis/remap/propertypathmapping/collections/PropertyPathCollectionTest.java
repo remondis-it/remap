@@ -15,7 +15,6 @@ import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.remap.propertypathmapping.Address;
 import com.remondis.remap.propertypathmapping.Person;
-import com.remondis.remap.propertypathmapping.PersonView;
 
 public class PropertyPathCollectionTest {
 
@@ -23,18 +22,6 @@ public class PropertyPathCollectionTest {
 
   @Before
   public void setup() {
-    Mapper<Person, PersonView> personMapper = Mapping.from(Person.class)
-        .to(PersonView.class)
-        .replace(Person::getAddress, PersonView::getStreet)
-        .withPropertyPath(Address::getStreet)
-        .replace(Person::getAddress, PersonView::getHouseNumber)
-        .withPropertyPath(Address::getHouseNumber)
-        .replace(Person::getAddress, PersonView::getZipCode)
-        .withPropertyPath(Address::getZipCode)
-        .replace(Person::getAddress, PersonView::getCity)
-        .withPropertyPath(Address::getCity)
-        .mapper();
-
     this.mapper = Mapping.from(CollectionSource.class)
         .to(CollectionDestination.class)
         .replaceCollection(CollectionSource::getPersons, CollectionDestination::getCities)

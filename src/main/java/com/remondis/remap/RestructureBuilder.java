@@ -1,26 +1,50 @@
 package com.remondis.remap;
 
+import static com.remondis.remap.Lang.denyNull;
+
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static com.remondis.remap.Lang.denyNull;
-
+/**
+ * A builder for restructuring a field in the destination type.
+ *
+ * @param <S> The source type of mapping.
+ * @param <D> The destination type of mapping.
+ * @param <RD> The type of the destination field.
+ *
+ * @author schuettec
+ *
+ */
 public class RestructureBuilder<S, D, RD> {
 
   private MappingConfiguration<S, D> mappingConfiguration;
   private TypedPropertyDescriptor<RD> typedPropertyDescriptor;
 
-  public RestructureBuilder(MappingConfiguration<S, D> mappingConfiguration,
+  RestructureBuilder(MappingConfiguration<S, D> mappingConfiguration,
       TypedPropertyDescriptor<RD> typedPropertyDescriptor) {
     this.mappingConfiguration = mappingConfiguration;
     this.typedPropertyDescriptor = typedPropertyDescriptor;
   }
 
+  /**
+   * Tells the mapping, that the destination object can be restructured by simple implicit mappings. Use this
+   * method if no custom mappings are required to build the destination object.
+   *
+   * @return Returns a {@link MappingConfiguration} for further configuration.
+   */
   public MappingConfiguration<S, D> implicitly() {
     return createRestructure(conf -> {
     }, false);
   }
 
+  /**
+   * Adds further mapping configurations to the mapping that is used to restructure the destination object. Use this
+   * method, if custom mappings are required to build the destination object.
+   *
+   * @param restructureMappingConfiguration A {@link Consumer} that receives a {@link MappingConfiguration} and applies
+   *        further mapping configurations.
+   * @return Returns a {@link MappingConfiguration} for further configuration.
+   */
   public MappingConfiguration<S, D> applying(Consumer<MappingConfiguration<S, RD>> restructureMappingConfiguration) {
     denyNull("restructureMappingConfiguration", restructureMappingConfiguration);
     boolean applyingSpecificConfiguration = true;
@@ -30,7 +54,8 @@ public class RestructureBuilder<S, D, RD> {
   private MappingConfiguration<S, D> createRestructure(
       Consumer<MappingConfiguration<S, RD>> restructureMappingConfiguration, boolean applyingSpecificConfiguration) {
     Map<Projection<?, ?>, InternalMapper<?, ?>> mappers = mappingConfiguration.getMappers();
-    MappingConfiguration<S, RD> config = Mapping.from((Class<S>) mappingConfiguration.getSource())
+    @SuppressWarnings("unchecked")
+    MappingConfiguration<S, RD> config = Mapping.from(mappingConfiguration.getSource())
         .to((Class<RD>) typedPropertyDescriptor.property.getPropertyType());
     // Do not make all source properties mandatory
     config.omitOtherSourceProperties();
@@ -38,8 +63,6 @@ public class RestructureBuilder<S, D, RD> {
     mappers.entrySet()
         .stream()
         .forEach(entry -> {
-          Class<?> destType = entry.getKey()
-              .getDestination();
           InternalMapper<?, ?> mapper = entry.getValue();
           config.useInternalMapper(mapper);
         });

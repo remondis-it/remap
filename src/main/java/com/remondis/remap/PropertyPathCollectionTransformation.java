@@ -20,6 +20,7 @@ import com.remondis.propertypath.api.PropertyPath;
  *
  * @param <RS> The type of the source field.
  * @param <RD> The type of the destination field.
+ * @param <X> The return type of the property path.
  * @author schuettec
  */
 public class PropertyPathCollectionTransformation<RS, X, RD> extends Transformation {
@@ -116,6 +117,7 @@ public class PropertyPathCollectionTransformation<RS, X, RD> extends Transformat
     return result;
   }
 
+  @SuppressWarnings("rawtypes")
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {

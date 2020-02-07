@@ -17,7 +17,7 @@ public class AResource {
     return bString;
   }
 
-  public void setAString(String aString) {
+  public void setAString(String bString) {
     this.bString = bString;
   }
 

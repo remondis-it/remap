@@ -35,14 +35,14 @@ class OmitTransformation extends Transformation {
   }
 
   /**
-   * Returns <code>true</code> if this {@link OmitTransformation} omits a destination property.
+   * @return Returns <code>true</code> if this {@link OmitTransformation} omits a destination property.
    */
   public boolean isOmitInDestination() {
     return nonNull(destinationProperty);
   }
 
   /**
-   * Returns <code>true</code> if this {@link OmitTransformation} omits a destination property.
+   * @return Returns <code>true</code> if this {@link OmitTransformation} omits a destination property.
    */
   public boolean isOmitInSource() {
     return nonNull(sourceProperty);

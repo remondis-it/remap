@@ -58,6 +58,7 @@ public class GenericsTest {
   }
 
   @Test
+  @SuppressWarnings("rawtypes")
   public void shouldMapGenericType() {
     Mapper<Bean, Bean2> mapper = Mapping.from(Bean.class)
         .to(Bean2.class)
@@ -74,6 +75,7 @@ public class GenericsTest {
   }
 
   @Test
+  @SuppressWarnings("rawtypes")
   public void shouldMap() {
     Mapper<Identifiable, IdentifiableImpl> idMapper = Mapping.from(Identifiable.class)
         .to(IdentifiableImpl.class)
