@@ -7,6 +7,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Map;
@@ -159,6 +160,9 @@ public class ReassignTransformation extends Transformation {
       type = parameterizedType.getActualTypeArguments()[genericParameterIndex];
       if (type instanceof ParameterizedType) {
         parameterizedType = (ParameterizedType) type;
+      } else if (type instanceof TypeVariable) {
+        type = Object.class;
+        parameterizedType = null;
       } else {
         parameterizedType = null;
       }
