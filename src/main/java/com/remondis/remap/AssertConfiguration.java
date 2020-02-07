@@ -1,7 +1,5 @@
 package com.remondis.remap;
 
-import org.springframework.util.ConcurrentReferenceHashMap;
-
 import static com.remondis.remap.Lang.denyNull;
 import static com.remondis.remap.MappingConfiguration.OMIT_FIELD_DEST;
 import static com.remondis.remap.MappingConfiguration.OMIT_FIELD_SOURCE;
@@ -13,7 +11,12 @@ import static com.remondis.remap.ReassignBuilder.ASSIGN;
 import static com.remondis.remap.ReplaceBuilder.TRANSFORM;
 
 import java.beans.PropertyDescriptor;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

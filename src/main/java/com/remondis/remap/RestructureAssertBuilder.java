@@ -1,12 +1,10 @@
 package com.remondis.remap;
 
+import static com.remondis.remap.Lang.denyNull;
+import static java.util.Objects.nonNull;
+
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import static com.remondis.remap.Lang.denyNull;
-import static com.remondis.remap.Properties.asString;
-import static java.util.Objects.nonNull;
 
 /**
  * Builder to assert a set operation on a {@link Mapper} object using {@link AssertConfiguration}.
@@ -48,6 +46,9 @@ public class RestructureAssertBuilder<S, D, RD> {
     return _assertRestructure(restructureMappingAssertions);
   }
 
+  @SuppressWarnings({
+      "rawtypes", "unchecked"
+  })
   private AssertConfiguration<S, D> _assertRestructure(
       Consumer<RestructuringAssertConfiguration<S, RD>> restructureMappingAssertions) {
     Optional<RestructureTransformation> restructureTransformation = asserts.getMapping()

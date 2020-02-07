@@ -68,8 +68,6 @@ public class MapperTest {
     MappingConfiguration<? extends Parent, ? extends ParentResource> parentMapping = Mapping.from(Parent.class)
         .to(ParentResource.class);
     parentMappingConfig(parentMapping);
-    Mapper<? extends Parent, ? extends ParentResource> parentMapper = parentMapping.mapper();
-
     MappingConfiguration<Child, ChildResource> childMapping = Mapping.from(Child.class)
         .to(ChildResource.class);
     parentMappingConfig(childMapping);

@@ -1,12 +1,12 @@
 package com.remondis.remap;
 
-import java.beans.PropertyDescriptor;
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import static com.remondis.remap.Properties.asString;
 import static java.util.Objects.nonNull;
 
+import java.beans.PropertyDescriptor;
+import java.util.function.Consumer;
+
+@SuppressWarnings("rawtypes")
 public class RestructureVerification<S, RD> implements AssertVerification {
 
   public static final String APPLY_SPECIFIC = "apply specific mapping configuration";
@@ -22,6 +22,7 @@ public class RestructureVerification<S, RD> implements AssertVerification {
     this.applyingSpecificConfiguration = nonNull(restructureMappingAssertions);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void verify() throws AssertionError {
     Mapper mapper = restructureTransformation.getRestructureMapper();

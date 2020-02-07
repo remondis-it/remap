@@ -129,6 +129,7 @@ class ReflectionUtil {
    * @return Returns a {@link Collector} that supports the specified collection type. If no supported collection type
    *         was specified a {@link MappingException} is thrown.
    */
+  @SuppressWarnings("rawtypes")
   static Collector getCollector(Class<?> collectionType) {
     if (Set.class.isAssignableFrom(collectionType)) {
       return Collectors.toSet();

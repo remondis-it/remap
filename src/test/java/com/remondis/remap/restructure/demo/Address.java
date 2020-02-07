@@ -1,7 +1,5 @@
 package com.remondis.remap.restructure.demo;
 
-import com.remondis.remap.AssertMapping;
-
 public class Address {
 
   private String street;
