@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.remondis</groupId>
     <artifactId>remap</artifactId>
-    <version>4.2.2</version>
+    <version>4.2.3</version>
     <packaging>jar</packaging>
     <name>ReMap</name>
     <description>A declarative mapping library for converting objects field by field.</description>
