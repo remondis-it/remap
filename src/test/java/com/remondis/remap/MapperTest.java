@@ -11,7 +11,6 @@ import org.junit.Test;
 /**
  * This is the test of class {@link Mapper}.
  */
-@SuppressWarnings("javadoc")
 public class MapperTest {
 
   private Mapper<A, A> mapper;
