@@ -5,6 +5,11 @@ script: mvn install
 before_install:
 - ./etc/before.sh
 
+cache:
+  directories:
+  - .autoconf
+  - $HOME/.m2
+
 deploy:
   skip_cleanup: true
   provider: script
