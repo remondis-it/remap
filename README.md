@@ -23,7 +23,7 @@
    8. [Type mappings](#type-mappings)
    9. [Mapping with property paths](#mapping-with-property-paths)
    10. [Mapping other values to a field](#mapping-other-values-to-a-field)
-   11. [Restructure a complex object in the destination}(#restructure-a-complex-object-in-the-destination)
+   11. [Restructure a complex object in the destination](#restructure-a-complex-object-in-the-destination)
    12. [Mapping maps](#mapping-maps)
    13. [Tests](#tests)
 9. [Spring integration](#spring-integration)
