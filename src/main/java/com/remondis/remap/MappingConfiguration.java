@@ -275,6 +275,15 @@ public class MappingConfiguration<S, D> {
     return builder;
   }
 
+  /**
+   * Defines a restructuring operation to build an complex object to be assigned to the specified destination field by
+   * mapping from fields of the source type.
+   *
+   * @param <RD> The destination type.
+   * @param destinationSelector The {@link FieldSelector}s selecting the destination property with
+   *        get-method invocation.
+   * @return Returns a {@link RestructureBuilder} for further configuration.
+   */
   public <RD> RestructureBuilder<S, D, RD> restructure(TypedSelector<RD, D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,

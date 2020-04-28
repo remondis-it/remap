@@ -4,6 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +25,18 @@ public class MapperTest {
     this.mapper = Mapping.from(A.class)
         .to(A.class)
         .mapper();
+  }
+
+  @Test
+  public void shouldMapEmptyList() {
+    List<A> list = mapper.map(Collections.emptyList());
+    assertTrue(list.isEmpty());
+  }
+
+  @Test
+  public void shouldMapEmptySet() {
+    Set<A> list = mapper.map(Collections.emptySet());
+    assertTrue(list.isEmpty());
   }
 
   @Test
