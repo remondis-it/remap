@@ -60,7 +60,7 @@ abstract class Transformation {
   }
 
   /**
-   * Performs the transformation for the specified source and destinatione.
+   * Performs the transformation for the specified source and destination.
    *
    * @param source The source object
    * @param destination The destination object.
