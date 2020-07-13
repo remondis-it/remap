@@ -43,13 +43,25 @@ public class ReassignTransformation extends Transformation {
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
     // Only if the source value is not null we have to perform the mapping
+    MappedResult result = MappedResult.skip();
     if (sourceValue != null) {
-      GenericParameterContext sourceCtx = new GenericParameterContext(sourceProperty.getReadMethod());
-      GenericParameterContext destinationCtx = new GenericParameterContext(destinationProperty.getReadMethod());
-      Object destinationValue = _convert(sourceCtx.getCurrentType(), sourceValue, destinationCtx.getCurrentType(),
-          destination, sourceCtx, destinationCtx);
-      writeOrFail(destinationProperty, destination, destinationValue);
+      result = performValueTransformation(sourceProperty, destinationProperty, sourceValue, destination);
     }
+
+    if (result.hasValue()) {
+      writeOrFail(destinationProperty, destination, result.getValue());
+    }
+  }
+
+  @Override
+  protected MappedResult performValueTransformation(PropertyDescriptor sourceProperty,
+      PropertyDescriptor destinationProperty, Object source, Object destination) throws MappingException {
+    Object destinationValue;
+    GenericParameterContext sourceCtx = new GenericParameterContext(sourceProperty.getReadMethod());
+    GenericParameterContext destinationCtx = new GenericParameterContext(destinationProperty.getReadMethod());
+    destinationValue = _convert(sourceCtx.getCurrentType(), source, destinationCtx.getCurrentType(), destination,
+        sourceCtx, destinationCtx);
+    return MappedResult.value(destinationValue);
   }
 
   @SuppressWarnings({

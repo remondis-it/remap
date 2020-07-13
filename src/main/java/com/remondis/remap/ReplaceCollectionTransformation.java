@@ -35,18 +35,28 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
   }
 
   @Override
-  @SuppressWarnings({
-      "rawtypes", "unchecked"
-  })
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
 
-    if (sourceValue == null) {
+    MappedResult result = performValueTransformation(sourceProperty, destinationProperty, sourceValue, destination);
+
+    if (result.hasValue()) {
+      writeOrFail(destinationProperty, destination, result.getValue());
+    }
+  }
+
+  @SuppressWarnings({
+      "rawtypes", "unchecked"
+  })
+  @Override
+  protected MappedResult performValueTransformation(PropertyDescriptor sourceProperty,
+      PropertyDescriptor destinationProperty, Object source, Object destination) throws MappingException {
+    if (source == null) {
       // Skip if source value is null and the transformation was declared to skip on null input.
-      return;
+      return MappedResult.skip();
     } else {
-      Collection collection = (Collection) sourceValue;
+      Collection collection = (Collection) source;
 
       Class<?> destinationCollectionType = destinationProperty.getPropertyType();
       Collector collector = getCollector(destinationCollectionType);
@@ -67,9 +77,8 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
             })
             .collect(collector);
       }
-      writeOrFail(destinationProperty, destination, destinationValue);
+      return MappedResult.value(destinationValue);
     }
-
   }
 
   @Override

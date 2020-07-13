@@ -32,19 +32,26 @@ class ReplaceTransformation<RS, RD> extends SkipWhenNullTransformation<RS, RD> {
   }
 
   @Override
-  @SuppressWarnings({
-      "unchecked"
-  })
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
 
-    if (sourceValue == null && skipWhenNull) {
-      // Skip if source value is null and the transformation was declared to skip on null input.
-      return;
+    MappedResult result = performValueTransformation(sourceProperty, destinationProperty, sourceValue, destination);
+
+    if (result.hasValue()) {
+      writeOrFail(destinationProperty, destination, result.getValue());
     }
-    RD destinationValue = transformation.apply((RS) sourceValue);
-    writeOrFail(destinationProperty, destination, destinationValue);
+  }
+
+  @Override
+  protected MappedResult performValueTransformation(PropertyDescriptor sourceProperty,
+      PropertyDescriptor destinationProperty, Object source, Object destination) throws MappingException {
+    if (source == null && skipWhenNull) {
+      // Skip if source value is null and the transformation was declared to skip on null input.
+      return MappedResult.skip();
+    }
+    RD destinationValue = transformation.apply((RS) source);
+    return MappedResult.value(destinationValue);
   }
 
   @Override

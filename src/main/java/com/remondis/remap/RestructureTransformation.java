@@ -31,10 +31,18 @@ class RestructureTransformation<S, D, RD> extends Transformation {
     this.applyingSpecificConfiguration = applyingSpecificConfiguration;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+    MappedResult result = performValueTransformation(sourceProperty, destinationProperty, source, destination);
+    if (result.hasValue()) {
+      writeOrFail(destinationProperty, destination, result.getValue());
+    }
+  }
+
+  @Override
+  protected MappedResult performValueTransformation(PropertyDescriptor sourceProperty,
+      PropertyDescriptor destinationProperty, Object source, Object destination) throws MappingException {
     RD destinationValue = null;
     if (objectCreator.isPresent()) {
       RD newObject = objectCreator.get()
@@ -43,7 +51,7 @@ class RestructureTransformation<S, D, RD> extends Transformation {
     } else {
       destinationValue = restructureMapper.map((S) source);
     }
-    writeOrFail(destinationProperty, destination, destinationValue);
+    return MappedResult.value(destinationValue);
   }
 
   @SuppressWarnings("unchecked")
