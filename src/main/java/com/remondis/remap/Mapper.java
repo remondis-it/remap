@@ -134,4 +134,8 @@ public class Mapper<S, D> {
     return mapping.toString();
   }
 
+  public MappingModel<S, D> getMappingModel() {
+    return new MappingModel<>(getMapping());
+  }
+
 }
