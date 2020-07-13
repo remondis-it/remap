@@ -1,5 +1,6 @@
 package com.remondis.remap;
 
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 
 import java.beans.PropertyDescriptor;
@@ -76,11 +77,16 @@ public class MappingModel<S, D> {
   }
 
   private Predicate<Transformation> toSourcePredicate(Predicate<String> sourcePropertySelector) {
-    return toPredicate(sourcePropertySelector, Transformation::getSourceProperty);
+    Function<Transformation, PropertyDescriptor> pdExtractor = Transformation::getSourceProperty;
+    return hasPropertyDescriptor(pdExtractor).and(toPredicate(sourcePropertySelector, pdExtractor));
   }
 
   private Predicate<Transformation> toDestPredicate(Predicate<String> destinationPropertySelector) {
-    return toPredicate(destinationPropertySelector, Transformation::getDestinationProperty);
+    Function<Transformation, PropertyDescriptor> pdExtractor = Transformation::getDestinationProperty;
+    return hasPropertyDescriptor(pdExtractor).and(toPredicate(destinationPropertySelector, pdExtractor));
   }
 
+  private Predicate<Transformation> hasPropertyDescriptor(Function<Transformation, PropertyDescriptor> pdExtractor) {
+    return t -> nonNull(pdExtractor.apply(t));
+  }
 }

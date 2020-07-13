@@ -4,7 +4,7 @@ package com.remondis.remap;
  * Represents a field value mapping result. This result carries the actual value to write to the destination object and
  * an operation flag indicating situations where a value, <code>null</code> or nothing should be written to destination.
  */
-class MappedResult {
+public class MappedResult {
 
   private Object value;
 

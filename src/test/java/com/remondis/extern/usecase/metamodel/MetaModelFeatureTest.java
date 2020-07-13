@@ -1,10 +1,13 @@
 package com.remondis.extern.usecase.metamodel;
 
 import static com.remondis.remap.MappingModel.nameEqualsPredicate;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import com.remondis.remap.FieldTransformation;
+import com.remondis.remap.MappedResult;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.remap.MappingModel;
@@ -39,7 +42,9 @@ public class MetaModelFeatureTest {
     FieldTransformation reassign = model.getFieldTransformation(nameEqualsPredicate("string"),
         nameEqualsPredicate("stringRename"));
 
-    // assertEquals("testString", reassign.performTransformation("testString", null));
+    MappedResult result = reassign.performTransformation("testString");
+    assertTrue(result.hasValue());
+    assertEquals("testString", result.getValue());
   }
 
 }
