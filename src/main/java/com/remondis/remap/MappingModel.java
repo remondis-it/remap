@@ -13,6 +13,12 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * The mapping model provides access to field mappings. The field mappings can be used to transform single values.
+ *
+ * @param <S> The source type.
+ * @param <D> The destination type.
+ */
 public class MappingModel<S, D> {
 
   private MappingConfiguration<S, D> mapping;
