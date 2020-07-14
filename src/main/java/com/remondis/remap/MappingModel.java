@@ -1,10 +1,14 @@
 package com.remondis.remap;
 
+import static java.util.Arrays.asList;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 
 import java.beans.PropertyDescriptor;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -17,32 +21,54 @@ public class MappingModel<S, D> {
     this.mapping = mapping;
   }
 
-  public FieldTransformation getFieldTransformation(Predicate<String> sourcePropertySelector,
-      Predicate<String> destinationPropertySelector) {
-    requireNonNull(sourcePropertySelector, "sourcePropertySelector must not be null!");
-    requireNonNull(destinationPropertySelector, "destinationPropertySelector must not be null!");
+  /**
+   * @param sourcePropertySelector (Optional) The source selector predicate. May be <code>null</code> if the search is
+   *        intended by the destination field.
+   * @return Returns the search result.
+   */
+  public TransformationSearchResult findMappingBySource(Predicate<String> sourcePropertySelector) {
+    return findMapping(sourcePropertySelector, null);
+  }
+
+  /**
+   * @param destinationPropertySelector The destination selector predicate.
+   * @return Returns the search result.
+   */
+  public TransformationSearchResult findMappingByDestination(Predicate<String> destinationPropertySelector) {
     List<Transformation> transformations = mapping.getMappings()
         .stream()
-        .filter(toSourcePredicate(sourcePropertySelector).and(toDestPredicate(destinationPropertySelector)))
+        .filter(andOnDemand(null, destinationPropertySelector))
         .collect(Collectors.toList());
-    denyMappingNotFound(transformations);
-    denyMultipleMappingsFound(transformations);
-    Transformation match = transformations.get(0);
-    return FieldTransformation.of(match);
+    return new TransformationSearchResult(transformations);
   }
 
-  private void denyMappingNotFound(List<Transformation> collect) {
-    if (collect.isEmpty()) {
-      throw new MappingException("Could not find a field mapping matching the specified search criteria.");
-    }
+  /**
+   * @param sourcePropertySelector (Optional) The source selector predicate. May be <code>null</code> if the search is
+   *        intended by the destination field.
+   * @param destinationPropertySelector The destination selector predicate.
+   * @return Returns the search result.
+   */
+  public TransformationSearchResult findMapping(Predicate<String> sourcePropertySelector,
+      Predicate<String> destinationPropertySelector) {
+    List<Transformation> transformations = mapping.getMappings()
+        .stream()
+        .filter(andOnDemand(sourcePropertySelector, destinationPropertySelector))
+        .collect(Collectors.toList());
+    return new TransformationSearchResult(transformations);
   }
 
-  private void denyMultipleMappingsFound(List<Transformation> collect) {
-    StringBuilder b = new StringBuilder();
-    MappingConfiguration.transformationToString(collect, true, b);
-    if (collect.size() > 1) {
-      throw new MappingException("The selected search criteria returned more than one mapping:\n" + b.toString());
-    }
+  private Predicate<Transformation> andOnDemand(Predicate<String> sourcePropertySelector,
+      Predicate<String> destinationPropertySelector) {
+    Predicate<Transformation> sourcePredicate = isNull(sourcePropertySelector) ? null
+        : toSourcePredicate(sourcePropertySelector);
+    Predicate<Transformation> destPredicate = isNull(destinationPropertySelector) ? null
+        : toDestPredicate(destinationPropertySelector);
+
+    Optional<Predicate<Transformation>> reduce = asList(sourcePredicate, destPredicate).stream()
+        .filter(Objects::nonNull)
+        .reduce(Predicate::and);
+
+    return reduce.orElse(p -> false);
   }
 
   /**
@@ -88,5 +114,93 @@ public class MappingModel<S, D> {
 
   private Predicate<Transformation> hasPropertyDescriptor(Function<Transformation, PropertyDescriptor> pdExtractor) {
     return t -> nonNull(pdExtractor.apply(t));
+  }
+
+  @Override
+  public String toString() {
+    return "MappingModel [mapping=" + mapping + "]";
+  }
+
+  public class TransformationSearchResult {
+
+    private List<Transformation> transformations;
+
+    TransformationSearchResult(List<Transformation> transformations) {
+      super();
+      this.transformations = transformations;
+    }
+
+    /**
+     * @return Returns <code>true</code> if the search has a result, <code>false</code>
+     *         otherwise.
+     */
+    public boolean hasResult() {
+      return !transformations.isEmpty();
+    }
+
+    /**
+     * @return Returns <code>true</code> if the search has exactly one result, <code>false</code>
+     *         otherwise.
+     */
+    public boolean hasSingleResult() {
+      return hasResult() && transformations.size() == 1;
+    }
+
+    /**
+     * Checks if the matching transformation is a value transformation. Note: There are also transformation that use the
+     * whole source object for mapping. In this case use {@link #isObjectTransformation()} to determine source object
+     * transformations.
+     * This method expects a single search result, use {@link #hasSingleResult()} before calling this method.
+     *
+     * @return Returns <code>true</code> if the transformation expects a single field value, otherwise
+     *         <code>false</code>
+     *         is returned.
+     *
+     */
+    public boolean isValueTransformation() {
+      return !(getSingleMatch() instanceof RestructureTransformation)
+          && !(getSingleMatch() instanceof SetTransformation);
+    }
+
+    /**
+     * Checks if the matching transformation is a source object transformation.
+     * This method expects a single search result, use {@link #hasSingleResult()} before calling this method.
+     *
+     * @return Returns <code>true</code> if the transformation expects the whole source object for mapping, otherwise
+     *         <code>false</code> is returned.
+     *
+     */
+    public boolean isObjectTransformation() {
+      return !isValueTransformation();
+    }
+
+    /**
+     * Performs a value transformation. This method expects a single search result, use {@link #hasSingleResult()}
+     * before calling this method.
+     *
+     * @param value The value to map. Use {@link #isObjectTransformation()} to determine which input value is to be
+     *        used.
+     * @return Returns the {@link MappedResult}.
+     */
+    public MappedResult performValueTransformation(Object value) {
+      Transformation singleMatch = getSingleMatch();
+      return singleMatch.performValueTransformation(value, null);
+    }
+
+    private Transformation getSingleMatch() {
+      if (!hasSingleResult()) {
+        throw new IllegalStateException(
+            "A value transformation cannot be performed on the mapping search result, because the result is unambiguous. "
+                + "Please use hasSingleResult() before calling this method.");
+      }
+      return transformations.get(0);
+    }
+
+    @Override
+    public String toString() {
+      return "TransformationSearchResult [hasResult()=" + hasResult() + ", hasSingleResult()=" + hasSingleResult()
+          + ", transformations=" + transformations + "]";
+    }
+
   }
 }

@@ -11,19 +11,19 @@ public class Destination {
 
   private NestedDestination nested;
 
-  public Destination(String doesNotExistInSource, String stringRename, int stringLength, String flattened,
-      NestedDestination nested) {
-    super();
-    this.doesNotExistInSource = doesNotExistInSource;
-    this.stringRename = stringRename;
-    this.stringLength = stringLength;
-    this.flattened = flattened;
-    this.nested = nested;
-  }
+  private Object omitInDestination;
 
   public Destination() {
     super();
 
+  }
+
+  public Object getOmitInDestination() {
+    return omitInDestination;
+  }
+
+  public void setOmitInDestination(Object omitInDestination) {
+    this.omitInDestination = omitInDestination;
   }
 
   public String getDoesNotExistInSource() {

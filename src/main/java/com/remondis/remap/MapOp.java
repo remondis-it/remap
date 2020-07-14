@@ -3,7 +3,7 @@ package com.remondis.remap;
 /**
  * Specifies how the mapping result should be used.
  */
-enum MapOp {
+public enum MapOp {
   /**
    * The mapping does not produce a value. Used to distinguish a <code>null</code>-value from "mapping has no result".
    */

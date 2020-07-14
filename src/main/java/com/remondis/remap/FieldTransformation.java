@@ -21,8 +21,7 @@ public class FieldTransformation {
    * @throws MappingException Throws a mapping exception if the transformation function throws an exception.
    */
   public MappedResult performTransformation(Object source) throws MappingException {
-    return transformation.performValueTransformation(transformation.getSourceProperty(),
-        transformation.getDestinationProperty(), source, null);
+    return transformation.performValueTransformation(source, null);
   }
 
   public Class<?> getSourceType() {

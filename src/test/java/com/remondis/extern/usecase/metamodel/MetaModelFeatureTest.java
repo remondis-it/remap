@@ -1,12 +1,16 @@
 package com.remondis.extern.usecase.metamodel;
 
 import static com.remondis.remap.MappingModel.nameEqualsPredicate;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.util.function.Predicate;
 
 import org.junit.Test;
 
-import com.remondis.remap.FieldTransformation;
+import com.remondis.remap.MapOp;
 import com.remondis.remap.MappedResult;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
@@ -15,8 +19,118 @@ import com.remondis.remap.MappingModel;
 public class MetaModelFeatureTest {
 
   @Test
-  public void shouldGetMetaModel() {
+  public void shouldSetTransformation() {
+    Mapper<Source, Destination> mapper = getMapper();
 
+    Predicate<String> destPredicate = nameEqualsPredicate("doesNotExistInSource");
+
+    MappingModel<Source, Destination> model = mapper.getMappingModel();
+    MappingModel<Source, Destination>.TransformationSearchResult mappingModel = model
+        .findMappingByDestination(destPredicate);
+
+    assertResult(mappingModel);
+    assertSingleResult(mappingModel);
+    assertObjectMapping(mappingModel);
+
+    Source source = new Source();
+    source.setString("string");
+    MappedResult mappedResult = mappingModel.performValueTransformation(source);
+    assertMappingValue(mappedResult, "string");
+  }
+
+  @Test
+  public void shouldGetOmitInDest() {
+    Mapper<Source, Destination> mapper = getMapper();
+
+    Predicate<String> destPredicate = nameEqualsPredicate("omitInDestination");
+
+    MappingModel<Source, Destination> model = mapper.getMappingModel();
+    MappingModel<Source, Destination>.TransformationSearchResult mappingModel = model
+        .findMappingByDestination(destPredicate);
+
+    assertResult(mappingModel);
+    assertSingleResult(mappingModel);
+    assertValueMapping(mappingModel);
+
+    MappedResult mappedResult = mappingModel.performValueTransformation("testString");
+    assertMappingSkipped(mappedResult);
+  }
+
+  @Test
+  public void shouldGetOmitInSource() {
+    Mapper<Source, Destination> mapper = getMapper();
+
+    Predicate<String> sourcePredicate = nameEqualsPredicate("omitInSource");
+
+    MappingModel<Source, Destination> model = mapper.getMappingModel();
+    MappingModel<Source, Destination>.TransformationSearchResult mappingModel = model
+        .findMappingBySource(sourcePredicate);
+
+    assertResult(mappingModel);
+    assertSingleResult(mappingModel);
+    assertValueMapping(mappingModel);
+
+    MappedResult mappedResult = mappingModel.performValueTransformation("testString");
+    assertMappingSkipped(mappedResult);
+  }
+
+  @Test
+  public void shouldGetBySource_multiMatch() {
+    Mapper<Source, Destination> mapper = getMapper();
+
+    Predicate<String> sourcePredicate = nameEqualsPredicate("string");
+
+    MappingModel<Source, Destination> model = mapper.getMappingModel();
+    MappingModel<Source, Destination>.TransformationSearchResult mappingModel = model
+        .findMappingBySource(sourcePredicate);
+
+    assertResult(mappingModel);
+    assertMultiResult(mappingModel);
+
+    assertThatThrownBy(() -> mappingModel.performValueTransformation("testString"))
+        .isInstanceOf(IllegalStateException.class);
+  }
+
+  @Test
+  public void shouldGetByDest_singleMatch() {
+    Mapper<Source, Destination> mapper = getMapper();
+
+    Predicate<String> destPredicate = nameEqualsPredicate("stringRename");
+
+    MappingModel<Source, Destination> model = mapper.getMappingModel();
+    MappingModel<Source, Destination>.TransformationSearchResult mappingModel = model
+        .findMappingByDestination(destPredicate);
+
+    assertResult(mappingModel);
+    assertSingleResult(mappingModel);
+    assertValueMapping(mappingModel);
+
+    MappedResult mappedResult = mappingModel.performValueTransformation("testString");
+
+    assertMappingValue(mappedResult, "testString");
+  }
+
+  @Test
+  public void shouldGetBySourceAndDest_singleMatch() {
+    Mapper<Source, Destination> mapper = getMapper();
+
+    Predicate<String> sourcePredicate = nameEqualsPredicate("string");
+    Predicate<String> destPredicate = nameEqualsPredicate("stringRename");
+
+    MappingModel<Source, Destination> model = mapper.getMappingModel();
+    MappingModel<Source, Destination>.TransformationSearchResult mappingModel = model.findMapping(sourcePredicate,
+        destPredicate);
+
+    assertResult(mappingModel);
+    assertSingleResult(mappingModel);
+    assertValueMapping(mappingModel);
+
+    MappedResult mappedResult = mappingModel.performValueTransformation("testString");
+
+    assertMappingValue(mappedResult, "testString");
+  }
+
+  private Mapper<Source, Destination> getMapper() {
     Mapper<NestedSource, NestedDestination> nestedMapper = Mapping.from(NestedSource.class)
         .to(NestedDestination.class)
         .reassign(NestedSource::getString)
@@ -25,11 +139,12 @@ public class MetaModelFeatureTest {
     Mapper<Source, Destination> mapper = Mapping.from(Source.class)
         .to(Destination.class)
         .useMapper(nestedMapper)
+        .omitInSource(Source::getOmitInSource)
+        .omitInDestination(Destination::getOmitInDestination)
         .reassign(Source::getString)
         .to(Destination::getStringRename)
         .replace(Source::getString, Destination::getStringLength)
         .with(String::length)
-        .omitInSource(Source::getZahl)
         .reassign(Source::getNested)
         .to(Destination::getNested)
         .replace(Source::getNested, Destination::getFlattened)
@@ -37,14 +152,38 @@ public class MetaModelFeatureTest {
         .set(Destination::getDoesNotExistInSource)
         .with(Source::getString)
         .mapper();
+    return mapper;
+  }
 
-    MappingModel<Source, Destination> model = mapper.getMappingModel();
-    FieldTransformation reassign = model.getFieldTransformation(nameEqualsPredicate("string"),
-        nameEqualsPredicate("stringRename"));
+  private void assertValueMapping(MappingModel<Source, Destination>.TransformationSearchResult mappingModel) {
+    assertTrue(mappingModel.isValueTransformation());
+    assertFalse(mappingModel.isObjectTransformation());
+  }
 
-    MappedResult result = reassign.performTransformation("testString");
-    assertTrue(result.hasValue());
-    assertEquals("testString", result.getValue());
+  private void assertObjectMapping(MappingModel<Source, Destination>.TransformationSearchResult mappingModel) {
+    assertTrue(mappingModel.isObjectTransformation());
+    assertFalse(mappingModel.isValueTransformation());
+  }
+
+  private void assertMappingSkipped(MappedResult mappedResult) {
+    assertEquals(MapOp.SKIP, mappedResult.getOperation());
+  }
+
+  private void assertSingleResult(MappingModel<Source, Destination>.TransformationSearchResult mappingModel) {
+    assertTrue("Mapping model should have a single result!", mappingModel.hasSingleResult());
+  }
+
+  private void assertMappingValue(MappedResult mappedResult, Object expectedValue) {
+    assertTrue("Mapping result should have a value!", mappedResult.hasValue());
+    assertEquals(expectedValue, mappedResult.getValue());
+  }
+
+  private void assertResult(MappingModel<Source, Destination>.TransformationSearchResult mappingModel) {
+    assertTrue("Mapping model should have a result!", mappingModel.hasResult());
+  }
+
+  private void assertMultiResult(MappingModel<Source, Destination>.TransformationSearchResult mappingModel) {
+    assertFalse("Mapping model should have multiple results!", mappingModel.hasSingleResult());
   }
 
 }

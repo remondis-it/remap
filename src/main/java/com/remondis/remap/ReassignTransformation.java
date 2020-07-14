@@ -45,7 +45,7 @@ public class ReassignTransformation extends Transformation {
     // Only if the source value is not null we have to perform the mapping
     MappedResult result = MappedResult.skip();
     if (sourceValue != null) {
-      result = performValueTransformation(sourceProperty, destinationProperty, sourceValue, destination);
+      result = performValueTransformation(sourceValue, destination);
     }
 
     if (result.hasValue()) {
@@ -54,8 +54,7 @@ public class ReassignTransformation extends Transformation {
   }
 
   @Override
-  protected MappedResult performValueTransformation(PropertyDescriptor sourceProperty,
-      PropertyDescriptor destinationProperty, Object source, Object destination) throws MappingException {
+  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
     Object destinationValue;
     GenericParameterContext sourceCtx = new GenericParameterContext(sourceProperty.getReadMethod());
     GenericParameterContext destinationCtx = new GenericParameterContext(destinationProperty.getReadMethod());

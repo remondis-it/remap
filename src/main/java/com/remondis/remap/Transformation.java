@@ -99,8 +99,7 @@ abstract class Transformation {
    *         transformation does not produce a destination value.
    * @throws MappingException Thrown on any mapping exception.
    */
-  protected abstract MappedResult performValueTransformation(PropertyDescriptor sourceProperty,
-      PropertyDescriptor destinationProperty, Object source, Object destination) throws MappingException;
+  protected abstract MappedResult performValueTransformation(Object source, Object destination) throws MappingException;
 
   /**
    * Lets this transformation validate its configuration. If the state of this transformation is invalid,

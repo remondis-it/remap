@@ -3,15 +3,9 @@ package com.remondis.extern.usecase.metamodel;
 public class Source {
 
   private String string;
-  private int zahl;
   private NestedSource nested;
 
-  public Source(String string, int zahl, NestedSource nested) {
-    super();
-    this.string = string;
-    this.zahl = zahl;
-    this.nested = nested;
-  }
+  private Object omitInSource;
 
   public Source() {
     super();
@@ -25,14 +19,6 @@ public class Source {
     this.string = string;
   }
 
-  public int getZahl() {
-    return zahl;
-  }
-
-  public void setZahl(int zahl) {
-    this.zahl = zahl;
-  }
-
   public NestedSource getNested() {
     return nested;
   }
@@ -41,9 +27,17 @@ public class Source {
     this.nested = nested;
   }
 
+  public Object getOmitInSource() {
+    return omitInSource;
+  }
+
+  public void setOmitInSource(Object omitInSource) {
+    this.omitInSource = omitInSource;
+  }
+
   @Override
   public String toString() {
-    return "Source [string=" + string + ", zahl=" + zahl + ", nested=" + nested + "]";
+    return "Source [string=" + string + ", nested=" + nested + "]";
   }
 
 }
