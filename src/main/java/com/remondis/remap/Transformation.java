@@ -91,8 +91,6 @@ abstract class Transformation {
    * {@link MappingModel}, therefore this method should work without side-effects like accessing fields to read or write
    * mapping values.
    *
-   * @param sourceProperty The source property
-   * @param destinationProperty The destination property
    * @param source The source object to map from.
    * @param destination The destination object to map to.
    * @return Returns a {@link MappedResult} specifying the mapping value or signals to skip the mapping, because the
