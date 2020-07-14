@@ -134,6 +134,9 @@ public class Mapper<S, D> {
     return mapping.toString();
   }
 
+  /**
+   * @return Returns the {@link MappingModel} for this mapping.
+   */
   public MappingModel<S, D> getMappingModel() {
     return new MappingModel<>(getMapping());
   }
