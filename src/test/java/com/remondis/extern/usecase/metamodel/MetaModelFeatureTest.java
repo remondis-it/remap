@@ -10,13 +10,38 @@ import java.util.function.Predicate;
 
 import org.junit.Test;
 
-import com.remondis.remap.MappingOperation;
 import com.remondis.remap.MappedResult;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.remap.MappingModel;
+import com.remondis.remap.MappingOperation;
 
 public class MetaModelFeatureTest {
+
+  @Test
+  public void shouldPerformObjectTransformation() {
+    Mapper<Source, Destination> mapper = getMapper();
+
+    Predicate<String> destPredicate = nameEqualsPredicate("nested");
+
+    MappingModel<Source, Destination> model = mapper.getMappingModel();
+    MappingModel<Source, Destination>.TransformationSearchResult mappingModel = model
+        .findMappingByDestination(destPredicate);
+
+    assertResult(mappingModel);
+    assertSingleResult(mappingModel);
+    assertValueMapping(mappingModel);
+
+    NestedSource source = new NestedSource("string");
+    MappedResult mappedResult = mappingModel.performValueTransformation(source);
+
+    assertMappingHasValue(mappedResult);
+
+    NestedDestination nestedDestination = (NestedDestination) mappedResult.getValue();
+
+    NestedDestination expectedDest = new NestedDestination("string");
+    assertEquals(expectedDest.getStringRenamed(), nestedDestination.getStringRenamed());
+  }
 
   @Test
   public void shouldSetTransformation() {
@@ -175,8 +200,12 @@ public class MetaModelFeatureTest {
   }
 
   private void assertMappingValue(MappedResult mappedResult, Object expectedValue) {
-    assertTrue("Mapping result should have a value!", mappedResult.hasValue());
+    assertMappingHasValue(mappedResult);
     assertEquals(expectedValue, mappedResult.getValue());
+  }
+
+  private void assertMappingHasValue(MappedResult mappedResult) {
+    assertTrue("Mapping result should have a value!", mappedResult.hasValue());
   }
 
   private void assertResult(MappingModel<Source, Destination>.TransformationSearchResult mappingModel) {

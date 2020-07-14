@@ -26,10 +26,11 @@
    11. [Restructure a complex object in the destination](#restructure-a-complex-object-in-the-destination)
    12. [Mapping maps](#mapping-maps)
    13. [Tests](#tests)
-9. [Spring integration](#spring-integration)
+9. [Mapping meta model](#mapping-meta-model)
+10. [Spring integration](#spring-integration)
    1. [Spring Boot Issue](#spring-boot-issue)
-10. [Migration guide](#migration-guide)
-11. [How to contribute](#how-to-contribute)
+11. [Migration guide](#migration-guide)
+12. [How to contribute](#how-to-contribute)
 
 ## Long story short
 
@@ -640,6 +641,9 @@ The asserts check that the expected mappings are also configured on the specifie
 
 Note: The `replace` operation supports two null-strategies and the mapper needs to specify the same strategy as the asserts! The transformation function in this example is checked against a `null` when `ensure()` is invoked. If the `replace` operation was added using `withSkipWhenNull()` the specified transformation function is not checked against `null`.
 
+## Mapping meta model
+
+ReMap provides a meta model that allows to search for top-level mappings. This can be used to perform single value mappings without the need of having the whole source object. 
 
 ## Spring Integration
 
