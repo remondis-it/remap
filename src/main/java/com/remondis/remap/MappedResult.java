@@ -8,9 +8,9 @@ public class MappedResult {
 
   private Object value;
 
-  private MapOp operation;
+  private MappingOperation operation;
 
-  private MappedResult(Object value, MapOp operation) {
+  private MappedResult(Object value, MappingOperation operation) {
     super();
     this.value = value;
     this.operation = operation;
@@ -20,7 +20,7 @@ public class MappedResult {
    * @return Returns a {@link MappedResult} that signals that the mapping should be skipped.
    */
   public static MappedResult skip() {
-    return new MappedResult(null, MapOp.SKIP);
+    return new MappedResult(null, MappingOperation.SKIP);
   }
 
   /**
@@ -29,14 +29,14 @@ public class MappedResult {
    *         returned.
    */
   public static MappedResult value(Object value) {
-    return new MappedResult(value, MapOp.VALUE);
+    return new MappedResult(value, MappingOperation.VALUE);
   }
 
   public Object getValue() {
     return value;
   }
 
-  public MapOp getOperation() {
+  public MappingOperation getOperation() {
     return operation;
   }
 
@@ -44,7 +44,7 @@ public class MappedResult {
    * @return Returns <code>true</code> if a mapped value is present.
    */
   public boolean hasValue() {
-    return MapOp.VALUE == this.getOperation();
+    return MappingOperation.VALUE == this.getOperation();
   }
 
   @Override

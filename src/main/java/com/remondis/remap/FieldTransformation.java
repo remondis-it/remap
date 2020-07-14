@@ -1,8 +1,8 @@
 package com.remondis.remap;
 
 /**
-* Describes a single field transformation.
-*/
+ * Describes a single field transformation.
+ */
 public class FieldTransformation {
 
   Transformation transformation;

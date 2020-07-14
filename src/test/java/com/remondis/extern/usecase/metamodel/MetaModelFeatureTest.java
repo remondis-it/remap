@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 
 import org.junit.Test;
 
-import com.remondis.remap.MapOp;
+import com.remondis.remap.MappingOperation;
 import com.remondis.remap.MappedResult;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
@@ -166,7 +166,7 @@ public class MetaModelFeatureTest {
   }
 
   private void assertMappingSkipped(MappedResult mappedResult) {
-    assertEquals(MapOp.SKIP, mappedResult.getOperation());
+    assertEquals(MappingOperation.SKIP, mappedResult.getOperation());
   }
 
   private void assertSingleResult(MappingModel<Source, Destination>.TransformationSearchResult mappingModel) {
