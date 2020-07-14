@@ -171,6 +171,7 @@ public class MetaModelFeatureTest {
 
   private void assertSingleResult(MappingModel<Source, Destination>.TransformationSearchResult mappingModel) {
     assertTrue("Mapping model should have a single result!", mappingModel.hasSingleResult());
+    assertFalse("Mapping model should not have multiple results!", mappingModel.hasMultipleResults());
   }
 
   private void assertMappingValue(MappedResult mappedResult, Object expectedValue) {

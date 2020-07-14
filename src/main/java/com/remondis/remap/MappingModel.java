@@ -147,6 +147,14 @@ public class MappingModel<S, D> {
     }
 
     /**
+     * @return Returns <code>true</code> if the search has multiple results, <code>false</code>
+     *         otherwise.
+     */
+    public boolean hasMultipleResults() {
+      return hasResult() && transformations.size() > 1;
+    }
+
+    /**
      * Checks if the matching transformation is a value transformation. Note: There are also transformation that use the
      * whole source object for mapping. In this case use {@link #isObjectTransformation()} to determine source object
      * transformations.
@@ -194,6 +202,34 @@ public class MappingModel<S, D> {
                 + "Please use hasSingleResult() before calling this method.");
       }
       return transformations.get(0);
+    }
+
+    /**
+     * @return Returns the source property name.
+     */
+    public String getSourcePropertyName() {
+      return getSource().getName();
+    }
+
+    /**
+     * @return Returns the destination property name.
+     */
+    public String getDestinationPropertyName() {
+      return getDestination().getName();
+    }
+
+    /**
+     * @return Returns the source property descriptor.
+     */
+    public PropertyDescriptor getSource() {
+      return getSingleMatch().getSourceProperty();
+    }
+
+    /**
+     * @return Returns the destination property descriptor.
+     */
+    public PropertyDescriptor getDestination() {
+      return getSingleMatch().getDestinationProperty();
     }
 
     @Override
