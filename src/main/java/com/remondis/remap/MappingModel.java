@@ -1,5 +1,6 @@
 package com.remondis.remap;
 
+import static com.remondis.remap.MappingConfiguration.getPropertyFromFieldSelector;
 import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -46,6 +47,42 @@ public class MappingModel<S, D> {
         .filter(andOnDemand(null, destinationPropertySelector))
         .collect(Collectors.toList());
     return new TransformationSearchResult(transformations);
+  }
+
+  /**
+   * @param sourceSelector The destination field selector.
+   * @return Returns the search result.
+   */
+  public TransformationSearchResult findMappingBySource(FieldSelector<S> sourceSelector) {
+    return findMapping(sourceSelector, null);
+  }
+
+  /**
+   * @param destinationSelector The destination field selector.
+   * @return Returns the search result.
+   */
+  public TransformationSearchResult findMappingByDestination(FieldSelector<D> destinationSelector) {
+    return findMapping(null, destinationSelector);
+  }
+
+  public TransformationSearchResult findMapping(FieldSelector<S> sourceSelector, FieldSelector<D> destinationSelector) {
+    PropertyDescriptor sourceProperty = null;
+    PropertyDescriptor destinationProperty = null;
+
+    if (nonNull(sourceSelector)) {
+      sourceProperty = getPropertyFromFieldSelector(Target.SOURCE, "findMapping", mapping.getSource(), sourceSelector);
+    }
+
+    if (nonNull(destinationSelector)) {
+      destinationProperty = getPropertyFromFieldSelector(Target.DESTINATION, "findMapping", mapping.getDestination(),
+          destinationSelector);
+    }
+
+    Predicate<String> sourcePredicate = isNull(sourceProperty) ? null : nameEqualsPredicate(sourceProperty.getName());
+    Predicate<String> destinationPredicate = isNull(destinationProperty) ? null
+        : nameEqualsPredicate(destinationProperty.getName());
+
+    return findMapping(sourcePredicate, destinationPredicate);
   }
 
   /**

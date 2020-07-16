@@ -19,6 +19,21 @@ import com.remondis.remap.MappingOperation;
 public class MetaModelFeatureTest {
 
   @Test
+  public void shouldGetSourceFieldByFieldSelector() {
+    Mapper<Source, Destination> mapper = getMapper();
+    MappingModel<Source, Destination> model = mapper.getMappingModel();
+    MappingModel<Source, Destination>.TransformationSearchResult result = model.findMappingBySource(Source::getNested);
+
+    assertResult(result);
+    assertMultiResult(result);
+
+    result = model.findMapping(Source::getNested, Destination::getNested);
+
+    assertResult(result);
+    assertSingleResult(result);
+  }
+
+  @Test
   public void shouldPerformObjectTransformation() {
     Mapper<Source, Destination> mapper = getMapper();
 

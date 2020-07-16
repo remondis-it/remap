@@ -643,7 +643,11 @@ Note: The `replace` operation supports two null-strategies and the mapper needs 
 
 ## Mapping meta model
 
-ReMap provides a meta model that allows to search for top-level mappings. This can be used to perform single value mappings without the need of having the whole source object. 
+ReMap provides a meta model that allows to search for top-level mappings. This can be used to perform single value mappings without the need of having an instance of the whole source object. The mapping model can be obtained by calling `getMappingModel()` on a valid mapper.
+
+The meta model allows to search for field mappings. Since some search methods can return multiple results, the search results must be checked using `com.remondis.remap.MappingModel.TransformationSearchResult.hasSingleResult()` before performing transformations.
+
+Note: The meta model distinguish between value and object mappings. Object mappings are `set` or `restructure` operations because the input for this mapping operations is the whole source object. So once a transformation was selected using the meta model, check the transformation type with `com.remondis.remap.MappingModel.TransformationSearchResult.isObjectTransformation()` or `com.remondis.remap.MappingModel.TransformationSearchResult.isValueTransformation()` to determine the input for performing this mapping operation.
 
 ## Spring Integration
 
