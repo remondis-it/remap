@@ -198,7 +198,8 @@ public class MappingModel<S, D> {
     }
 
     /**
-     * Checks if the matching transformation is a value transformation. Note: There are also transformation that use the
+     * Checks if the matching transformation is a value transformation. Note: There are also transformations that use
+     * the
      * whole source object for mapping. In this case use {@link #isObjectTransformation()} to determine source object
      * transformations.
      * This method expects a single search result, use {@link #hasSingleResult()} before calling this method.
@@ -223,6 +224,30 @@ public class MappingModel<S, D> {
      */
     public boolean isObjectTransformation() {
       return !isValueTransformation();
+    }
+
+    /**
+     * Checks if this transformation is likely to delegate to nested mappers. <b>Note:</b> This method expects a single
+     * search
+     * result, use {@link #hasSingleResult()} before calling this method.
+     *
+     * @return Returns <code>true</code> if the transformation will delegate to nested mappers, otherwise
+     *         <code>false</code> is returned.
+     */
+    public boolean isDelegatingTransformation() {
+      return (getSingleMatch() instanceof ReassignTransformation);
+    }
+
+    /**
+     * Checks if the mapping configuration has a mapper registered for the specified type mapping.
+     *
+     * @param sourceType The source type.
+     * @param targetType The destination type.
+     * @return Returns <code>true</code> if the mapping configuration has a mapper for the specified type mapping,
+     *         otherwise <code>false</code> is returned.
+     */
+    public boolean hasMapperFor(Class<?> sourceType, Class<?> targetType) {
+      return getSingleMatch().hasMapperFor(sourceType, targetType);
     }
 
     /**
