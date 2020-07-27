@@ -65,6 +65,11 @@ public class MappingModel<S, D> {
     return findMapping(null, destinationSelector);
   }
 
+  /**
+   * @param sourceSelector The destination field selector.
+   * @param destinationSelector The destination field selector.
+   * @return Returns the search result.
+   */
   public TransformationSearchResult findMapping(FieldSelector<S> sourceSelector, FieldSelector<D> destinationSelector) {
     PropertyDescriptor sourceProperty = null;
     PropertyDescriptor destinationProperty = null;
@@ -247,7 +252,32 @@ public class MappingModel<S, D> {
      *         otherwise <code>false</code> is returned.
      */
     public boolean hasMapperFor(Class<?> sourceType, Class<?> targetType) {
-      return getSingleMatch().hasMapperFor(sourceType, targetType);
+      try {
+        getMapperFor(sourceType, targetType);
+        return true;
+      } catch (Exception e) {
+        return false;
+      }
+    }
+
+    /**
+     * Returns a {@link Mapper} if the specified type mapping was registered on the mapper.
+     *
+     * @param sourceType The source type.
+     * @param destinationType The destination type.
+     * @return Returns a {@link Mapper} if registered.
+     * @throws IllegalStateException If the mapper cannot be found. To avoid this, check with
+     *         {@link #hasMapperFor(Class, Class)} before.
+     */
+    public Mapper<?, ?> getMapperFor(Class<?> sourceType, Class<?> destinationType) {
+      InternalMapper<?, ?> internalMapper = getSingleMatch().getMapperFor(sourceType, destinationType);
+      if (internalMapper instanceof MapperAdapter) {
+        MapperAdapter mapperAdapter = (MapperAdapter) internalMapper;
+        return mapperAdapter.getMapper();
+      } else {
+        throw new IllegalStateException(String.format("Could not find mapping for filter model. Mapping was %s to %s.",
+            sourceType.getName(), destinationType.getName()));
+      }
     }
 
     /**

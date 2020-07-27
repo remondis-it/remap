@@ -69,7 +69,7 @@ public class ReassignTransformation extends Transformation {
   private Object _convert(Class<?> sourceType, Object sourceValue, Class<?> destinationType, Object destination,
       GenericParameterContext sourceCtx, GenericParameterContext destinationCtx) {
     if (hasMapperFor(sourceType, destinationType)) {
-      InternalMapper mapper = getMapperFor(this.sourceProperty, sourceType, this.destinationProperty, destinationType);
+      InternalMapper mapper = getMapperFor(sourceType, destinationType);
       return mapper.map(sourceValue, null);
     } else if (isMap(sourceValue)) {
       return convertMap(sourceValue, sourceCtx, destinationCtx);
@@ -137,7 +137,7 @@ public class ReassignTransformation extends Transformation {
       return sourceValue;
     } else {
       // Object types must be mapped by a registered mapper before setting the value.
-      InternalMapper delegateMapper = getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
+      InternalMapper delegateMapper = getMapperFor(sourceType, destinationType);
       return delegateMapper.map(sourceValue);
     }
   }
@@ -151,7 +151,7 @@ public class ReassignTransformation extends Transformation {
       return sourceValue;
     } else {
       // Object types must be mapped by a registered mapper before setting the value.
-      InternalMapper delegateMapper = getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
+      InternalMapper delegateMapper = getMapperFor(sourceType, destinationType);
       Object destinationValueMapped = readOrFail(destinationProperty, destinationValue);
       return delegateMapper.map(sourceValue, destinationValueMapped);
     }
@@ -246,7 +246,7 @@ public class ReassignTransformation extends Transformation {
 
     if (!isReferenceMapping(sourceType, destinationType)) {
       // Check if there is a registered mapper if required.
-      getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
+      getMapperFor(sourceType, destinationType);
     }
   }
 
