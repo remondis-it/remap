@@ -24,7 +24,7 @@ public class MappingModel<S, D> {
 
   private MappingConfiguration<S, D> mapping;
 
-  public MappingModel(MappingConfiguration<S, D> mapping) {
+  MappingModel(MappingConfiguration<S, D> mapping) {
     this.mapping = mapping;
   }
 
@@ -169,6 +169,9 @@ public class MappingModel<S, D> {
     return "MappingModel [mapping=" + mapping + "]";
   }
 
+  /**
+   * Represents the search results, when inspecting the {@link MappingModel}.
+   */
   public class TransformationSearchResult {
 
     private List<Transformation> transformations;
