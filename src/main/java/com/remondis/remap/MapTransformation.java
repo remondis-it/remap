@@ -6,7 +6,7 @@ import java.beans.PropertyDescriptor;
 
 /**
  * The map transformation is the simplest mapping operation. It just reassigns a field from the source object to a
- * destination object while the property name AND [ type are equal OR a matching mapper is
+ * destination object while the property name AND [ types are equal OR a matching mapper is
  * registered on the parent mapper ]. Therefore the mapping transformation is
  * a special case of {@link ReassignTransformation}. This mapping transformation is only used
  * internally to distinguish from mappings configured by the user and implicit field mappings created by the mapper

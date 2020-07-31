@@ -28,13 +28,19 @@ class SetTransformation<S, D, RD> extends Transformation {
   }
 
   @Override
-  @SuppressWarnings({
-      "unchecked"
-  })
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
-    RD destinationValue = transformation.apply((S) source);
-    writeOrFail(destinationProperty, destination, destinationValue);
+    MappedResult result = performValueTransformation(source, destination);
+    if (result.hasValue()) {
+      writeOrFail(destinationProperty, destination, result.getValue());
+    }
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
+    Object destinationValue = transformation.apply((S) source);
+    return MappedResult.value(destinationValue);
   }
 
   @Override

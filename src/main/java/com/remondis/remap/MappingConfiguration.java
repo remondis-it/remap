@@ -746,14 +746,7 @@ public class MappingConfiguration<S, D> {
         .append(detailed ? destination.getName() : destination.getSimpleName())
         .append("\n with transformation:\n");
 
-    mappings.stream()
-        .sorted(Comparator.comparing(t -> t.getClass()
-            .getName()))
-        .forEach(t -> {
-          b.append("- ")
-              .append(t.toString(detailed))
-              .append("\n");
-        });
+    transformationToString(mappings, detailed, b);
 
     Set<PropertyDescriptor> unmappedProperties = getUnmappedProperties();
     if (unmappedProperties.isEmpty()) {
@@ -764,10 +757,22 @@ public class MappingConfiguration<S, D> {
     return b.toString();
   }
 
+  static void transformationToString(Collection<Transformation> transformations, boolean detailed, StringBuilder b) {
+    transformations.stream()
+        .sorted(Comparator.comparing(t -> t.getClass()
+            .getName()))
+        .forEach(t -> {
+          b.append("- ")
+              .append(t.toString(detailed))
+              .append("\n");
+        });
+  }
+
   /**
    * @return Returns the registered {@link Mapper}s.
    */
   protected Map<Projection<?, ?>, InternalMapper<?, ?>> getMappers() {
     return new Hashtable<>(this.mappers);
   }
+
 }
