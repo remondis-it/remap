@@ -34,4 +34,8 @@ class MapperAdapter<S, D> implements InternalMapper<S, D> {
     return new Projection<>(source, destination);
   }
 
+  Mapper<S, D> getMapper() {
+    return mapper;
+  }
+
 }

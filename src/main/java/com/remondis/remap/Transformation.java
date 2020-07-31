@@ -60,7 +60,7 @@ abstract class Transformation {
   }
 
   /**
-   * Performs the transformation for the specified source and destinatione.
+   * Performs the transformation for the specified source and destination.
    *
    * @param source The source object
    * @param destination The destination object.
@@ -71,7 +71,11 @@ abstract class Transformation {
   }
 
   /**
-   * Performs a single transformation step while mapping.
+   * Performs a single transformation step while mapping. In contrast to
+   * {@link #performValueTransformation(PropertyDescriptor, Object, PropertyDescriptor, Object)} this method should
+   * implement field access to read/write mapping values. This method should delegate to
+   * {@link #performValueTransformation(PropertyDescriptor, Object, PropertyDescriptor, Object)} to perform the actual
+   * value mapping.
    *
    * @param sourceProperty The source property
    * @param source The source object to map from.
@@ -81,6 +85,19 @@ abstract class Transformation {
    */
   protected abstract void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException;
+
+  /**
+   * Performs a single value transformation. This method is used to provide single field mappings via
+   * {@link MappingModel}, therefore this method should work without side-effects like accessing fields to read or write
+   * mapping values.
+   *
+   * @param source The source object to map from.
+   * @param destination The destination object to map to.
+   * @return Returns a {@link MappedResult} specifying the mapping value or signals to skip the mapping, because the
+   *         transformation does not produce a destination value.
+   * @throws MappingException Thrown on any mapping exception.
+   */
+  protected abstract MappedResult performValueTransformation(Object source, Object destination) throws MappingException;
 
   /**
    * Lets this transformation validate its configuration. If the state of this transformation is invalid,
@@ -98,9 +115,8 @@ abstract class Transformation {
    * @return Returns a mapper for the specified mapping if one was registered. Otherwise a {@link MappingException} is
    *         thrown.
    */
-  <S, T> InternalMapper<S, T> getMapperFor(PropertyDescriptor sourceProperty, Class<S> sourceType,
-      PropertyDescriptor destinationProperty, Class<T> destinationType) {
-    return this.mapping.getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
+  <S, T> InternalMapper<S, T> getMapperFor(Class<S> sourceType, Class<T> destinationType) {
+    return this.mapping.getMapperFor(getSourceProperty(), sourceType, getDestinationProperty(), destinationType);
   }
 
   /**

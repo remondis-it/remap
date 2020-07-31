@@ -43,13 +43,24 @@ public class ReassignTransformation extends Transformation {
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
     // Only if the source value is not null we have to perform the mapping
+    MappedResult result = MappedResult.skip();
     if (sourceValue != null) {
-      GenericParameterContext sourceCtx = new GenericParameterContext(sourceProperty.getReadMethod());
-      GenericParameterContext destinationCtx = new GenericParameterContext(destinationProperty.getReadMethod());
-      Object destinationValue = _convert(sourceCtx.getCurrentType(), sourceValue, destinationCtx.getCurrentType(),
-          destination, sourceCtx, destinationCtx);
-      writeOrFail(destinationProperty, destination, destinationValue);
+      result = performValueTransformation(sourceValue, destination);
     }
+
+    if (result.hasValue()) {
+      writeOrFail(destinationProperty, destination, result.getValue());
+    }
+  }
+
+  @Override
+  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
+    Object destinationValue;
+    GenericParameterContext sourceCtx = new GenericParameterContext(sourceProperty.getReadMethod());
+    GenericParameterContext destinationCtx = new GenericParameterContext(destinationProperty.getReadMethod());
+    destinationValue = _convert(sourceCtx.getCurrentType(), source, destinationCtx.getCurrentType(), destination,
+        sourceCtx, destinationCtx);
+    return MappedResult.value(destinationValue);
   }
 
   @SuppressWarnings({
@@ -58,7 +69,7 @@ public class ReassignTransformation extends Transformation {
   private Object _convert(Class<?> sourceType, Object sourceValue, Class<?> destinationType, Object destination,
       GenericParameterContext sourceCtx, GenericParameterContext destinationCtx) {
     if (hasMapperFor(sourceType, destinationType)) {
-      InternalMapper mapper = getMapperFor(this.sourceProperty, sourceType, this.destinationProperty, destinationType);
+      InternalMapper mapper = getMapperFor(sourceType, destinationType);
       return mapper.map(sourceValue, null);
     } else if (isMap(sourceValue)) {
       return convertMap(sourceValue, sourceCtx, destinationCtx);
@@ -126,7 +137,7 @@ public class ReassignTransformation extends Transformation {
       return sourceValue;
     } else {
       // Object types must be mapped by a registered mapper before setting the value.
-      InternalMapper delegateMapper = getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
+      InternalMapper delegateMapper = getMapperFor(sourceType, destinationType);
       return delegateMapper.map(sourceValue);
     }
   }
@@ -140,7 +151,7 @@ public class ReassignTransformation extends Transformation {
       return sourceValue;
     } else {
       // Object types must be mapped by a registered mapper before setting the value.
-      InternalMapper delegateMapper = getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
+      InternalMapper delegateMapper = getMapperFor(sourceType, destinationType);
       Object destinationValueMapped = readOrFail(destinationProperty, destinationValue);
       return delegateMapper.map(sourceValue, destinationValueMapped);
     }
@@ -235,7 +246,7 @@ public class ReassignTransformation extends Transformation {
 
     if (!isReferenceMapping(sourceType, destinationType)) {
       // Check if there is a registered mapper if required.
-      getMapperFor(sourceProperty, sourceType, destinationProperty, destinationType);
+      getMapperFor(sourceType, destinationType);
     }
   }
 

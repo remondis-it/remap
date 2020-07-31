@@ -67,6 +67,11 @@ class OmitTransformation extends Transformation {
   }
 
   @Override
+  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
+    return MappedResult.skip();
+  }
+
+  @Override
   protected void validateTransformation() throws MappingException {
   }
 
