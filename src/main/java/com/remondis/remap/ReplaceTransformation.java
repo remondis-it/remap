@@ -1,8 +1,9 @@
 package com.remondis.remap;
 
+import com.googlecode.openbeans.PropertyDescriptor;
+
 import static com.remondis.remap.Properties.asString;
 
-import java.beans.PropertyDescriptor;
 import java.util.function.Function;
 
 import javax.xml.crypto.dsig.Transform;

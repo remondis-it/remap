@@ -1,6 +1,7 @@
 package com.remondis.remap;
 
-import java.beans.PropertyDescriptor;
+
+import com.googlecode.openbeans.PropertyDescriptor;
 
 /**
  * A set transformation set a value supplied by a custom function to a destination field.

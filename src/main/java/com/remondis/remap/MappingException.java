@@ -1,11 +1,12 @@
 package com.remondis.remap;
 
+import com.googlecode.openbeans.PropertyDescriptor;
+
 import static com.remondis.remap.Properties.asString;
 import static com.remondis.remap.Properties.asStringWithType;
 import static com.remondis.remap.Properties.createUnmappedMessage;
 import static com.remondis.remap.Properties.getPropertyClass;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;

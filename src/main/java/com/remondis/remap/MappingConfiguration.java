@@ -1,5 +1,7 @@
 package com.remondis.remap;
 
+import com.googlecode.openbeans.PropertyDescriptor;
+
 import static com.remondis.remap.Lang.denyNull;
 import static com.remondis.remap.MappingException.alreadyMappedProperty;
 import static com.remondis.remap.MappingException.multipleInteractions;
@@ -9,7 +11,6 @@ import static com.remondis.remap.Properties.createUnmappedMessage;
 import static com.remondis.remap.ReflectionUtil.newInstance;
 import static java.util.Objects.nonNull;
 
-import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;

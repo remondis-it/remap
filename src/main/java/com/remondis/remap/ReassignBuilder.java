@@ -1,9 +1,10 @@
 package com.remondis.remap;
 
+import com.googlecode.openbeans.PropertyDescriptor;
+
 import static com.remondis.remap.Lang.denyNull;
 import static com.remondis.remap.MappingConfiguration.getPropertyFromFieldSelector;
 
-import java.beans.PropertyDescriptor;
 
 /**
  * Builds a reassign operation.

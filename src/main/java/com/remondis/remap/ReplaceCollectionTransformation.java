@@ -1,9 +1,10 @@
 package com.remondis.remap;
 
+import com.googlecode.openbeans.PropertyDescriptor;
+
 import static com.remondis.remap.Properties.asString;
 import static com.remondis.remap.ReflectionUtil.getCollector;
 
-import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.stream.Collector;
@@ -36,7 +37,7 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
 
   @Override
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+                                       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
 
     MappedResult result = performValueTransformation(sourceValue, destination);

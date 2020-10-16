@@ -1,9 +1,10 @@
 package com.remondis.remap;
 
+import com.googlecode.openbeans.PropertyDescriptor;
+
 import static com.remondis.remap.Properties.asString;
 import static java.util.Objects.nonNull;
 
-import java.beans.PropertyDescriptor;
 import java.util.function.Consumer;
 
 @SuppressWarnings("rawtypes")

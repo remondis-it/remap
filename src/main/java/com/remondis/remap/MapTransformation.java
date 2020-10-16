@@ -1,8 +1,9 @@
 package com.remondis.remap;
 
+import com.googlecode.openbeans.PropertyDescriptor;
+
 import static com.remondis.remap.Properties.asString;
 
-import java.beans.PropertyDescriptor;
 
 /**
  * The map transformation is the simplest mapping operation. It just reassigns a field from the source object to a

@@ -3,13 +3,13 @@ package com.remondis.remap;
 import static com.remondis.remap.Properties.asString;
 import static com.remondis.remap.ReflectionUtil.getCollector;
 
-import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
+import com.googlecode.openbeans.PropertyDescriptor;
 import com.remondis.propertypath.api.Get;
 import com.remondis.propertypath.api.Getter;
 import com.remondis.propertypath.api.PropertyPath;
@@ -37,7 +37,7 @@ public class PropertyPathCollectionTransformation<RS, X, RD> extends Transformat
   }
 
   PropertyPathCollectionTransformation(MappingConfiguration<?, ?> mapping, PropertyDescriptor sourceProperty,
-      PropertyDescriptor destinationProperty, PropertyPath<X, RS, ?> propertyPath, Function<X, RD> transformation) {
+                                       PropertyDescriptor destinationProperty, PropertyPath<X, RS, ?> propertyPath, Function<X, RD> transformation) {
     super(mapping, sourceProperty, destinationProperty);
     this.propertyPath = createGetterAndApply(sourceProperty, propertyPath, transformation);
     this.hasTransformation = true;

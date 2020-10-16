@@ -1,6 +1,7 @@
 package com.remondis.remap;
 
-import java.beans.PropertyDescriptor;
+
+import com.googlecode.openbeans.PropertyDescriptor;
 
 /**
  * A bucket to hold the generic type of a property and the {@link PropertyDescriptor}.

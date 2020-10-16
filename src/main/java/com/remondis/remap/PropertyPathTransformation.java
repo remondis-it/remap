@@ -2,10 +2,10 @@ package com.remondis.remap;
 
 import static com.remondis.remap.Properties.asString;
 
-import java.beans.PropertyDescriptor;
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.googlecode.openbeans.PropertyDescriptor;
 import com.remondis.propertypath.api.Get;
 import com.remondis.propertypath.api.Getter;
 import com.remondis.propertypath.api.PropertyPath;

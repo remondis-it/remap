@@ -1,6 +1,7 @@
 package com.remondis.remap;
 
-import java.beans.Introspector;
+import com.googlecode.openbeans.Introspector;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

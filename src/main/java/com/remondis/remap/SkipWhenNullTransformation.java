@@ -1,6 +1,7 @@
 package com.remondis.remap;
 
-import java.beans.PropertyDescriptor;
+import com.googlecode.openbeans.PropertyDescriptor;
+
 import java.util.function.Function;
 
 /**

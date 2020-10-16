@@ -1,10 +1,11 @@
 package com.remondis.remap;
 
+import com.googlecode.openbeans.PropertyDescriptor;
+
 import static com.remondis.remap.Lang.denyNull;
 import static com.remondis.remap.Properties.asString;
 import static java.util.Objects.nonNull;
 
-import java.beans.PropertyDescriptor;
 
 /**
  * The omit transformation marks a property as omitted.

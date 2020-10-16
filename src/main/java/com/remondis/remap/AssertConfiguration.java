@@ -1,5 +1,7 @@
 package com.remondis.remap;
 
+import com.googlecode.openbeans.PropertyDescriptor;
+
 import static com.remondis.remap.Lang.denyNull;
 import static com.remondis.remap.MappingConfiguration.OMIT_FIELD_DEST;
 import static com.remondis.remap.MappingConfiguration.OMIT_FIELD_SOURCE;
@@ -10,7 +12,6 @@ import static com.remondis.remap.OmitTransformation.omitSource;
 import static com.remondis.remap.ReassignBuilder.ASSIGN;
 import static com.remondis.remap.ReplaceBuilder.TRANSFORM;
 
-import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
