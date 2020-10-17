@@ -273,11 +273,10 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-		    <groupId>com.googlecode</groupId>
-		    <artifactId>openbeans</artifactId>
-		    <version>1.0</version>
+            <groupId>com.googlecode</groupId>
+            <artifactId>openbeans</artifactId>
+            <version>1.0</version>
 		</dependency>
-
 		<!-- Test scoped dependencies -->
         <dependency>
             <groupId>com.remondis</groupId>
