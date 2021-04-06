@@ -5,8 +5,10 @@ import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 
 import java.beans.PropertyDescriptor;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -172,13 +174,21 @@ public class MappingModel<S, D> {
   /**
    * Represents the search results, when inspecting the {@link MappingModel}.
    */
-  public class TransformationSearchResult {
+  public class TransformationSearchResult implements Iterable<TransformationSearchResult> {
 
     private List<Transformation> transformations;
 
     TransformationSearchResult(List<Transformation> transformations) {
       super();
       this.transformations = transformations;
+    }
+
+    @Override
+    public Iterator<TransformationSearchResult> iterator() {
+      return transformations.stream()
+          .map(transformation -> new TransformationSearchResult(asList(transformation)))
+          .collect(toList())
+          .iterator();
     }
 
     /**
@@ -309,14 +319,14 @@ public class MappingModel<S, D> {
      * @return Returns the source property name.
      */
     public String getSourcePropertyName() {
-      return getSource().getName();
+      return getSingleMatch().getSourcePropertyName();
     }
 
     /**
      * @return Returns the destination property name.
      */
     public String getDestinationPropertyName() {
-      return getDestination().getName();
+      return getSingleMatch().getDestinationPropertyName();
     }
 
     /**

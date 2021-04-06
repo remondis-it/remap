@@ -43,6 +43,11 @@ public class PropertyPathCollectionTransformation<RS, X, RD> extends Transformat
     this.hasTransformation = true;
   }
 
+  @Override
+  public String getSourcePropertyName() {
+    return sourceProperty.getName() + "." + propertyPath.toPath();
+  }
+
   @SuppressWarnings("unchecked")
   private Get<RS, RD, ?> createGetter(PropertyDescriptor sourceProperty, PropertyPath<RD, RS, ?> propertyPath) {
     Class<RS> genericSourceType = (Class<RS>) ReassignTransformation

@@ -39,6 +39,11 @@ public class PropertyPathTransformation<RS, X, RD> extends Transformation {
     this.hasTransformation = true;
   }
 
+  @Override
+  public String getSourcePropertyName() {
+    return sourceProperty.getName() + "." + propertyPath.toPath();
+  }
+
   @SuppressWarnings("unchecked")
   private Get<RS, RD, ?> createGetter(PropertyDescriptor sourceProperty, PropertyPath<RD, RS, ?> propertyPath) {
     return Getter.newFor((Class<RS>) sourceProperty.getPropertyType())
