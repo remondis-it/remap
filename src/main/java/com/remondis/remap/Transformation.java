@@ -1,6 +1,7 @@
 package com.remondis.remap;
 
 import static com.remondis.remap.Lang.denyNull;
+import static java.util.Objects.isNull;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -25,6 +26,21 @@ abstract class Transformation {
     this.mapping = mapping;
     this.sourceProperty = sourceProperty;
     this.destinationProperty = destinationProperty;
+  }
+
+  /**
+   * @return Returns the destination property name.
+   */
+  public String getDestinationPropertyName() {
+    return isNull(destinationProperty) ? null : destinationProperty.getName();
+  }
+
+  /**
+   * @return Returns the source property name. This might be a property path, if the transformation operates on
+   *         property paths like PropertyPathTransformation.
+   */
+  public String getSourcePropertyName() {
+    return isNull(sourceProperty) ? null : sourceProperty.getName();
   }
 
   protected Class<?> getDestinationType() {

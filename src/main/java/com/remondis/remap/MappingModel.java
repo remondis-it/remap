@@ -319,14 +319,14 @@ public class MappingModel<S, D> {
      * @return Returns the source property name.
      */
     public String getSourcePropertyName() {
-      return getSource().getName();
+      return getSingleMatch().getSourcePropertyName();
     }
 
     /**
      * @return Returns the destination property name.
      */
     public String getDestinationPropertyName() {
-      return getDestination().getName();
+      return getSingleMatch().getDestinationPropertyName();
     }
 
     /**
