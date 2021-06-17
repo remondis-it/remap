@@ -42,13 +42,13 @@ public class ReassignTransformation extends Transformation {
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
-    // Only if the source value is not null we have to perform the mapping
     MappedResult result = MappedResult.skip();
+
     if (sourceValue != null) {
       result = performValueTransformation(sourceValue, destination);
     }
 
-    if (result.hasValue()) {
+    if (result.hasValue() || mapping.isWriteNull()) {
       writeOrFail(destinationProperty, destination, result.getValue());
     }
   }

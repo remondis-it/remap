@@ -70,6 +70,8 @@ public class AssertConfiguration<S, D> {
   private boolean expectNoImplicitMappings;
   private List<AssertVerification> verificaions;
 
+  private boolean expectWriteNullIfSourceIsNull = false;
+
   AssertConfiguration(Mapper<S, D> mapper) {
     denyNull("mapper", mapper);
     this.mapper = mapper;
@@ -210,6 +212,20 @@ public class AssertConfiguration<S, D> {
   }
 
   /**
+   * Expects the mapper to suppress creation of implicit mappings. Note: This requires the user to define the mappings
+   * explicitly using {@link MappingConfiguration#reassign(FieldSelector)} or any other mapping operation. Therefore all
+   * this
+   * explicit
+   * mappings must be backed by an assertion.
+   *
+   * @return Returns this instance for further configuration.
+   */
+  public AssertConfiguration<S, D> expectToWriteNullIfSourceIsNull() {
+    this.expectWriteNullIfSourceIsNull = true;
+    return this;
+  }
+
+  /**
    * Specifies an assertion for a destination field to be omitted.
    *
    * @param destinationSelector
@@ -266,6 +282,7 @@ public class AssertConfiguration<S, D> {
    */
   public void ensure() throws AssertionError {
     checkImplicitMappingStrategy();
+    checkNullHandling();
     checkReplaceTransformations();
 
     checkVerifications();
@@ -285,6 +302,18 @@ public class AssertConfiguration<S, D> {
     } else if (mapper.getMapping()
         .isNoImplicitMappings() && !expectNoImplicitMappings) {
       throw new AssertionError("The mapper was expected to create implicit mappings but the actual mapper does not.");
+    }
+  }
+
+  private void checkNullHandling() {
+    if (!mapper.getMapping()
+        .isWriteNull() && expectWriteNullIfSourceIsNull) {
+      throw new AssertionError("The mapper was expected to write null values if the source value is null, "
+          + "but the current mapper is configured to skip mappings if source value is null.");
+    } else if (mapper.getMapping()
+        .isWriteNull() && !expectWriteNullIfSourceIsNull) {
+      throw new AssertionError("The mapper was expected to skip mapping if the source value is null, "
+          + "but the current mapper is configured to write null if source value is null.");
     }
   }
 

@@ -94,6 +94,11 @@ public class MappingConfiguration<S, D> {
    */
   private boolean noImplicitMappings;
 
+  /**
+   * Write null if the source value is null.
+   */
+  private boolean writeNullIfSourceIsNull;
+
   MappingConfiguration(Class<S> source, Class<D> destination) {
     this.source = source;
     this.destination = destination;
@@ -632,6 +637,17 @@ public class MappingConfiguration<S, D> {
   }
 
   /**
+   * Configures the mapper to write <code>null</code> value if the source value is null. If not set the mapper skips
+   * mapping if the source value is <code>null</code>.
+   *
+   * @return Returns this {@link MappingConfiguration} object for further configuration.
+   */
+  public MappingConfiguration<S, D> writeNullIfSourceIsNull() {
+    this.writeNullIfSourceIsNull = true;
+    return this;
+  }
+
+  /**
    * Returns <code>true</code> if the mapper does not create implicit mappings. If <code>false</code>
    * is returned, the mapper creates implicit mappings for field that have the same name and type.
    */
@@ -773,6 +789,10 @@ public class MappingConfiguration<S, D> {
    */
   protected Map<Projection<?, ?>, InternalMapper<?, ?>> getMappers() {
     return new Hashtable<>(this.mappers);
+  }
+
+  public boolean isWriteNull() {
+    return this.writeNullIfSourceIsNull;
   }
 
 }
