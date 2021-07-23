@@ -16,12 +16,6 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
-      - name: Create Key File
-        run: echo "$GPG_PRIVATE_KEY" > secret.asc
-        env:
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-      - name: Import GPG Key
-        run: gpg --import --batch secret.asc
       # Step that does that actual cache save and restore
       - uses: actions/cache@v1
         with:
