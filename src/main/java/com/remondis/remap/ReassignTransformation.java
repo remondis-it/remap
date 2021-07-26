@@ -11,6 +11,7 @@ import java.lang.reflect.TypeVariable;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -75,8 +76,41 @@ public class ReassignTransformation extends Transformation {
       return convertMap(sourceValue, sourceCtx, destinationCtx);
     } else if (isCollection(sourceValue)) {
       return convertCollection(sourceValue, sourceCtx, destinationCtx);
+    } else if (isOptional(sourceType) || isOptional(destinationType)) {
+      return convertOptional(sourceType, sourceValue, destinationType, sourceCtx, destinationCtx);
     } else {
       return convertValueMapOver(sourceType, sourceValue, destinationType, destination);
+    }
+  }
+
+  private Object convertOptional(Class<?> sourceType, Object sourceValue, Class<?> destinationType,
+      GenericParameterContext sourceCtx, GenericParameterContext destinationCtx) {
+
+    Object newSourceValue = sourceValue;
+    GenericParameterContext newSourceCtx = sourceCtx;
+    if (isOptional(sourceType)) {
+      newSourceCtx = sourceCtx.goInto(0);
+      Optional opt = (Optional) sourceValue;
+      if (opt.isEmpty()) {
+        newSourceValue = null;
+      } else {
+        newSourceValue = opt.get();
+      }
+    }
+
+    boolean wasDestOptional = false;
+    GenericParameterContext newDestinationCtx = destinationCtx;
+    if (isOptional(destinationType)) {
+      newDestinationCtx = destinationCtx.goInto(0);
+      wasDestOptional = true;
+    }
+
+    Object newDestValue = _convert(newSourceCtx.getCurrentType(), newSourceValue, newDestinationCtx.getCurrentType(),
+        null, newSourceCtx, newDestinationCtx);
+    if (wasDestOptional) {
+      return Optional.ofNullable(newDestValue);
+    } else {
+      return newDestValue;
     }
   }
 
@@ -189,6 +223,14 @@ public class ReassignTransformation extends Transformation {
     return collection instanceof Collection;
   }
 
+  static boolean isOptional(Object optional) {
+    return optional instanceof Optional;
+  }
+
+  static boolean isOptional(Class<?> type) {
+    return Optional.class.isAssignableFrom(type);
+  }
+
   @Override
   protected void validateTransformation() throws MappingException {
     // we have to check that all required mappers are known for nested mapping
@@ -202,9 +244,14 @@ public class ReassignTransformation extends Transformation {
   }
 
   private void _validateTransformation(GenericParameterContext sourceCtx, GenericParameterContext destCtx) {
+
+    sourceCtx = skipOptional(sourceCtx);
+    destCtx = skipOptional(destCtx);
+
     // Travers nested types here and check for equal map/collection and existing type mapping.
     Class<?> sourceType = sourceCtx.getCurrentType();
     Class<?> destinationType = destCtx.getCurrentType();
+
     boolean incompatibleCollecion = (isMap(sourceType) && isCollection(destinationType))
         || (isCollection(sourceType) && isMap(destinationType))
         || (noCollectionOrMap(sourceType) && isCollectionOrMap(destinationType))
@@ -231,6 +278,13 @@ public class ReassignTransformation extends Transformation {
     } else {
       validateTypeMapping(getSourceProperty(), sourceType, getDestinationProperty(), destinationType);
     }
+  }
+
+  private GenericParameterContext skipOptional(GenericParameterContext genericParameterContext) {
+    while (isOptional(genericParameterContext.getCurrentType())) {
+      genericParameterContext = genericParameterContext.goInto(0);
+    }
+    return genericParameterContext;
   }
 
   private static boolean noCollectionOrMap(Class<?> type) {
