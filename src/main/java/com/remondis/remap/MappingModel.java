@@ -104,7 +104,29 @@ public class MappingModel<S, D> {
         .stream()
         .filter(andOnDemand(sourcePropertySelector, destinationPropertySelector))
         .collect(Collectors.toList());
-    return new TransformationSearchResult(transformations);
+    MappingModel<S, D>.TransformationSearchResult candidates = new TransformationSearchResult(transformations);
+    boolean allMatch = transformations.stream()
+        .allMatch(t -> t instanceof OmitTransformation);
+
+    if (allMatch) {
+      return mapping.getMappings()
+          .stream()
+          .filter(t -> t instanceof RestructureTransformation)
+          .map(t -> (RestructureTransformation) t)
+          .map(rT -> rT.getRestructureMapper()
+              .getMappingModel()
+              .findMapping(sourcePropertySelector, destinationPropertySelector))
+          .map(tsr -> tsr.getTransformations())
+          .reduce((list1, list2) -> {
+            list1.addAll(list2);
+            return list1;
+          })
+          .map(TransformationSearchResult::new)
+          .orElse(candidates);
+
+    } else {
+      return candidates;
+    }
   }
 
   private Predicate<Transformation> andOnDemand(Predicate<String> sourcePropertySelector,
@@ -181,6 +203,10 @@ public class MappingModel<S, D> {
     TransformationSearchResult(List<Transformation> transformations) {
       super();
       this.transformations = transformations;
+    }
+
+    List<Transformation> getTransformations() {
+      return transformations;
     }
 
     @Override

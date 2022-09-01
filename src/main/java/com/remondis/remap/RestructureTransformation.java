@@ -84,7 +84,7 @@ class RestructureTransformation<S, D, RD> extends Transformation {
   /**
    * @return Returns the {@link Mapper} used to restructure the destination field.
    */
-  Mapper<S, RD> getRestructureMapper() {
+  protected Mapper<S, RD> getRestructureMapper() {
     return restructureMapper;
   }
 

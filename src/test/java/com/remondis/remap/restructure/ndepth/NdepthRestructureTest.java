@@ -1,17 +1,28 @@
 package com.remondis.remap.restructure.ndepth;
 
-import com.remondis.remap.AssertMapping;
-import com.remondis.remap.Mapper;
-import com.remondis.remap.Mapping;
-import com.remondis.remap.restructure.Address;
-import com.remondis.remap.restructure.Bean;
-import com.remondis.resample.Samples;
-import org.junit.Test;
-
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertSame;
 
+import org.junit.Test;
+
+import com.remondis.remap.AssertMapping;
+import com.remondis.remap.Mapper;
+import com.remondis.remap.Mapping;
+import com.remondis.remap.MappingModel;
+import com.remondis.remap.restructure.Address;
+import com.remondis.remap.restructure.Bean;
+import com.remondis.resample.Samples;
+
 public class NdepthRestructureTest {
+
+  @Test
+  public void shouldReturnMappingModel_n_depth_for_Restructure_n_depth() {
+
+    Mapper<Bean, Bean2> mapper = createMapper();
+    MappingModel<Bean, Bean2>.TransformationSearchResult result = mapper.getMappingModel()
+        .findMappingBySource(MappingModel.nameEqualsPredicateIgnoreCase("city"));
+    System.out.println(result);
+  }
 
   @Test
   public void shouldRestructure_n_depth() {
