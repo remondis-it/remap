@@ -208,7 +208,7 @@ public class MappingConfiguration<S, D> {
    */
   public MappingConfiguration<S, D> omitInSource(FieldSelector<S> sourceSelector) {
     denyNull("sourceSelector", sourceSelector);
-    // Omit in destination
+    // Omit in source
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(Target.SOURCE, OMIT_FIELD_SOURCE, this.source,
         sourceSelector);
     OmitTransformation omitSource = OmitTransformation.omitSource(this, propertyDescriptor);
@@ -475,7 +475,7 @@ public class MappingConfiguration<S, D> {
    *
    * @param type The type to check for unmapped properties.
    * @param mappedSourceProperties The set of mapped properties.
-   * @param target The type of mapping target.
+   * @param targetType The type of mapping target.
    * @return Returns the {@link Set} of unmapped properties.
    */
   private <T> Set<PropertyDescriptor> getUnmappedProperties(Class<T> type,
