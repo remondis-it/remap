@@ -55,11 +55,18 @@ public class InvocationSensor<T> {
     proxyObject = po;
   }
 
+  /**
+   * Creates an {@link ElementMatcher.Junction} for the method description of all superclasses, interfaces and the given
+   * type itself so that all of those methods are proxied by the {@link InvocationSensor}.
+   * 
+   * @param type type to get the junction for
+   * @return the junction with all superclasses and interfaces including the given typeD
+   */
   private ElementMatcher.Junction<MethodDescription> isDeclaredByClassHierarchy(Class<T> type) {
-    HierarchyIterator hierarchyIterator = new HierarchyIterator(type);
+    ClassHierarchyIterator classHierarchyIterator = new ClassHierarchyIterator(type);
     ElementMatcher.Junction<MethodDescription> methodDescriptionJunction = null;
-    while (hierarchyIterator.hasNext()) {
-      Class<?> next = hierarchyIterator.next();
+    while (classHierarchyIterator.hasNext()) {
+      Class<?> next = classHierarchyIterator.next();
       if (isNull(methodDescriptionJunction)) {
         methodDescriptionJunction = isDeclaredBy(next);
       } else {

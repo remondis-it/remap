@@ -4,11 +4,14 @@ import static java.util.Objects.nonNull;
 
 import java.util.*;
 
-public class HierarchyIterator implements Iterator<Class<?>> {
+/**
+ * Iterator that enables to interate over the complete class hierarchy of a type including superclasses and interfaces.
+ */
+public class ClassHierarchyIterator implements Iterator<Class<?>> {
   private Queue<Class<?>> remaining = new LinkedList<>();
   private Set<Class<?>> visited = new LinkedHashSet<>();
 
-  public HierarchyIterator(Class<?> initial) {
+  public ClassHierarchyIterator(Class<?> initial) {
     append(initial);
   }
 
