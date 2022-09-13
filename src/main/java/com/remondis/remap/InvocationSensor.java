@@ -2,6 +2,7 @@ package com.remondis.remap;
 
 import static com.remondis.remap.ReflectionUtil.*;
 import static java.lang.ClassLoader.getSystemClassLoader;
+import static java.util.Objects.isNull;
 import static net.bytebuddy.matcher.ElementMatchers.isDeclaredBy;
 
 import java.lang.reflect.InvocationTargetException;
@@ -11,11 +12,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
+import net.bytebuddy.matcher.ElementMatcher;
 
 /**
  * The {@link InvocationSensor} tracks get-method invocations on a proxy class and makes the invocation information
@@ -38,7 +41,7 @@ public class InvocationSensor<T> {
     T po = null;
     try {
       po = (T) new ByteBuddy().subclass(superType)
-          .method(isDeclaredBy(superType))
+          .method(isDeclaredByClassHierarchy(superType))
           .intercept(MethodDelegation.to(this))
           .make()
           .load(getSystemClassLoader(), ClassLoadingStrategy.Default.INJECTION)
@@ -52,9 +55,23 @@ public class InvocationSensor<T> {
     proxyObject = po;
   }
 
+  private ElementMatcher.Junction<MethodDescription> isDeclaredByClassHierarchy(Class<T> type) {
+    HierarchyIterator hierarchyIterator = new HierarchyIterator(type);
+    ElementMatcher.Junction<MethodDescription> methodDescriptionJunction = null;
+    while (hierarchyIterator.hasNext()) {
+      Class<?> next = hierarchyIterator.next();
+      if (isNull(methodDescriptionJunction)) {
+        methodDescriptionJunction = isDeclaredBy(next);
+      } else {
+        methodDescriptionJunction = methodDescriptionJunction.or(isDeclaredBy(next));
+      }
+    }
+    return methodDescriptionJunction;
+  }
+
   /**
    * This method will be called each time when the object proxy calls any of its methods.
-   * 
+   *
    * @param method the intercepted method
    * @param args the given arguments ti the intercepted method
    * @throws Exception throws
