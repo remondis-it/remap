@@ -4,7 +4,7 @@ import java.util.Collection;
 
 /**
  * Facade for {@link AssertConfiguration} to specify assertions for a restructuring mapper configuration.
- * 
+ *
  * @param <S> The source type.
  * @param <D> The destination type.
  */
