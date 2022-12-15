@@ -733,6 +733,9 @@ This workaround was tested and should work for most cases. Please file an issue 
 
 # Migration guide
 
+## Sidenote for 4.2.7
+ReMap migrated to byte-buddy thanks to @Karlender. Since cglib is unmaintained ReMap would not be compatible to JDK17+. The migration is just an internal refactoring in ReMap - this sidenote is just about the dependency of ReMap to byte-buddy.
+
 ## Sidenote for updating from 4.1.xx to 4.2.xx
 
 The static entrypoints for the ReMap API changed. Like in earlier versions, you can access the mapping and assertion API with `Mapping.from(...)` and `AssertMapping.of(...)` but if your code held references to instances of those types, you have to change the references to the type `MappingConfiguration`
