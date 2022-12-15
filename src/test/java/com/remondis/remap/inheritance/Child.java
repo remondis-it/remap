@@ -2,7 +2,7 @@ package com.remondis.remap.inheritance;
 
 import com.remondis.remap.basic.B;
 
-public class Child extends Parent {
+public class Child extends Parent implements ChildInterface {
 
   private Object object;
   private int zahl;

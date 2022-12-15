@@ -2,7 +2,7 @@ package com.remondis.remap.inheritance;
 
 import com.remondis.remap.basic.B;
 
-public class Parent {
+public class Parent implements ParentInterface {
 
   private Object moreInParent;
   private Object shouldNotMap;

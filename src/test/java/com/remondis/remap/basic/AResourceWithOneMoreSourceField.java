@@ -33,7 +33,7 @@ public class AResourceWithOneMoreSourceField {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override
