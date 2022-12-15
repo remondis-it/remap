@@ -1,5 +1,4 @@
 [![Maven Central](https://img.shields.io/maven-central/v/com.remondis/remap.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.remondis%22%20AND%20a:%22remap%22)
-[![JCenter](https://api.bintray.com/packages/schuettec/maven/com.remondis%3Aremap/images/download.svg) ](https://bintray.com/schuettec/maven/com.remondis%3Aremap/_latestVersion)
 [![Build Status](https://travis-ci.org/remondis-it/remap.svg?branch=develop)](https://travis-ci.org/remondis-it/remap)
 
 # ReMap - A declarative object mapper
