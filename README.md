@@ -1,5 +1,4 @@
 [![Maven Central](https://img.shields.io/maven-central/v/com.remondis/remap.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.remondis%22%20AND%20a:%22remap%22)
-[![JCenter](https://api.bintray.com/packages/schuettec/maven/com.remondis%3Aremap/images/download.svg) ](https://bintray.com/schuettec/maven/com.remondis%3Aremap/_latestVersion)
 [![Build Status](https://travis-ci.org/remondis-it/remap.svg?branch=develop)](https://travis-ci.org/remondis-it/remap)
 
 # ReMap - A declarative object mapper
@@ -733,6 +732,9 @@ This bug was fixed in `net.minidev:accessors-smart:1.2` but is still present in 
 This workaround was tested and should work for most cases. Please file an issue if you are experiencing problems.
 
 # Migration guide
+
+## Sidenote for 4.2.7
+ReMap migrated to byte-buddy thanks to @Karlender. Since cglib is unmaintained ReMap would not be compatible to JDK17+. The migration is just an internal refactoring in ReMap - this sidenote is just about the dependency of ReMap to byte-buddy.
 
 ## Sidenote for updating from 4.1.xx to 4.2.xx
 

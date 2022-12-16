@@ -1,8 +1,6 @@
 package com.remondis.remap.inheritance;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -31,6 +29,48 @@ public class MapperTest {
     Mapper<Child, ChildResource> map = Mapping.from(Child.class)
         .to(ChildResource.class)
         .omitInSource(Child::getMoreInParent)
+        .omitInDestination(ChildResource::getMoreInParentResource)
+        .useMapper(Mapping.from(B.class)
+            .to(BResource.class)
+            .mapper())
+        .mapper();
+
+    B b = new B(B_STRING, B_NUMBER, B_INTEGER);
+    Object shouldNotMap = new Object();
+    Object object = new Object();
+    int zahl = 11;
+    Child child = new Child(shouldNotMap, STRING, b, object, zahl);
+    ChildResource cr = map.map(child);
+
+    assertNull(cr.getMoreInParentResource());
+    assertEquals(STRING, child.getString());
+    assertEquals(STRING, cr.getString());
+    assertEquals(object, child.getObject());
+    // We cannot assertEquals here, because it's object they will not be equal.
+    assertNotNull(cr.getObject());
+    assertEquals(zahl, child.getZahl());
+    assertEquals(zahl, cr.getZahl());
+
+    BResource br = cr.getB();
+    assertEquals(B_STRING, b.getString());
+    assertEquals(B_STRING, br.getString());
+    assertEquals(B_NUMBER, b.getNumber());
+    assertEquals(B_NUMBER, br.getNumber());
+    assertEquals(B_INTEGER, b.getInteger());
+    assertEquals(B_INTEGER, br.getInteger());
+
+  }
+
+  /**
+   * Ensures that the mapper maps interface defined fields correctly.
+   */
+  @Test
+  public void shouldMapWithInterfaceDefinedMethods() {
+    Mapper<Child, ChildResource> map = Mapping.from(Child.class)
+        .to(ChildResource.class)
+        .reassign(ChildInterface::getString)
+        .to(ChildResource::getString)
+        .omitInSource(ChildInterface::getMoreInParent)
         .omitInDestination(ChildResource::getMoreInParentResource)
         .useMapper(Mapping.from(B.class)
             .to(BResource.class)
