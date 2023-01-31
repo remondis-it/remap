@@ -683,6 +683,8 @@ Use the following code snippet in components to inject the mapper instances:
 
 `````
 
+It should be noted that an update of the default mapping strategy (handling of null values) must be applied before bean creation.
+
 ### Spring Boot Issue
 
 When using the Spring Boot Framework in version <= 1.5.13.RELEASE in combination with ReMap 4.0.0 a known issue can occur:

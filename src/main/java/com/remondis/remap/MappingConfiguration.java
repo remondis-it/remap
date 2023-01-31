@@ -8,6 +8,7 @@ import static com.remondis.remap.MappingException.zeroInteractions;
 import static com.remondis.remap.Properties.createUnmappedMessage;
 import static com.remondis.remap.ReflectionUtil.newInstance;
 import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
@@ -95,9 +96,9 @@ public class MappingConfiguration<S, D> {
   private boolean noImplicitMappings;
 
   /**
-   * Write null if the source value is null.
+   * Mapping strategy that should be used for mapping.
    */
-  private boolean writeNullIfSourceIsNull;
+  private MappingStrategy mappingStrategy;
 
   MappingConfiguration(Class<S> source, Class<D> destination) {
     this.source = source;
@@ -106,6 +107,7 @@ public class MappingConfiguration<S, D> {
     this.mappedSourceProperties = new HashSet<>();
     this.mappedDestinationProperties = new HashSet<>();
     this.mappers = new Hashtable<>();
+    this.mappingStrategy = ReMapDefaults.getMappingStrategy();
   }
 
   /**
@@ -640,10 +642,24 @@ public class MappingConfiguration<S, D> {
    * Configures the mapper to write <code>null</code> value if the source value is null. If not set the mapper skips
    * mapping if the source value is <code>null</code>.
    *
+   * @deprecated Use {@link MappingConfiguration#mappingStrategy(MappingStrategy)} instead.
    * @return Returns this {@link MappingConfiguration} object for further configuration.
    */
+  @Deprecated
   public MappingConfiguration<S, D> writeNullIfSourceIsNull() {
-    this.writeNullIfSourceIsNull = true;
+    this.mappingStrategy = MappingStrategy.PUT;
+    return this;
+  }
+
+  /**
+   * Configures the mapper to use a specific mapping strategy.
+   *
+   * @param mappingStrategy Mapping strategy that should be use.
+   * @return Returns this {@link MappingConfiguration} object for further configuration.
+   */
+  public MappingConfiguration<S, D> mappingStrategy(MappingStrategy mappingStrategy) {
+    requireNonNull(mappingStrategy, "mapping strategy must not be null.");
+    this.mappingStrategy = mappingStrategy;
     return this;
   }
 
@@ -792,7 +808,7 @@ public class MappingConfiguration<S, D> {
   }
 
   public boolean isWriteNull() {
-    return this.writeNullIfSourceIsNull;
+    return MappingStrategy.PUT.equals(mappingStrategy);
   }
 
 }
