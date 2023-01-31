@@ -55,6 +55,10 @@ public class RestructuringAssertConfiguration<S, D> {
     return delegate.expectNoImplicitMappings();
   }
 
+  public AssertConfiguration<S, D> expectMappingStrategy(MappingStrategy mappingStrategy) {
+    return delegate.expectMappingStrategy(mappingStrategy);
+  }
+
   public AssertConfiguration<S, D> expectOmitInDestination(FieldSelector<D> destinationSelector) {
     return delegate.expectOmitInDestination(destinationSelector);
   }

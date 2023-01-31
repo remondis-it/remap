@@ -38,7 +38,6 @@ public class WriteNullTest {
 
   @Test
   public void shouldComplainAboutWrongNullHandling() {
-
     MappingConfiguration<Source, Destination> configuration = Mapping.from(Source.class)
         .to(Destination.class);
     Mapper<Source, Destination> mapper = configuration.mapper();
@@ -48,7 +47,7 @@ public class WriteNullTest {
         .expectToWriteNullIfSourceIsNull()
         .ensure()).isInstanceOf(AssertionError.class)
             .hasMessageContaining(
-                "The mapper was expected to write null values if the source value is null, but the current mapper is configured to skip mappings if source value is null.");
+                "The mapper was expected to write null values if the source value is null, but the current mapper is configured to skip mappings if source value is null (Mapping strategy).");
   }
 
 }

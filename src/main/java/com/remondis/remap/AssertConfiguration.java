@@ -70,7 +70,7 @@ public class AssertConfiguration<S, D> {
   private boolean expectNoImplicitMappings;
   private List<AssertVerification> verificaions;
 
-  private boolean expectWriteNullIfSourceIsNull = false;
+  private MappingStrategy expectedMappingStrategy = ReMapDefaults.getMappingStrategy();
 
   AssertConfiguration(Mapper<S, D> mapper) {
     denyNull("mapper", mapper);
@@ -212,16 +212,25 @@ public class AssertConfiguration<S, D> {
   }
 
   /**
-   * Expects the mapper to suppress creation of implicit mappings. Note: This requires the user to define the mappings
-   * explicitly using {@link MappingConfiguration#reassign(FieldSelector)} or any other mapping operation. Therefore all
-   * this
-   * explicit
-   * mappings must be backed by an assertion.
+   * Expects the mapper to write null into destination if the source value is null.
    *
+   * @deprecated Use {@link AssertConfiguration#expectMappingStrategy(MappingStrategy)} instead.
    * @return Returns this instance for further configuration.
    */
+  @Deprecated
   public AssertConfiguration<S, D> expectToWriteNullIfSourceIsNull() {
-    this.expectWriteNullIfSourceIsNull = true;
+    this.expectedMappingStrategy = MappingStrategy.PUT;
+    return this;
+  }
+
+  /**
+   * Expects the mapper to use a specific mapping strategy.
+   *
+   * @param mappingStrategy The expected mapping strategy.
+   * @return Returns this instance for further configuration.
+   */
+  public AssertConfiguration<S, D> expectMappingStrategy(MappingStrategy mappingStrategy) {
+    this.expectedMappingStrategy = mappingStrategy;
     return this;
   }
 
@@ -306,14 +315,15 @@ public class AssertConfiguration<S, D> {
   }
 
   private void checkNullHandling() {
+    boolean expectWriteNullIfSourceIsNull = MappingStrategy.PUT.equals(expectedMappingStrategy);
     if (!mapper.getMapping()
         .isWriteNull() && expectWriteNullIfSourceIsNull) {
       throw new AssertionError("The mapper was expected to write null values if the source value is null, "
-          + "but the current mapper is configured to skip mappings if source value is null.");
+          + "but the current mapper is configured to skip mappings if source value is null (Mapping strategy).");
     } else if (mapper.getMapping()
         .isWriteNull() && !expectWriteNullIfSourceIsNull) {
       throw new AssertionError("The mapper was expected to skip mapping if the source value is null, "
-          + "but the current mapper is configured to write null if source value is null.");
+          + "but the current mapper is configured to write null if source value is null (Mapping strategy).");
     }
   }
 
