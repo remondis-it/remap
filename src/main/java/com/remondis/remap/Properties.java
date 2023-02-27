@@ -1,6 +1,7 @@
 package com.remondis.remap;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -115,10 +116,14 @@ class Properties {
     try {
       BeanInfo beanInfo = Introspector.getBeanInfo(inspectType);
       PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
-      if (propertyDescriptors != null && fluentSetters && targetType == Target.DESTINATION) {
-        for (PropertyDescriptor pd : propertyDescriptors) {
+
+      if (fluentSetters && nonNull(propertyDescriptors) && targetType == Target.DESTINATION) {
+        for (int i = 0; i < propertyDescriptors.length; i++) {
+          PropertyDescriptor pd = propertyDescriptors[i];
           if (pd.getWriteMethod() == null) {
-            checkForAndSetFluentWriteMethod(inspectType, pd);
+            // if the fluent setter feature is activated, the property descriptor is replaces on demand, to also reflect
+            // setters with a return value.
+            propertyDescriptors[i] = checkForAndSetFluentWriteMethod(inspectType, pd);
           }
         }
       }
@@ -144,20 +149,27 @@ class Properties {
    * Tries to see if a fluent setXXX method exists even though it was not found by the initial retrospection.
    * If a setter exists set it as the property descriptors write method.
    */
-  private static void checkForAndSetFluentWriteMethod(Class<?> inspectType, PropertyDescriptor pd) {
+  private static PropertyDescriptor checkForAndSetFluentWriteMethod(Class<?> inspectType, PropertyDescriptor pd) {
     String writeMethodName = pd.getName();
     writeMethodName = "set" + writeMethodName.substring(0, 1)
         .toUpperCase() + writeMethodName.substring(1);
     try {
       Method setMethod = inspectType.getDeclaredMethod(writeMethodName, pd.getPropertyType());
       if (Modifier.isPublic(setMethod.getModifiers())) {
-        pd.setWriteMethod(setMethod);
+        /*
+         * Create a new PropertyDescriptor instance, because the one supplied here comes from the Java Introspector and
+         * is cached VM-wide (?). Due to this caching, it is not possible to deactivate fluent setters for other mapper
+         * instances. We have to create a new PropertyDescriptor to avoid this.
+         */
+        PropertyDescriptor clone = new PropertyDescriptor(pd.getName(), pd.getReadMethod(), setMethod);
+        return clone;
       }
     } catch (NoSuchMethodException e) {
       // just ignore, the method does not have to exist
     } catch (IntrospectionException e) {
       throw new RuntimeException(e);
     }
+    return pd;
   }
 
   private static boolean hasGetter(PropertyDescriptor pd) {

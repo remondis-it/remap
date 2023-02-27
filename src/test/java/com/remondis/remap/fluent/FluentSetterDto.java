@@ -1,6 +1,6 @@
 package com.remondis.remap.fluent;
 
-public class A {
+public class FluentSetterDto {
 
   private Integer integer;
   private int i;
@@ -12,7 +12,7 @@ public class A {
     return integer;
   }
 
-  public A setInteger(Integer integer) {
+  public FluentSetterDto setInteger(Integer integer) {
     this.integer = integer;
     return this;
   }
@@ -21,7 +21,7 @@ public class A {
     return integer;
   }
 
-  public A setI(int i) {
+  public FluentSetterDto setI(int i) {
     this.i = i;
     return this;
   }
@@ -30,7 +30,7 @@ public class A {
     return s;
   }
 
-  public A setS(String s) {
+  public FluentSetterDto setS(String s) {
     this.s = s;
     return this;
   }
@@ -39,7 +39,7 @@ public class A {
     return b1;
   }
 
-  public A setB1(boolean b) {
+  public FluentSetterDto setB1(boolean b) {
     this.b1 = b;
     return this;
   }
@@ -48,7 +48,7 @@ public class A {
     return b2;
   }
 
-  public A setB2(boolean b) {
+  public FluentSetterDto setB2(boolean b) {
     this.b2 = b;
     return this;
   }

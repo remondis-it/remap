@@ -87,11 +87,7 @@ abstract class Transformation {
   }
 
   /**
-   * Performs a single transformation step while mapping. In contrast to
-   * {@link #performValueTransformation(PropertyDescriptor, Object, PropertyDescriptor, Object)} this method should
-   * implement field access to read/write mapping values. This method should delegate to
-   * {@link #performValueTransformation(PropertyDescriptor, Object, PropertyDescriptor, Object)} to perform the actual
-   * value mapping.
+   * Performs a single transformation step while mapping.
    *
    * @param sourceProperty The source property
    * @param source The source object to map from.
