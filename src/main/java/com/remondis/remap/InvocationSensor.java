@@ -38,13 +38,19 @@ public class InvocationSensor<T> {
    * @param superType the class type for which the proxy should be created
    */
   public InvocationSensor(Class<T> superType) {
+    ClassLoader classLoader;
+    if (isNull(superType) || isNull(superType.getClassLoader())) {
+      classLoader = getSystemClassLoader();
+    } else {
+      classLoader = superType.getClassLoader();
+    }
     T po = null;
     try {
       po = (T) new ByteBuddy().subclass(superType)
           .method(isDeclaredByClassHierarchy(superType))
           .intercept(MethodDelegation.to(this))
           .make()
-          .load(getSystemClassLoader(), ClassLoadingStrategy.Default.INJECTION)
+          .load(classLoader, ClassLoadingStrategy.Default.INJECTION)
           .getLoaded()
           .getDeclaredConstructor()
           .newInstance();
