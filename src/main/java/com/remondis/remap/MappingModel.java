@@ -77,12 +77,13 @@ public class MappingModel<S, D> {
     PropertyDescriptor destinationProperty = null;
 
     if (nonNull(sourceSelector)) {
-      sourceProperty = getPropertyFromFieldSelector(Target.SOURCE, "findMapping", mapping.getSource(), sourceSelector);
+      sourceProperty = getPropertyFromFieldSelector(Target.SOURCE, "findMapping", mapping.getSource(), sourceSelector,
+          mapping.isFluentSettersAllowed());
     }
 
     if (nonNull(destinationSelector)) {
       destinationProperty = getPropertyFromFieldSelector(Target.DESTINATION, "findMapping", mapping.getDestination(),
-          destinationSelector);
+          destinationSelector, mapping.isFluentSettersAllowed());
     }
 
     Predicate<String> sourcePredicate = isNull(sourceProperty) ? null : nameEqualsPredicate(sourceProperty.getName());

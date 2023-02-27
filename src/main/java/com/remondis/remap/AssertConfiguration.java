@@ -89,7 +89,8 @@ public class AssertConfiguration<S, D> {
   public <RS> ReassignAssertBuilder<S, D, RS> expectReassign(FieldSelector<S> sourceSelector) {
     denyNull("sourceSelector", sourceSelector);
     PropertyDescriptor sourceProperty = getPropertyFromFieldSelector(Target.SOURCE, ASSIGN, getMapping().getSource(),
-        sourceSelector);
+        sourceSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
     ReassignAssertBuilder<S, D, RS> reassignBuilder = new ReassignAssertBuilder<S, D, RS>(sourceProperty,
         getMapping().getDestination(), this);
     return reassignBuilder;
@@ -110,9 +111,11 @@ public class AssertConfiguration<S, D> {
     denyNull("destinationSelector", destinationSelector);
 
     TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE, TRANSFORM,
-        getMapping().getSource(), sourceSelector);
+        getMapping().getSource(), sourceSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION, TRANSFORM,
-        getMapping().getDestination(), destinationSelector);
+        getMapping().getDestination(), destinationSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
 
     ReplaceAssertBuilder<S, D, RD, RS> builder = new ReplaceAssertBuilder<>(sourceProperty, destProperty, this);
     return builder;
@@ -129,7 +132,8 @@ public class AssertConfiguration<S, D> {
     denyNull("destinationSelector", destinationSelector);
 
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION, TRANSFORM,
-        getMapping().getDestination(), destinationSelector);
+        getMapping().getDestination(), destinationSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
     SetAssertBuilder<S, D, RD> builder = new SetAssertBuilder<>(destProperty, this);
     return builder;
   }
@@ -145,7 +149,8 @@ public class AssertConfiguration<S, D> {
     denyNull("destinationSelector", destinationSelector);
 
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION, TRANSFORM,
-        getMapping().getDestination(), destinationSelector);
+        getMapping().getDestination(), destinationSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
     RestructureAssertBuilder<S, D, RD> builder = new RestructureAssertBuilder<>(destProperty, this);
     return builder;
   }
@@ -164,9 +169,11 @@ public class AssertConfiguration<S, D> {
     denyNull("sourceSelector", sourceSelector);
     denyNull("destinationSelector", destinationSelector);
     TypedPropertyDescriptor<Collection<RS>> sourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE,
-        ReplaceBuilder.TRANSFORM, getMapping().getSource(), sourceSelector);
+        ReplaceBuilder.TRANSFORM, getMapping().getSource(), sourceSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
     TypedPropertyDescriptor<Collection<RD>> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
-        ReplaceBuilder.TRANSFORM, getMapping().getDestination(), destinationSelector);
+        ReplaceBuilder.TRANSFORM, getMapping().getDestination(), destinationSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
 
     ReplaceCollectionAssertBuilder<S, D, RD, RS> builder = new ReplaceCollectionAssertBuilder<>(sourceProperty,
         destProperty, this);
@@ -191,7 +198,8 @@ public class AssertConfiguration<S, D> {
     denyNull("sourceSelector", sourceSelector);
     // Omit in destination
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(Target.SOURCE, OMIT_FIELD_SOURCE,
-        getMapping().getSource(), sourceSelector);
+        getMapping().getSource(), sourceSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
     OmitTransformation omitSource = omitSource(getMapping(), propertyDescriptor);
     _add(omitSource);
     return this;
@@ -235,7 +243,8 @@ public class AssertConfiguration<S, D> {
   public AssertConfiguration<S, D> expectOmitInDestination(FieldSelector<D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(Target.DESTINATION, OMIT_FIELD_DEST,
-        getMapping().getDestination(), destinationSelector);
+        getMapping().getDestination(), destinationSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
     OmitTransformation omitDestination = omitDestination(getMapping(), propertyDescriptor);
     _add(omitDestination);
     return this;
