@@ -1,7 +1,6 @@
 package com.remondis.remap;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -10,9 +9,9 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Util class to get a list of all properties of a class.
@@ -116,21 +115,22 @@ class Properties {
     try {
       BeanInfo beanInfo = Introspector.getBeanInfo(inspectType);
       PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
-
-      if (fluentSetters && nonNull(propertyDescriptors) && targetType == Target.DESTINATION) {
-        for (int i = 0; i < propertyDescriptors.length; i++) {
-          PropertyDescriptor pd = propertyDescriptors[i];
+      Stream<PropertyDescriptor> stream = Arrays.asList(propertyDescriptors)
+          .stream();
+      // Scan the property descriptors if support fluent setters are enabled and add the fluent setter-method.
+      if (fluentSetters && targetType == Target.DESTINATION) {
+        stream = stream.map(pd -> {
           if (pd.getWriteMethod() == null) {
             // if the fluent setter feature is activated, the property descriptor is replaces on demand, to also reflect
             // setters with a return value.
-            propertyDescriptors[i] = checkForAndSetFluentWriteMethod(inspectType, pd);
+            return checkForAndSetFluentWriteMethod(inspectType, pd);
+          } else {
+            return pd;
           }
-        }
+        });
       }
-      return new HashSet<>(Arrays.asList(propertyDescriptors)
-          .stream()
-          .filter(pd -> !pd.getName()
-              .equals("class"))
+      Set<PropertyDescriptor> result = stream.filter(pd -> !pd.getName()
+          .equals("class"))
           .filter(Properties::hasGetter)
           .filter(pd -> {
             if (Target.SOURCE.equals(targetType)) {
@@ -139,7 +139,8 @@ class Properties {
               return hasSetter(pd);
             }
           })
-          .collect(Collectors.toList()));
+          .collect(Collectors.toSet());
+      return result;
     } catch (IntrospectionException e) {
       throw new MappingException(String.format("Cannot introspect the type %s.", inspectType.getName()));
     }
@@ -149,7 +150,7 @@ class Properties {
    * Tries to see if a fluent setXXX method exists even though it was not found by the initial retrospection.
    * If a setter exists set it as the property descriptors write method.
    */
-  private static PropertyDescriptor checkForAndSetFluentWriteMethod(Class<?> inspectType, PropertyDescriptor pd) {
+  static PropertyDescriptor checkForAndSetFluentWriteMethod(Class<?> inspectType, PropertyDescriptor pd) {
     String writeMethodName = pd.getName();
     writeMethodName = "set" + writeMethodName.substring(0, 1)
         .toUpperCase() + writeMethodName.substring(1);

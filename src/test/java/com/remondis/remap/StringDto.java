@@ -1,15 +1,15 @@
 package com.remondis.remap;
 
-public class A {
+public class StringDto {
 
   private String string;
 
-  public A(String string) {
+  public StringDto(String string) {
     super();
     this.string = string;
   }
 
-  public A() {
+  public StringDto() {
     super();
   }
 
@@ -37,7 +37,7 @@ public class A {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    A other = (A) obj;
+    StringDto other = (StringDto) obj;
     if (string == null) {
       if (other.string != null)
         return false;

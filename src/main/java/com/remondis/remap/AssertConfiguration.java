@@ -72,6 +72,8 @@ public class AssertConfiguration<S, D> {
 
   private boolean expectWriteNullIfSourceIsNull = false;
 
+  private boolean expectFluentSettersAllowed = false;
+
   AssertConfiguration(Mapper<S, D> mapper) {
     denyNull("mapper", mapper);
     this.mapper = mapper;
@@ -220,6 +222,16 @@ public class AssertConfiguration<S, D> {
   }
 
   /**
+   * Expects the mapper to allow fluent setter methods.
+   *
+   * @return Returns this instance for further configuration.
+   */
+  public AssertConfiguration<S, D> expectFluentSettersAllowed() {
+    this.expectFluentSettersAllowed = true;
+    return this;
+  }
+
+  /**
    * Expects the mapper to suppress creation of implicit mappings. Note: This requires the user to define the mappings
    * explicitly using {@link MappingConfiguration#reassign(FieldSelector)} or any other mapping operation. Therefore all
    * this
@@ -292,6 +304,7 @@ public class AssertConfiguration<S, D> {
   public void ensure() throws AssertionError {
     checkImplicitMappingStrategy();
     checkNullHandling();
+    checkFluentSetters();
     checkReplaceTransformations();
 
     checkVerifications();
@@ -323,6 +336,18 @@ public class AssertConfiguration<S, D> {
         .isWriteNull() && !expectWriteNullIfSourceIsNull) {
       throw new AssertionError("The mapper was expected to skip mapping if the source value is null, "
           + "but the current mapper is configured to write null if source value is null.");
+    }
+  }
+
+  private void checkFluentSetters() {
+    if (!mapper.getMapping()
+        .isFluentSettersAllowed() && expectFluentSettersAllowed) {
+      throw new AssertionError("The mapper was expected to support fluent setter methods, "
+          + "but the current mapper is configured to only handle Java Bean compliant setter methods.");
+    } else if (mapper.getMapping()
+        .isFluentSettersAllowed() && !expectFluentSettersAllowed) {
+      throw new AssertionError("The mapper was expected to only support Java Bean compliant setter methods, "
+          + "but the current mapper is configured to also support fluent setter methods.");
     }
   }
 
