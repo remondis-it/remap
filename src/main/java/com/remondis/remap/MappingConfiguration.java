@@ -654,9 +654,9 @@ public class MappingConfiguration<S, D> {
   }
 
   /**
-   * Relaxes the strict java bean requirement that setters should return void, thus allowing for and mapped classes to
+   * Relaxes the strict java bean requirement that setters should return void, thus allowing for mapped classes to
    * be <em>fluent</em>.
-   * 
+   *
    * @return Returns this object for method chaining.
    */
   public MappingConfiguration<S, D> allowFluentSetters() {
