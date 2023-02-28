@@ -43,7 +43,8 @@ public class ReassignAssertBuilder<S, D, RS> {
   public AssertConfiguration<S, D> to(FieldSelector<D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
     PropertyDescriptor destinationProperty = getPropertyFromFieldSelector(Target.DESTINATION, ReassignBuilder.ASSIGN,
-        this.destination, destinationSelector);
+        this.destination, destinationSelector, asserts.getMapping()
+            .isFluentSettersAllowed());
     ReassignTransformation transformation = new ReassignTransformation(asserts.getMapping(), sourceProperty,
         destinationProperty);
     asserts.addAssertion(transformation);

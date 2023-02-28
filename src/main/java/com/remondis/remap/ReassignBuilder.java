@@ -39,7 +39,7 @@ public class ReassignBuilder<S, D> {
   public MappingConfiguration<S, D> to(FieldSelector<D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
     PropertyDescriptor destProperty = getPropertyFromFieldSelector(Target.DESTINATION, ASSIGN, destination,
-        destinationSelector);
+        destinationSelector, mapping.isFluentSettersAllowed());
     ReassignTransformation transformation = new ReassignTransformation(mapping, sourceProperty, destProperty);
     mapping.addMapping(sourceProperty, destProperty, transformation);
     return mapping;

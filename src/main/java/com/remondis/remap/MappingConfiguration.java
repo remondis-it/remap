@@ -99,6 +99,11 @@ public class MappingConfiguration<S, D> {
    */
   private boolean writeNullIfSourceIsNull;
 
+  /**
+   * Relax strict java beans requirement about setters must have Void return type.
+   */
+  private boolean allowFluentSetters;
+
   MappingConfiguration(Class<S> source, Class<D> destination) {
     this.source = source;
     this.destination = destination;
@@ -120,7 +125,7 @@ public class MappingConfiguration<S, D> {
     denyNull("destinationSelector", destinationSelector);
 
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(Target.DESTINATION, OMIT_FIELD_DEST,
-        destination, destinationSelector);
+        destination, destinationSelector, allowFluentSetters);
     OmitTransformation omitDestination = OmitTransformation.omitDestination(this, propertyDescriptor);
     omitMapping(mappedDestinationProperties, propertyDescriptor, omitDestination);
     return this;
@@ -215,7 +220,7 @@ public class MappingConfiguration<S, D> {
     denyNull("sourceSelector", sourceSelector);
     // Omit in source
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(Target.SOURCE, OMIT_FIELD_SOURCE, this.source,
-        sourceSelector);
+        sourceSelector, allowFluentSetters);
     OmitTransformation omitSource = OmitTransformation.omitSource(this, propertyDescriptor);
     omitMapping(mappedSourceProperties, propertyDescriptor, omitSource);
     return this;
@@ -231,7 +236,7 @@ public class MappingConfiguration<S, D> {
   public <RS> ReassignBuilder<S, D> reassign(FieldSelector<S> sourceSelector) {
     denyNull("sourceSelector", sourceSelector);
     PropertyDescriptor typedSourceProperty = getPropertyFromFieldSelector(Target.SOURCE, ReassignBuilder.ASSIGN,
-        this.source, sourceSelector);
+        this.source, sourceSelector, allowFluentSetters);
     ReassignBuilder<S, D> reassignBuilder = new ReassignBuilder<>(typedSourceProperty, destination, this);
     return reassignBuilder;
   }
@@ -254,9 +259,9 @@ public class MappingConfiguration<S, D> {
     denyNull("destinationSelector", destinationSelector);
 
     TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE,
-        ReplaceBuilder.TRANSFORM, this.source, sourceSelector);
+        ReplaceBuilder.TRANSFORM, this.source, sourceSelector, allowFluentSetters);
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
-        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector);
+        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector, allowFluentSetters);
 
     ReplaceBuilder<S, D, RD, RS> builder = new ReplaceBuilder<>(sourceProperty, destProperty, this);
     return builder;
@@ -275,7 +280,7 @@ public class MappingConfiguration<S, D> {
   public <RD> SetBuilder<S, D, RD> set(TypedSelector<RD, D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
-        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector);
+        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector, allowFluentSetters);
     SetBuilder<S, D, RD> builder = new SetBuilder<>(destProperty, this);
     return builder;
   }
@@ -292,7 +297,7 @@ public class MappingConfiguration<S, D> {
   public <RD> RestructureBuilder<S, D, RD> restructure(TypedSelector<RD, D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
-        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector);
+        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector, allowFluentSetters);
     return new RestructureBuilder<S, D, RD>(this, destProperty);
   }
 
@@ -313,9 +318,9 @@ public class MappingConfiguration<S, D> {
     denyNull("sourceSelector", sourceSelector);
     denyNull("destinationSelector", destinationSelector);
     TypedPropertyDescriptor<Collection<RS>> sourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE,
-        ReplaceBuilder.TRANSFORM, this.source, sourceSelector);
+        ReplaceBuilder.TRANSFORM, this.source, sourceSelector, allowFluentSetters);
     TypedPropertyDescriptor<Collection<RD>> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
-        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector);
+        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector, allowFluentSetters);
 
     ReplaceCollectionBuilder<S, D, RD, RS> builder = new ReplaceCollectionBuilder<>(sourceProperty, destProperty, this);
     return builder;
@@ -485,7 +490,7 @@ public class MappingConfiguration<S, D> {
    */
   private <T> Set<PropertyDescriptor> getUnmappedProperties(Class<T> type,
       Set<PropertyDescriptor> mappedSourceProperties, Target targetType) {
-    Set<PropertyDescriptor> allSourceProperties = Properties.getProperties(type, targetType);
+    Set<PropertyDescriptor> allSourceProperties = Properties.getProperties(type, targetType, allowFluentSetters);
     allSourceProperties.removeAll(mappedSourceProperties);
     return allSourceProperties;
   }
@@ -503,7 +508,7 @@ public class MappingConfiguration<S, D> {
    * @throws MappingException if a property was specified for mapping but not invoked.
    */
   static <R, T> TypedPropertyDescriptor<R> getTypedPropertyFromFieldSelector(Target target, String configurationMethod,
-      Class<T> sensorType, TypedSelector<R, T> selector) {
+      Class<T> sensorType, TypedSelector<R, T> selector, boolean fluentSetters) {
     InvocationSensor<T> invocationSensor = new InvocationSensor<T>(sensorType);
     T sensor = invocationSensor.getSensor();
     // perform the selector lambda on the sensor
@@ -516,7 +521,7 @@ public class MappingConfiguration<S, D> {
       // get the property name
       String propertyName = trackedPropertyNames.get(0);
       // find the property descriptor or fail with an exception
-      PropertyDescriptor property = getPropertyDescriptorOrFail(target, sensorType, propertyName);
+      PropertyDescriptor property = getPropertyDescriptorOrFail(target, sensorType, propertyName, fluentSetters);
       TypedPropertyDescriptor<R> tpd = new TypedPropertyDescriptor<R>();
       tpd.returnValue = returnValue;
       tpd.property = property;
@@ -539,7 +544,7 @@ public class MappingConfiguration<S, D> {
    * @throws MappingException if a property was specified for mapping but not invoked.
    */
   static <T> PropertyDescriptor getPropertyFromFieldSelector(Target target, String configurationMethod,
-      Class<T> sensorType, FieldSelector<T> selector) {
+      Class<T> sensorType, FieldSelector<T> selector, boolean fluentSetters) {
     InvocationSensor<T> invocationSensor = new InvocationSensor<T>(sensorType);
     T sensor = invocationSensor.getSensor();
     // perform the selector lambda on the sensor
@@ -552,7 +557,7 @@ public class MappingConfiguration<S, D> {
       // get the property name
       String propertyName = trackedPropertyNames.get(0);
       // find the property descriptor or fail with an exception
-      return getPropertyDescriptorOrFail(target, sensorType, propertyName);
+      return getPropertyDescriptorOrFail(target, sensorType, propertyName, fluentSetters);
     } else {
       throw zeroInteractions(configurationMethod);
     }
@@ -566,9 +571,10 @@ public class MappingConfiguration<S, D> {
    * @param type The inspected type.
    * @param propertyName The property name
    */
-  static PropertyDescriptor getPropertyDescriptorOrFail(Target target, Class<?> type, String propertyName) {
+  static PropertyDescriptor getPropertyDescriptorOrFail(Target target, Class<?> type, String propertyName,
+      boolean fluentSetters) {
     Optional<PropertyDescriptor> property;
-    property = Properties.getProperties(type, target)
+    property = Properties.getProperties(type, target, fluentSetters)
         .stream()
         .filter(pd -> pd.getName()
             .equals(propertyName))
@@ -645,6 +651,21 @@ public class MappingConfiguration<S, D> {
   public MappingConfiguration<S, D> writeNullIfSourceIsNull() {
     this.writeNullIfSourceIsNull = true;
     return this;
+  }
+
+  /**
+   * Relaxes the strict java bean requirement that setters should return void, thus allowing for mapped classes to
+   * be <em>fluent</em>.
+   *
+   * @return Returns this object for method chaining.
+   */
+  public MappingConfiguration<S, D> allowFluentSetters() {
+    this.allowFluentSetters = true;
+    return this;
+  }
+
+  public boolean isFluentSettersAllowed() {
+    return allowFluentSetters;
   }
 
   /**
