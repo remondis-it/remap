@@ -23,7 +23,6 @@ public class PropertiesTest {
         .filter(pd -> pd.getName()
             .equals("b1"))
         .findFirst();
-
     assertFalse(pdFluentSetterNotThere.isPresent());
   }
 
