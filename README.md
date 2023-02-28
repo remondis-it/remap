@@ -72,6 +72,30 @@ ReMap maps a objects of a source to a destination type. As per default ReMap tri
 
 ## Great news
 
+### Now mapping of fluent-style setters is supported
+
+Thanks to @djarnis73 ReMap now supports fluent-style setters. This relaxes the Java Bean convention in a way, that bean setter methods are now allowed to have a return type different from `void`
+
+How to use:
+
+```
+Mapper<FluentSetterDto, FluentSetterDto> m = Mapping.from(FluentSetterDto.class)
+        .to(FluentSetterDto.class)
+        .allowFluentSetters()
+        .mapper();
+FluentSetterDto expected = new FluentSetterDto().setInteger(5)
+        .setI(22)
+        .setS("str")
+        .setB1(true)
+        .setB2(true);
+FluentSetterDto actual = m.map(expected);
+```
+_This example is taken from [here](src/test/java/com/remondis/remap/fluent/ChainedSetterTest.java)_
+
+**Note:** To add this feature in a backwards compatible way, you have to activate it using `.allowFluentSetters()`.
+
+
+
 ### Now mapping of Maps is supported
 
 Since version `4.1.16` ReMap supports the mapping of maps as well as mapping of generic nesting of collections/maps as long as the collection types (collection or map) match on source and destination fields.
@@ -157,6 +181,7 @@ ReMap supports
 * unit testing of mapping specifications
 * mapping without invasively changing code of involved objects
 * overwrite fields in an instance by specifying the target instance for the mapping
+* mapping of fluent-style setters (setters having a return type)
 
 ## Limitations
 
@@ -732,6 +757,11 @@ This bug was fixed in `net.minidev:accessors-smart:1.2` but is still present in 
 This workaround was tested and should work for most cases. Please file an issue if you are experiencing problems.
 
 # Migration guide
+
+## Sidenote for 4.3.0
+ReMap was extended to support fluent-style setter methods. Older versions of ReMap only support Java Bean compliant setter methods with return type `void`. Now fluent style setter methods are supported in a way, that a setter method might have a return type.
+
+No migrations necessary - this feature is backwards compatible.
 
 ## Sidenote for 4.2.7
 ReMap migrated to byte-buddy thanks to @Karlender. Since cglib is unmaintained ReMap would not be compatible to JDK17+. The migration is just an internal refactoring in ReMap - this sidenote is just about the dependency of ReMap to byte-buddy.

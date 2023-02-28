@@ -72,6 +72,8 @@ public class AssertConfiguration<S, D> {
 
   private boolean expectWriteNullIfSourceIsNull = false;
 
+  private boolean expectFluentSettersAllowed = false;
+
   AssertConfiguration(Mapper<S, D> mapper) {
     denyNull("mapper", mapper);
     this.mapper = mapper;
@@ -89,7 +91,8 @@ public class AssertConfiguration<S, D> {
   public <RS> ReassignAssertBuilder<S, D, RS> expectReassign(FieldSelector<S> sourceSelector) {
     denyNull("sourceSelector", sourceSelector);
     PropertyDescriptor sourceProperty = getPropertyFromFieldSelector(Target.SOURCE, ASSIGN, getMapping().getSource(),
-        sourceSelector);
+        sourceSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
     ReassignAssertBuilder<S, D, RS> reassignBuilder = new ReassignAssertBuilder<S, D, RS>(sourceProperty,
         getMapping().getDestination(), this);
     return reassignBuilder;
@@ -110,9 +113,11 @@ public class AssertConfiguration<S, D> {
     denyNull("destinationSelector", destinationSelector);
 
     TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE, TRANSFORM,
-        getMapping().getSource(), sourceSelector);
+        getMapping().getSource(), sourceSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION, TRANSFORM,
-        getMapping().getDestination(), destinationSelector);
+        getMapping().getDestination(), destinationSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
 
     ReplaceAssertBuilder<S, D, RD, RS> builder = new ReplaceAssertBuilder<>(sourceProperty, destProperty, this);
     return builder;
@@ -129,7 +134,8 @@ public class AssertConfiguration<S, D> {
     denyNull("destinationSelector", destinationSelector);
 
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION, TRANSFORM,
-        getMapping().getDestination(), destinationSelector);
+        getMapping().getDestination(), destinationSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
     SetAssertBuilder<S, D, RD> builder = new SetAssertBuilder<>(destProperty, this);
     return builder;
   }
@@ -145,7 +151,8 @@ public class AssertConfiguration<S, D> {
     denyNull("destinationSelector", destinationSelector);
 
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION, TRANSFORM,
-        getMapping().getDestination(), destinationSelector);
+        getMapping().getDestination(), destinationSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
     RestructureAssertBuilder<S, D, RD> builder = new RestructureAssertBuilder<>(destProperty, this);
     return builder;
   }
@@ -164,9 +171,11 @@ public class AssertConfiguration<S, D> {
     denyNull("sourceSelector", sourceSelector);
     denyNull("destinationSelector", destinationSelector);
     TypedPropertyDescriptor<Collection<RS>> sourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE,
-        ReplaceBuilder.TRANSFORM, getMapping().getSource(), sourceSelector);
+        ReplaceBuilder.TRANSFORM, getMapping().getSource(), sourceSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
     TypedPropertyDescriptor<Collection<RD>> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
-        ReplaceBuilder.TRANSFORM, getMapping().getDestination(), destinationSelector);
+        ReplaceBuilder.TRANSFORM, getMapping().getDestination(), destinationSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
 
     ReplaceCollectionAssertBuilder<S, D, RD, RS> builder = new ReplaceCollectionAssertBuilder<>(sourceProperty,
         destProperty, this);
@@ -191,7 +200,8 @@ public class AssertConfiguration<S, D> {
     denyNull("sourceSelector", sourceSelector);
     // Omit in destination
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(Target.SOURCE, OMIT_FIELD_SOURCE,
-        getMapping().getSource(), sourceSelector);
+        getMapping().getSource(), sourceSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
     OmitTransformation omitSource = omitSource(getMapping(), propertyDescriptor);
     _add(omitSource);
     return this;
@@ -208,6 +218,16 @@ public class AssertConfiguration<S, D> {
    */
   public AssertConfiguration<S, D> expectNoImplicitMappings() {
     this.expectNoImplicitMappings = true;
+    return this;
+  }
+
+  /**
+   * Expects the mapper to allow fluent setter methods.
+   *
+   * @return Returns this instance for further configuration.
+   */
+  public AssertConfiguration<S, D> expectFluentSettersAllowed() {
+    this.expectFluentSettersAllowed = true;
     return this;
   }
 
@@ -235,7 +255,8 @@ public class AssertConfiguration<S, D> {
   public AssertConfiguration<S, D> expectOmitInDestination(FieldSelector<D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
     PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(Target.DESTINATION, OMIT_FIELD_DEST,
-        getMapping().getDestination(), destinationSelector);
+        getMapping().getDestination(), destinationSelector, mapper.getMapping()
+            .isFluentSettersAllowed());
     OmitTransformation omitDestination = omitDestination(getMapping(), propertyDescriptor);
     _add(omitDestination);
     return this;
@@ -283,6 +304,7 @@ public class AssertConfiguration<S, D> {
   public void ensure() throws AssertionError {
     checkImplicitMappingStrategy();
     checkNullHandling();
+    checkFluentSetters();
     checkReplaceTransformations();
 
     checkVerifications();
@@ -314,6 +336,18 @@ public class AssertConfiguration<S, D> {
         .isWriteNull() && !expectWriteNullIfSourceIsNull) {
       throw new AssertionError("The mapper was expected to skip mapping if the source value is null, "
           + "but the current mapper is configured to write null if source value is null.");
+    }
+  }
+
+  private void checkFluentSetters() {
+    if (!mapper.getMapping()
+        .isFluentSettersAllowed() && expectFluentSettersAllowed) {
+      throw new AssertionError("The mapper was expected to support fluent setter methods, "
+          + "but the current mapper is configured to only handle Java Bean compliant setter methods.");
+    } else if (mapper.getMapping()
+        .isFluentSettersAllowed() && !expectFluentSettersAllowed) {
+      throw new AssertionError("The mapper was expected to only support Java Bean compliant setter methods, "
+          + "but the current mapper is configured to also support fluent setter methods.");
     }
   }
 

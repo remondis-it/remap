@@ -18,37 +18,37 @@ import org.junit.Test;
  */
 public class MapperTest {
 
-  private Mapper<A, A> mapper;
+  private Mapper<StringDto, StringDto> mapper;
 
   @Before
   public void setup() {
-    this.mapper = Mapping.from(A.class)
-        .to(A.class)
+    this.mapper = Mapping.from(StringDto.class)
+        .to(StringDto.class)
         .mapper();
   }
 
   @Test
   public void shouldMapEmptyList() {
-    List<A> list = mapper.map(Collections.emptyList());
+    List<StringDto> list = mapper.map(Collections.emptyList());
     assertTrue(list.isEmpty());
   }
 
   @Test
   public void shouldMapEmptySet() {
-    Set<A> list = mapper.map(Collections.emptySet());
+    Set<StringDto> list = mapper.map(Collections.emptySet());
     assertTrue(list.isEmpty());
   }
 
   @Test
   public void shouldMapNull() {
-    A returnValue = mapper.mapOptional(null);
+    StringDto returnValue = mapper.mapOptional(null);
     assertNull(returnValue);
   }
 
   @Test
   public void shouldMapOptional() {
     String expectedString = "string";
-    A returnValue = mapper.mapOptional(new A(expectedString));
+    StringDto returnValue = mapper.mapOptional(new StringDto(expectedString));
     assertNotNull(returnValue);
     assertEquals(expectedString, returnValue.getString());
   }
@@ -56,8 +56,8 @@ public class MapperTest {
   @Test
   public void shouldMapDefault() {
     String expectedString = "string";
-    A expectedA = new A(expectedString);
-    A returnValue = mapper.mapOrDefault(null, expectedA);
+    StringDto expectedA = new StringDto(expectedString);
+    StringDto returnValue = mapper.mapOrDefault(null, expectedA);
     assertNotNull(returnValue);
     assertSame(expectedA, returnValue);
   }
@@ -65,9 +65,9 @@ public class MapperTest {
   @Test
   public void shouldNotMapDefault() {
     String expectedString = "string";
-    A expectedA = new A(expectedString);
-    A notExpectedDefault = new A("someOtherString");
-    A returnValue = mapper.mapOrDefault(expectedA, notExpectedDefault);
+    StringDto expectedA = new StringDto(expectedString);
+    StringDto notExpectedDefault = new StringDto("someOtherString");
+    StringDto returnValue = mapper.mapOrDefault(expectedA, notExpectedDefault);
     assertNotNull(returnValue);
     assertEquals(expectedA, returnValue);
   }
