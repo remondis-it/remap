@@ -132,19 +132,6 @@ public class ReassignTransformation extends Transformation {
   @SuppressWarnings({
       "unchecked", "rawtypes"
   })
-  Object convertValue(Class<?> sourceType, Object sourceValue, Class<?> destinationType) {
-    if (isReferenceMapping(sourceType, destinationType)) {
-      return sourceValue;
-    } else {
-      // Object types must be mapped by a registered mapper before setting the value.
-      InternalMapper delegateMapper = getMapperFor(sourceType, destinationType);
-      return delegateMapper.map(sourceValue);
-    }
-  }
-
-  @SuppressWarnings({
-      "unchecked", "rawtypes"
-  })
   Object convertValueMapOver(Class<?> sourceType, Object sourceValue, Class<?> destinationType,
       Object destinationValue) {
     if (isReferenceMapping(sourceType, destinationType)) {
