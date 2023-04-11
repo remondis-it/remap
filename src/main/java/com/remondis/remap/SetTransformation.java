@@ -5,11 +5,9 @@ import static com.remondis.remap.Properties.asString;
 import java.beans.PropertyDescriptor;
 import java.util.function.Function;
 
-import javax.xml.crypto.dsig.Transform;
-
 /**
  * A replace transformation converts a source object into a destination object by applying the specified {@link
- * Transform} function on the source.
+ * Transformation} function on the source.
  *
  * @param <RS> The input type
  * @param <RD> The output type
