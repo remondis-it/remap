@@ -36,8 +36,8 @@
 	</developers>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
 	</properties>
 	<distributionManagement>
 		<repository>
@@ -124,8 +124,7 @@
 							<manifestEntries>
 								<Bundle-Vendor>REMONDIS IT Services GmbH
 									&amp; Co. KG</Bundle-Vendor>
-								<Bundle-DocURL>
-									https://github.com/remondis-it/remap</Bundle-DocURL>
+								<Bundle-DocURL>https://github.com/remondis-it/remap</Bundle-DocURL>
 								<Automatic-Module-Name>com.remondis.remap</Automatic-Module-Name>
 							</manifestEntries>
 						</archive>
