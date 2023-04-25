@@ -1,4 +1,4 @@
-package com.remondis.remap;
+package com.remondis.remap.utils.propertywalker;
 
 import static java.util.Objects.requireNonNull;
 
@@ -39,17 +39,20 @@ public class BiRecursivePropertyWalker<R, T> {
     this.visitors = new LinkedList<>();
   }
 
-  public <TT> BiRecursivePropertyWalker<R, TT> goInto(Function<T, TT> propertyExtractor, Class<TT> beanType) {
+  public <TT> BiRecursivePropertyWalker<R, TT> goInto(Function<T, TT> propertyExtractor,
+      BiConsumer<T, TT> propertyWriter, Class<TT> beanType) {
     requireNonNull(propertyExtractor, "propertyExtractor may not be null!");
     requireNonNull(beanType, "beanType may not be null!");
     BiRecursivePropertyWalker<R, TT> recursivePropertyWalker = new BiRecursivePropertyWalker<>(rootWalker,
         fromRootExctractor, propertyExtractor, beanType);
 
-    addProperty(propertyExtractor, new BiConsumer<TT, TT>() {
-
+    addProperty(propertyExtractor, propertyWriter, new VisitorFunction<T, TT>() {
       @Override
-      public void accept(TT source, TT target) {
-        recursivePropertyWalker.execute(source, target);
+      public void consume(PropertyAccess<T, TT> access) {
+        recursivePropertyWalker.execute(access.sourceProperty()
+            .get(),
+            access.targetProperty()
+                .get());
       }
     });
 
@@ -57,9 +60,9 @@ public class BiRecursivePropertyWalker<R, T> {
   }
 
   public <P> BiRecursivePropertyWalker<R, T> addProperty(Function<T, P> propertyExtractor,
-      BiConsumer<P, P> biConsumer) {
+      BiConsumer<T, P> propertyWriter, VisitorFunction<T, P> biConsumer) {
     requireNonNull(propertyExtractor, "propertyExtractor may not be null!");
-    BiPropertyVisitor<T, P> pv = new BiPropertyVisitor<>(beanType, propertyExtractor, biConsumer);
+    BiPropertyVisitor<T, P> pv = new BiPropertyVisitor<>(beanType, propertyExtractor, propertyWriter, biConsumer);
     visitors.add(pv);
     return this;
   }
