@@ -20,8 +20,10 @@ public class BiPropertyVisitor<T, P> {
     this.biConsumer = biConsumer;
   }
 
-  protected void execute(P source, P target) {
-    biConsumer.accept(source, target);
+  protected void execute(T source, T target) {
+    P sourcePropertyValue = propertyExtractor.apply(source);
+    P targetPropertyValue = propertyExtractor.apply(target);
+    biConsumer.accept(sourcePropertyValue, targetPropertyValue);
   }
 
   BiConsumer<P, P> getBiConsumer() {

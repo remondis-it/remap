@@ -33,7 +33,7 @@ public class BiRecursivePropertyWalker<R, T> {
   private <TT> BiRecursivePropertyWalker(BiRecursivePropertyWalker<R, ?> rootWalker, Function<R, TT> fromRootExctractor,
       Function<TT, T> propertyExtractor, Class<T> beanType) {
     super();
-    this.rootWalker = this;
+    this.rootWalker = rootWalker;
     this.fromRootExctractor = fromRootExctractor.andThen(propertyExtractor);
     this.beanType = beanType;
     this.visitors = new LinkedList<>();
@@ -67,7 +67,9 @@ public class BiRecursivePropertyWalker<R, T> {
   @SuppressWarnings("unchecked")
   public void execute(T source, T target) {
     visitors.parallelStream()
-        .forEach(visitor -> ((BiPropertyVisitor<T, T>) visitor).execute(source, target));
+        .forEach(visitor -> {
+          ((BiPropertyVisitor<T, T>) visitor).execute(source, target);
+        });
   }
 
   public static <T> BiRecursivePropertyWalker<T, T> create(Class<T> beanType) {
