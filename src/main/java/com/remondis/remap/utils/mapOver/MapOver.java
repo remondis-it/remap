@@ -18,13 +18,13 @@ import com.remondis.remap.utils.propertywalker.VisitorFunction;
  * </p>
  * <p>
  * Using the MapOver utility makes it possible to apply the following update strategy on attached entities:
- * 
+ *
  * <pre>
  * REST -->  DTO  -->  RE-Map  --> new Entity instance     (detached)
  *                                                             *
  *                                                             |
  *                                                         Map-over selected attributes
- *                                                         to perform a partial update 
+ *                                                         to perform a partial update
  *                                                         on the attached entity+
  *                                                             |
  *                                                             |
@@ -32,7 +32,7 @@ import com.remondis.remap.utils.propertywalker.VisitorFunction;
  * JPA-Repository --> findById --> Entity instance from DB (attached)  --> em.update(entity);
  * </pre>
  * </p>
- * 
+ *
  * @param <T> The root bean type
  */
 public class MapOver<R, T> {
@@ -55,6 +55,12 @@ public class MapOver<R, T> {
 
   public <TT> MapOver<R, T> mapProperty(Function<T, TT> propertyExtractor, BiConsumer<T, TT> propertyWriter) {
     walker.addProperty(propertyExtractor, propertyWriter, propertyVisitor());
+    return this;
+  }
+
+  public <TT> MapOver<R, T> addPropertyAction(Function<T, TT> propertyExtractor, BiConsumer<T, TT> propertyWriter,
+      VisitorFunction<T, TT> action) {
+    walker.addProperty(propertyExtractor, propertyWriter, action);
     return this;
   }
 
