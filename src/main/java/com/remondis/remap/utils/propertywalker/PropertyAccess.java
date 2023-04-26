@@ -15,7 +15,7 @@ public class PropertyAccess<T, P> {
     this.source = source;
     this.target = target;
     this.sourceGetSet = GetSet.create(source, propertyExtractor, propertyWriter);
-    this.targetGetSet = GetSet.create(source, propertyExtractor, propertyWriter);
+    this.targetGetSet = GetSet.create(target, propertyExtractor, propertyWriter);
   }
 
   public T source() {
