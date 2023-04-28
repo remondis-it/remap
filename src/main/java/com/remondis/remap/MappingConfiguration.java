@@ -647,7 +647,11 @@ public class MappingConfiguration<S, D> {
    * mapping if the source value is <code>null</code>.
    *
    * @return Returns this {@link MappingConfiguration} object for further configuration.
+   * 
+   * @deprecated This method is deprecated, because the map-into feature of ReMap is not correctly implemented and will
+   *             be removed in future release.
    */
+  @Deprecated
   public MappingConfiguration<S, D> writeNullIfSourceIsNull() {
     this.writeNullIfSourceIsNull = true;
     return this;

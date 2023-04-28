@@ -47,7 +47,14 @@ public class Mapper<S, D> {
    * @param source The source object to map to a new destination object.
    * @param destination The destination object to map into. Field affected by the mapping will be overwritten.
    * @return Returns the specified destination object.
+   * @deprecated This method is deprecated, because the map-into feature of ReMap is not correctly implemented and will
+   *             be removed in future release. The complexity of mapping collections in a object tree is beyond of what
+   *             ReMap is currently able to deliver. For example: The problem with mapping sets into lists is
+   *             that the result becomes unstable as soon as both collections do not contain the same number of
+   *             elements. Furthermore, not every element of one collection can be uniquely assigned to an element of
+   *             the other collection without having to make serious API changes.
    */
+  @Deprecated
   public D map(S source, D destination) {
     return mapping.map(source, destination);
   }

@@ -6,7 +6,7 @@
 # Table of Contents
 1. [Long story short](#long-story-short)
 2. [About ReMap](#about-remap)
-3. [Great News](#great-news)
+3. [News](#news)
 4. [Mapping operations](#mapping-operations)
 5. [Validation](#validation)
 6. [Features](#features)
@@ -70,7 +70,18 @@ ReMap is a library that simplifies conversion of objects field by field. It was 
 ReMap maps a objects of a source to a destination type. As per default ReMap tries to map all fields from the source to the destination object if the fields have equal name and equal types or equal name and a mapper was registered to perform the type mapping. __Only differences between the source type and the target type must be specified when creating a mapper.__
 
 
-## Great news
+## News
+
+### Map into feature deprecated!
+The map-into feature of ReMap is now deprecated. This function was never correctly implemented and does not work recursively.
+
+Due to complexity we will remove the following features from the API in a future release:
+
+- com.remondis.remap.Mapper.map(S source, D dest)
+- com.remondis.remap.MappingConfiguration.writeNullIfSourceIsNull()
+- any dependencies of the assert API to this methods 
+
+Please make sure, that your mappings do not rely on this features.
 
 ### Now mapping of fluent-style setters is supported
 
