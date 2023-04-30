@@ -1,8 +1,6 @@
 package com.remondis.remap.utils.mapover;
 
-import com.remondis.remap.utils.property.walker.BiRecursivePropertyWalker;
-
-import lombok.Getter;
+import jakarta.persistence.EntityManager;
 
 /**
  * <p>
@@ -32,31 +30,21 @@ import lombok.Getter;
  *
  * @param <T> The root bean type
  */
-@Getter
-public class MapOver<R, T> implements MapOverStructure<R, T>, MapOverProperty<R, T>, MapOverCollectionByProperty<R, T>,
-    MapOverCollectionByFunction<R, T>, MapOverMap<R, T> {
+public interface MapOver<R, T> extends MapOverBase<R, T> {
 
-  private final MapOver<R, R> root;
-
-  private final BiRecursivePropertyWalker<T, T> walker;
-
-  @SuppressWarnings("unchecked")
-  protected MapOver(Class<T> beanType) {
-    this.root = (MapOver<R, R>) this;
-    this.walker = BiRecursivePropertyWalker.create(beanType);
+  static <R> MapOverWithoutReference<R, R> create(Class<R> beanType) {
+    return new MapOverWithoutReference<>(beanType);
   }
 
-  protected MapOver(MapOver<R, R> root, BiRecursivePropertyWalker<T, T> walker) {
-    this.root = root;
-    this.walker = walker;
+  static <R> MapOverWithReference<R, R> create(Class<R> beanType, EntityManager entityManager) {
+    return new MapOverWithReference<>(beanType, entityManager);
   }
 
-  public static <R> MapOver<R, R> create(Class<R> beanType) {
-    return new MapOver<>(beanType);
+  default MapOver<R, R> build() {
+    return getRoot();
   }
 
-  public void mapOver(T source, T target) {
-    walker.execute(source, target);
+  default void mapOver(T source, T target) {
+    getWalker().execute(source, target);
   }
-
 }
