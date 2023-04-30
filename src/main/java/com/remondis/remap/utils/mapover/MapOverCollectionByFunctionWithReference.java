@@ -10,8 +10,6 @@ import com.remondis.remap.utils.property.ChangeType;
 import com.remondis.remap.utils.property.change.CollectionChangeFunction;
 import com.remondis.remap.utils.property.visitor.MapOverMatchFunctionCollectionVisitor;
 
-import jakarta.persistence.EntityManager;
-
 public interface MapOverCollectionByFunctionWithReference<M extends MapOver<R, T>, R, T>
     extends MapOverReference, MapOverCollectionByFunctionWithoutReference<M, R, T> {
 
