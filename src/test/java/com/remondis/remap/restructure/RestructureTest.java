@@ -1,12 +1,11 @@
 package com.remondis.remap.restructure;
 
-import static org.junit.Assert.assertSame;
-
-import org.junit.Test;
-
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.resample.Samples;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * The restructure operation allows to map different properties from the source object to a bean hold by the destination
@@ -28,10 +27,10 @@ import com.remondis.resample.Samples;
  * </ul>
  * </p>
  */
-public class RestructureTest {
+class RestructureTest {
 
   @Test
-  public void shouldRestructure_implicit_mapping_operations() {
+  void shouldRestructure_implicit_mapping_operations() {
     Mapper<Bean, RestructuredBean> mapper = Mapping.from(Bean.class)
         .to(RestructuredBean.class)
         .omitOtherSourceProperties()
@@ -52,7 +51,7 @@ public class RestructureTest {
   }
 
   @Test
-  public void shouldRestructure_explicit_mapping_operations() {
+  void shouldRestructure_explicit_mapping_operations() {
 
     Mapper<Bean, RestructuredBean> mapper = Mapping.from(Bean.class)
         .to(RestructuredBean.class)

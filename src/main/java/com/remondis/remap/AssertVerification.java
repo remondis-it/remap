@@ -10,5 +10,5 @@ public interface AssertVerification {
    * @throws AssertionError Throws an {@link AssertionError} if the verification failed. Please use user-friendly text
    *         messages that explain the expected and actual state.
    */
-  public void verify() throws AssertionError;
+  void verify() throws AssertionError;
 }

@@ -2,14 +2,13 @@ package com.remondis.remap.regression.npeDenyAlreadyOmitted;
 
 import java.util.function.Function;
 
-import org.junit.Test;
-
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.Test;
 
-public class MapperTest {
+class MapperTest {
 
   @Test
-  public void shouldMap() {
+  void shouldMap() {
     Mapping.from(A.class)
         .to(AResource.class)
         .omitInDestination(AResource::getOmitted)

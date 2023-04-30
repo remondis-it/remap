@@ -1,12 +1,11 @@
 package com.remondis.remap.regression.omitReadOnlyGetterBug;
 
-import org.junit.Test;
-
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.Test;
 
-public class MapperTest {
+class MapperTest {
   @Test
-  public void test() {
+  void test() {
 
     Mapping.from(A.class)
         .to(B.class)

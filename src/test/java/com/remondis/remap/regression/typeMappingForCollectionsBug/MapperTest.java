@@ -1,24 +1,22 @@
 package com.remondis.remap.regression.typeMappingForCollectionsBug;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
-
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.remap.TypeMapping;
+import org.junit.jupiter.api.Test;
 
-public class MapperTest {
+class MapperTest {
 
   @Test
-  @SuppressWarnings("unchecked")
-  public void shouldMap() {
+  void shouldMap() {
     Mapper<A, B> mapper = Mapping.from(A.class)
         .to(B.class)
         .useMapper(TypeMapping.from(List.class)
@@ -35,9 +33,8 @@ public class MapperTest {
     assertEquals(expected, setOfStrings);
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void shouldUseReplaceCollectionInsteadOfTypeMapping() {
+  void shouldUseReplaceCollectionInsteadOfTypeMapping() {
     Mapper<A, B> mapper = Mapping.from(A.class)
         .to(B.class)
         .useMapper(TypeMapping.from(List.class)
@@ -54,9 +51,8 @@ public class MapperTest {
     assertEquals(expected, setOfStrings);
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  public void shouldUseReplaceInsteadOfTypeMapping() {
+  void shouldUseReplaceInsteadOfTypeMapping() {
     final Set<String> expected = new HashSet<>();
     expected.add("Z");
 

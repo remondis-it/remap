@@ -14,7 +14,7 @@ public class A {
     super();
   }
 
-  public void addNestedLists(@SuppressWarnings("unchecked") Set<B>... lists) {
+  public void addNestedLists(Set<B>... lists) {
     this.nestedLists = Arrays.asList(lists);
   }
 

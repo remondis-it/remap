@@ -1,17 +1,16 @@
 package com.remondis.remap.setOperation;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.function.Function;
-
-import org.junit.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.Test;
 
-public class SetOperationTest {
+class SetOperationTest {
 
   private static final String STATIC_STRING_VALUE = "static-string-value";
   private static final RuntimeException RUNTIME_EXCEPTION = new RuntimeException("Thrown for test purposes.");
@@ -19,7 +18,7 @@ public class SetOperationTest {
   private static final String ANOTHER_STRING = "anotherString";
 
   @Test
-  public void shouldHandleFunctionExceptionInAsserts() {
+  void shouldHandleFunctionExceptionInAsserts() {
     A a = a();
     Mapper<A, B> aToBmapper = Mapping.from(A.class)
         .to(B.class)
@@ -46,64 +45,58 @@ public class SetOperationTest {
   }
 
   @Test
-  public void shouldDetectMissingSetValueAssert() {
+  void shouldDetectMissingSetValueAssert() {
     A a = a();
     Mapper<A, B> aToBmapper = aToBmapper();
     B b = aToBmapper.map(a);
     assertMappingResult(a, b);
-    assertThatThrownBy(() -> {
-      AssertMapping.of(aToBmapper)
-          .expectOmitInSource(A::getAnotherString)
-          .expectSet(B::getInteger)
-          .withFunction()
-          .expectSet(B::getIntegerRef)
-          .withSupplier()
-          .ensure();
-    }).isInstanceOf(AssertionError.class)
+    assertThatThrownBy(() -> AssertMapping.of(aToBmapper)
+        .expectOmitInSource(A::getAnotherString)
+        .expectSet(B::getInteger)
+        .withFunction()
+        .expectSet(B::getIntegerRef)
+        .withSupplier()
+        .ensure()).isInstanceOf(AssertionError.class)
         .hasMessage("The following unexpected transformation were specified on the mapping:\n"
             + "- Set Property 'valueSet' in B with a custom value supplier.\n");
   }
 
   @Test
-  public void shouldDetectMissingSetWithSupplierAssert() {
+  void shouldDetectMissingSetWithSupplierAssert() {
     A a = a();
     Mapper<A, B> aToBmapper = aToBmapper();
     B b = aToBmapper.map(a);
     assertMappingResult(a, b);
-    assertThatThrownBy(() -> {
-      AssertMapping.of(aToBmapper)
-          .expectOmitInSource(A::getAnotherString)
-          .expectSet(B::getInteger)
-          .withFunction()
-          .expectSet(B::getValueSet)
-          .withValue()
-          .ensure();
-    }).isInstanceOf(AssertionError.class)
+    assertThatThrownBy(() -> AssertMapping.of(aToBmapper)
+        .expectOmitInSource(A::getAnotherString)
+        .expectSet(B::getInteger)
+        .withFunction()
+        .expectSet(B::getValueSet)
+        .withValue()
+        .ensure()).isInstanceOf(AssertionError.class)
         .hasMessage("The following unexpected transformation were specified on the mapping:\n"
             + "- Set Property 'integerRef' in B with a custom value supplier.\n");
   }
 
   @Test
-  public void shouldDetectMissingSetWithFunctionAssert() {
+  void shouldDetectMissingSetWithFunctionAssert() {
     A a = a();
     Mapper<A, B> aToBmapper = aToBmapper();
     B b = aToBmapper.map(a);
     assertMappingResult(a, b);
-    assertThatThrownBy(() -> {
-      AssertMapping.of(aToBmapper)
-          .expectOmitInSource(A::getAnotherString)
-          .expectSet(B::getIntegerRef)
-          .withSupplier()
-          .expectSet(B::getValueSet)
-          .withValue()
-          .ensure();
-    }).isInstanceOf(AssertionError.class)
+    assertThatThrownBy(() -> AssertMapping.of(aToBmapper)
+        .expectOmitInSource(A::getAnotherString)
+        .expectSet(B::getIntegerRef)
+        .withSupplier()
+        .expectSet(B::getValueSet)
+        .withValue()
+        .ensure()).isInstanceOf(AssertionError.class)
         .hasMessage("The following unexpected transformation were specified on the mapping:\n"
             + "- Set Property 'integer' in B with a custom value supplier.\n");
   }
 
   @Test
-  public void shouldMapAndSetCorrectly() {
+  void shouldMapAndSetCorrectly() {
     A a = a();
     Mapper<A, B> aToBmapper = aToBmapper();
     B b = aToBmapper.map(a);

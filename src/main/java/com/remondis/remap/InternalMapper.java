@@ -18,7 +18,7 @@ interface InternalMapper<S, D> {
    * @param destination The destination object to map into.
    * @return Returns the specified destination object.
    */
-  public D map(S source, D destination);
+  D map(S source, D destination);
 
   /**
    * Performs the mapping from the source into a new destination object. This method is expected to return a new
@@ -27,13 +27,13 @@ interface InternalMapper<S, D> {
    * @param source The source object.
    * @return Returns the specified destination object.
    */
-  public D map(S source);
+  D map(S source);
 
   /**
    * Returns the {@link Projection} this mapper defines.
    *
    * @return Returns the type projection information.
    */
-  public Projection<S, D> getProjection();
+  Projection<S, D> getProjection();
 
 }

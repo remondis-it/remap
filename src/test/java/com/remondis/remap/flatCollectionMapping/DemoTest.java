@@ -2,16 +2,15 @@ package com.remondis.remap.flatCollectionMapping;
 
 import java.util.function.Function;
 
-import org.junit.Test;
-
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.Test;
 
-public class DemoTest {
+class DemoTest {
 
   @Test
-  public void replaceCollection() {
+  void replaceCollection() {
     Mapper<Source, Destination> mapper = Mapping.from(Source.class)
         .to(Destination.class)
         .replaceCollection(Source::getIds, Destination::getIds)
@@ -25,7 +24,7 @@ public class DemoTest {
   }
 
   public Function<Long, Id> newId() {
-    return id -> new Id(id);
+    return Id::new;
   }
 
 }

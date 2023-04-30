@@ -1,20 +1,19 @@
 package com.remondis.remap.generics;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.List;
 
-import org.junit.Test;
-
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.Test;
 
-public class GenericsTest {
+class GenericsTest {
 
   @Test
-  public void shouldMapListOfGenericTypeFromInstance() {
+  void shouldMapListOfGenericTypeFromInstance() {
 
     List<Bean<String>> list = asList(new Bean<>("A"), new Bean<>("B"), new Bean<>("C"));
 
@@ -42,7 +41,7 @@ public class GenericsTest {
   }
 
   @Test
-  public void shouldMapGenericTypeFromInstance() {
+  void shouldMapGenericTypeFromInstance() {
     Mapper<Bean<String>, Bean2<String>> mapper = Mapping.from(new Bean<String>())
         .to(new Bean2<String>())
         .reassign(Bean::getObject)
@@ -59,7 +58,7 @@ public class GenericsTest {
 
   @Test
   @SuppressWarnings("rawtypes")
-  public void shouldMapGenericType() {
+  void shouldMapGenericType() {
     Mapper<Bean, Bean2> mapper = Mapping.from(Bean.class)
         .to(Bean2.class)
         .reassign(Bean::getObject)
@@ -76,7 +75,7 @@ public class GenericsTest {
 
   @Test
   @SuppressWarnings("rawtypes")
-  public void shouldMap() {
+  void shouldMap() {
     Mapper<Identifiable, IdentifiableImpl> idMapper = Mapping.from(Identifiable.class)
         .to(IdentifiableImpl.class)
         .replace(Identifiable::getId, IdentifiableImpl::getId)

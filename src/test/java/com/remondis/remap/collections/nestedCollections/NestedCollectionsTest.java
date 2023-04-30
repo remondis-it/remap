@@ -8,29 +8,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
-
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.remap.MappingException;
 import com.remondis.remap.basic.B;
 import com.remondis.remap.basic.BResource;
+import org.junit.jupiter.api.Test;
 
-public class NestedCollectionsTest {
+class NestedCollectionsTest {
 
   @Test
-  public void shouldDoMapperValidation() {
+  void shouldDoMapperValidation() {
     assertThatThrownBy(() -> Mapping.from(A.class)
         .to(AResource.class)
         .mapper()).isInstanceOf(MappingException.class)
-            .hasMessageContaining(
-                "No mapper found for type mapping from com.remondis.remap.basic.B to com.remondis.remap.basic.BResource.");
+        .hasMessageContaining(
+            "No mapper found for type mapping from com.remondis.remap.basic.B to com.remondis.remap.basic.BResource.");
 
   }
 
   @SuppressWarnings("unchecked")
   @Test
-  public void shouldMapNestedCollections() {
+  void shouldMapNestedCollections() {
 
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)

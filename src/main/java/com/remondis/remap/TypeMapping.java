@@ -14,7 +14,6 @@ import java.util.function.Function;
  * {@link TypeMapping} can be useful if a type conversion occurs very often in a mapping. A {@link TypeMapping} may
  * reduce the number of replace-operations needed to define a mapping.
  *
- *
  * @param <S> The source type
  * @param <D> The destination type.
  */
@@ -86,12 +85,7 @@ public final class TypeMapping<S, D> implements InternalMapper<S, D> {
     super();
     this.source = source;
     this.destination = destination;
-    this.conversionFunction = new BiFunction<S, Optional<D>, D>() {
-      @Override
-      public D apply(S s, Optional<D> d) {
-        return conversionFunction.apply(s);
-      }
-    };
+    this.conversionFunction = (s, d) -> conversionFunction.apply(s);
   }
 
   @Override

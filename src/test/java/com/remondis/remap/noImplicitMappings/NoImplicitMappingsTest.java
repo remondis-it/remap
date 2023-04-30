@@ -2,24 +2,23 @@ package com.remondis.remap.noImplicitMappings;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class NoImplicitMappingsTest {
+class NoImplicitMappingsTest {
 
   private Mapper<B, B> bMapper;
 
-  @Before
+  @BeforeEach
   public void setup() {
     this.bMapper = Mapping.from(B.class)
         .to(B.class)
@@ -44,7 +43,7 @@ public class NoImplicitMappingsTest {
   }
 
   @Test
-  public void shouldMapRight() {
+  void shouldMapRight() {
     int expectedBInt = 42;
     String expectedBString = "string";
     B b = new B(expectedBString, expectedBInt);
@@ -61,7 +60,7 @@ public class NoImplicitMappingsTest {
   }
 
   @Test
-  public void shouldAssertHappyPath() {
+  void shouldAssertHappyPath() {
     AssertMapping.of(getAMapper())
         .expectNoImplicitMappings()
         .expectReassign(A::getBs)
@@ -76,7 +75,7 @@ public class NoImplicitMappingsTest {
   }
 
   @Test
-  public void shouldComplainAboutDifferentImplicitMappingStrategy_expectImplicit() {
+  void shouldComplainAboutDifferentImplicitMappingStrategy_expectImplicit() {
     assertThatThrownBy(() -> AssertMapping.of(getAMapper())
         .expectReassign(A::getBs)
         .to(A::getBs)
@@ -87,11 +86,11 @@ public class NoImplicitMappingsTest {
         .expectReassign(A::getString)
         .to(A::getString)
         .ensure()).isInstanceOf(AssertionError.class)
-            .hasMessage("The mapper was expected to create implicit mappings but the actual mapper does not.");
+        .hasMessage("The mapper was expected to create implicit mappings but the actual mapper does not.");
   }
 
   @Test
-  public void shouldComplainAboutDifferentImplicitMappingStrategy_expectNoImplicit() {
+  void shouldComplainAboutDifferentImplicitMappingStrategy_expectNoImplicit() {
     Mapper<A, A> implicitMapper = Mapping.from(A.class)
         .to(A.class)
         .useMapper(bMapper)
@@ -104,7 +103,7 @@ public class NoImplicitMappingsTest {
         .expectReplace(A::getMap, A::getMap)
         .andSkipWhenNull()
         .ensure()).isInstanceOf(AssertionError.class)
-            .hasMessage("The mapper was expected to create no implicit mappings but the actual mapper does.");
+        .hasMessage("The mapper was expected to create no implicit mappings but the actual mapper does.");
   }
 
 }

@@ -1,5 +1,8 @@
 package com.remondis.remap.basic;
 
+import java.util.Collection;
+import java.util.Map;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,8 +14,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class B {
-  private String string;
-  private int number;
-  private Integer integer;
+public class C {
+  private Collection<B> collection;
+  private Map<Object, B> map;
 }

@@ -11,5 +11,5 @@ public enum Target {
   SOURCE,
 
   /** Mapping destination. */
-  DESTINATION;
+  DESTINATION
 }

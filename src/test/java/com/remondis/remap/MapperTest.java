@@ -1,26 +1,26 @@
 package com.remondis.remap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * This is the test of class {@link Mapper}.
  */
-public class MapperTest {
+class MapperTest {
 
   private Mapper<StringDto, StringDto> mapper;
 
-  @Before
+  @BeforeEach
   public void setup() {
     this.mapper = Mapping.from(StringDto.class)
         .to(StringDto.class)
@@ -28,25 +28,25 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldMapEmptyList() {
+  void shouldMapEmptyList() {
     List<StringDto> list = mapper.map(Collections.emptyList());
     assertTrue(list.isEmpty());
   }
 
   @Test
-  public void shouldMapEmptySet() {
+  void shouldMapEmptySet() {
     Set<StringDto> list = mapper.map(Collections.emptySet());
     assertTrue(list.isEmpty());
   }
 
   @Test
-  public void shouldMapNull() {
+  void shouldMapNull() {
     StringDto returnValue = mapper.mapOptional(null);
     assertNull(returnValue);
   }
 
   @Test
-  public void shouldMapOptional() {
+  void shouldMapOptional() {
     String expectedString = "string";
     StringDto returnValue = mapper.mapOptional(new StringDto(expectedString));
     assertNotNull(returnValue);
@@ -54,7 +54,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldMapDefault() {
+  void shouldMapDefault() {
     String expectedString = "string";
     StringDto expectedA = new StringDto(expectedString);
     StringDto returnValue = mapper.mapOrDefault(null, expectedA);
@@ -63,7 +63,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldNotMapDefault() {
+  void shouldNotMapDefault() {
     String expectedString = "string";
     StringDto expectedA = new StringDto(expectedString);
     StringDto notExpectedDefault = new StringDto("someOtherString");

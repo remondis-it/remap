@@ -2,8 +2,8 @@ package com.remondis.remap.generics;
 
 public interface Identifiable<I> {
 
-  public I getId();
+  I getId();
 
-  public void setId(I id);
+  void setId(I id);
 
 }

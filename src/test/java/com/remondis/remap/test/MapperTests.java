@@ -1,55 +1,57 @@
 package com.remondis.remap.test;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import com.remondis.remap.basic.PersonWithAddress;
+import com.remondis.remap.basic.PersonWithAddress.Address;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.remap.MappingException;
-import com.remondis.remap.test.MapperTests.PersonWithAddress.Address;
 
-public class MapperTests {
+class MapperTests {
 
   @Test
-  public void mapsBeansWithSameFields() {
+  void mapsBeansWithSameFields() {
     Mapper<BeanWithConstructors, BeanWithEmptyConstructor> mapper = Mapping.from(BeanWithConstructors.class)
         .to(BeanWithEmptyConstructor.class)
         .mapper();
     BeanWithEmptyConstructor result = mapper.map(new BeanWithConstructors(42, "42"));
-    assertThat(result.getIntField()).isEqualTo(42);
-    assertThat(result.getStringField()).isEqualTo("42");
+    assertEquals(42, result.getIntField());
+    assertEquals("42", result.getStringField());
   }
 
   @Test
-  public void mapsWithDefaultConstructor() {
+  void mapsWithDefaultConstructor() {
     // when a bean does not have a constructor, it should work with using the
     // default constructor
     Mapper<BeanWithConstructors, BeanWithoutConstructor> mapper = Mapping.from(BeanWithConstructors.class)
         .to(BeanWithoutConstructor.class)
         .mapper();
     BeanWithoutConstructor result = mapper.map(new BeanWithConstructors(42, "42"));
-    assertThat(result.getIntField()).isEqualTo(42);
-    assertThat(result.getStringField()).isEqualTo("42");
-  }
-
-  @Test(expected = MappingException.class)
-  public void failsWithoutEmptyConstructor() {
-    // when a bean does not have an empty constructor, mapping should fail
-    Mapping.from(BeanWithConstructors.class)
-        .to(BeanWithoutEmptyConstructor.class)
-        .mapper();
-  }
-
-  @Test(expected = MappingException.class)
-  public void failsOnUnspecifiedFields() {
-    Mapping.from(BeanWithConstructors.class)
-        .to(Person.class)
-        .mapper();
+    assertEquals(42, result.getIntField());
+    assertEquals("42", result.getStringField());
   }
 
   @Test
-  public void reassignsFields() {
+  void failsWithoutEmptyConstructor() {
+    // when a bean does not have an empty constructor, mapping should fail
+    assertThrows(MappingException.class, () -> Mapping.from(BeanWithConstructors.class)
+        .to(BeanWithoutEmptyConstructor.class)
+        .mapper());
+  }
+
+  @Test
+  void failsOnUnspecifiedFields() {
+    assertThrows(MappingException.class, () -> Mapping.from(BeanWithConstructors.class)
+        .to(Person.class)
+        .mapper());
+  }
+
+  @Test
+  void reassignsFields() {
     Mapper<BeanWithConstructors, Person> mapper = Mapping.from(BeanWithConstructors.class)
         .to(Person.class)
         .reassign(BeanWithConstructors::getIntField)
@@ -59,44 +61,44 @@ public class MapperTests {
         .mapper();
 
     Person person = mapper.map(new BeanWithConstructors(42, "42"));
-    assertThat(person.getAge()).isEqualTo(42);
-    assertThat(person.getName()).isEqualTo("42");
+    assertEquals(42, person.getAge());
+    assertEquals("42", person.getName());
   }
 
   @Test
-  public void omitsSourceField() {
+  void omitsSourceField() {
     Mapper<Person, Name> mapper = Mapping.from(Person.class)
         .to(Name.class)
         .omitInSource(Person::getAge)
         .mapper();
 
     Name name = mapper.map(new Person("Bob", 42));
-    assertThat(name.getName()).isEqualTo("Bob");
+    assertEquals("Bob", name.getName());
   }
 
   @Test
-  public void omitsDestinationField() {
+  void omitsDestinationField() {
     Mapper<Name, Person> mapper = Mapping.from(Name.class)
         .to(Person.class)
         .omitInDestination(Person::getAge)
         .mapper();
 
     Person person = mapper.map(new Name("Bob"));
-    assertThat(person.getName()).isEqualTo("Bob");
-  }
-
-  @Test(expected = MappingException.class)
-  public void failsOnMissingNestedMapper() {
-    Mapping.from(PersonWithAddress.class)
-        .to(HumanWithAddress.class)
-        .mapper();
+    assertEquals("Bob", person.getName());
   }
 
   @Test
-  public void mapsNested() {
+  void failsOnMissingNestedMapper() {
+    assertThrows(MappingException.class, () -> Mapping.from(PersonWithAddress.class)
+        .to(HumanWithAddress.class)
+        .mapper());
+  }
+
+  @Test
+  void mapsNested() {
     Mapper<PersonWithAddress, HumanWithAddress> mapper = Mapping.from(PersonWithAddress.class)
         .to(HumanWithAddress.class)
-        .useMapper(Mapping.from(PersonWithAddress.Address.class)
+        .useMapper(Mapping.from(Address.class)
             .to(HumanWithAddress.Address.class)
             .mapper())
         .mapper();
@@ -106,13 +108,13 @@ public class MapperTests {
     person.setAddress(new Address("Elm Street"));
 
     HumanWithAddress human = mapper.map(person);
-    assertThat(human.getName()).isEqualTo("Bob");
-    assertThat(human.getAddress()
-        .getStreet()).isEqualTo("Elm Street");
+    assertEquals("Bob", human.getName());
+    assertEquals("Elm Street", human.getAddress()
+        .getStreet());
   }
 
   @Test
-  public void replaces() {
+  void replaces() {
     Mapper<PersonWithAddress, PersonWithFoo> mapper = Mapping.from(PersonWithAddress.class)
         .to(PersonWithFoo.class)
         .replace(PersonWithAddress::getAddress, PersonWithFoo::getFoo)
@@ -124,9 +126,9 @@ public class MapperTests {
     person.setAddress(new Address("Elm Street"));
 
     PersonWithFoo personWithFoo = mapper.map(person);
-    assertThat(personWithFoo.getName()).isEqualTo("Bob");
-    assertThat(personWithFoo.getFoo()
-        .getBar()).isEqualTo("Elm Street");
+    assertEquals("Bob", personWithFoo.getName());
+    assertEquals("Elm Street", personWithFoo.getFoo()
+        .getBar());
   }
 
   public static class BeanWithoutConstructor {
@@ -280,51 +282,6 @@ public class MapperTests {
 
     public void setName(String name) {
       this.name = name;
-    }
-  }
-
-  public static class PersonWithAddress {
-
-    private String name;
-    private Address address;
-
-    public PersonWithAddress() {
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public void setName(String name) {
-      this.name = name;
-    }
-
-    public Address getAddress() {
-      return address;
-    }
-
-    public void setAddress(Address address) {
-      this.address = address;
-    }
-
-    public static class Address {
-
-      private String street;
-
-      public Address(String street) {
-        this.street = street;
-      }
-
-      public Address() {
-      }
-
-      public String getStreet() {
-        return street;
-      }
-
-      public void setStreet(String street) {
-        this.street = street;
-      }
     }
   }
 

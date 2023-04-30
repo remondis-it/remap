@@ -5,12 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.Test;
 
-public class MapperTest {
+class MapperTest {
 
   private static final Integer EXPECTED_AGE = 29;
   private static final String EXPECTED_LASTNAME = "Griffin";
@@ -19,7 +18,7 @@ public class MapperTest {
   private static final String EXPECTED_CITY = "Lünen";
 
   @Test
-  public void shouldUseDestinationObjectForNestedMappingsAlso() {
+  void shouldUseDestinationObjectForNestedMappingsAlso() {
     Address address1 = new Address(1, "street1", "city1");
     Address address2 = new Address(2, "street2", "city2");
     List<Address> addresses = Arrays.asList(address1, address2);

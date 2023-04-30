@@ -1,13 +1,12 @@
 package com.remondis.remap.multimapping.replace;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.Test;
 
-public class MapperTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class MapperTest {
 
   private static final int EXPECTED_INT = Integer.MIN_VALUE;
   private static final int EXPECTED_NUMBER = Integer.MAX_VALUE;
@@ -15,7 +14,7 @@ public class MapperTest {
   private static final String EXPECTED_A_STRING = "aString";
 
   @Test
-  public void shouldAllowMultiMappings() {
+  void shouldAllowMultiMappings() {
 
     B b = new B(EXPECTED_STRING, EXPECTED_NUMBER, EXPECTED_INT);
     A a = new A(EXPECTED_A_STRING, b);

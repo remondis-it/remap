@@ -1,25 +1,24 @@
 package com.remondis.remap.maps;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
-import org.junit.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.remap.TypeMapping;
 import com.remondis.remap.basic.B;
 import com.remondis.remap.basic.BResource;
+import org.junit.jupiter.api.Test;
 
-public class MapsTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class MapsTest {
 
   @Test
-  public void shouldMapMapsUsingMappers() {
+  void shouldMapMapsUsingMappers() {
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
         .mapper();
@@ -31,13 +30,13 @@ public class MapsTest {
         .useMapper(bMapper)
         .mapper();
 
-    B b1 = new B("String1", 1, new Integer(101));
-    B b2 = new B("String2", 2, new Integer(102));
-    B b3 = new B("String3", 3, new Integer(103));
+    B b1 = new B("String1", 1, 101);
+    B b2 = new B("String2", 2, 102);
+    B b3 = new B("String3", 3, 103);
 
-    BResource expectedBmapped1 = new BResource("String1", 1, new Integer(101));
-    BResource expectedBmapped2 = new BResource("String2", 2, new Integer(102));
-    BResource expectedBmapped3 = new BResource("String3", 3, new Integer(103));
+    BResource expectedBmapped1 = new BResource("String1", 1, 101);
+    BResource expectedBmapped2 = new BResource("String2", 2, 102);
+    BResource expectedBmapped3 = new BResource("String3", 3, 103);
 
     A a = new A();
     a.addB(1, b1);
@@ -55,23 +54,17 @@ public class MapsTest {
   }
 
   @Test
-  public void shouldWorkaroundMappingOfMaps() {
+  void shouldWorkaroundMappingOfMaps() {
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
         .mapper();
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getBmap, AResource::getBmap)
-        .with(iToBMap -> {
-          return iToBMap.entrySet()
-              .stream()
-              .map(e -> {
-                return new AbstractMap.SimpleEntry<String, BResource>(String.valueOf(e.getKey()),
-                    bMapper.map(e.getValue()));
-              })
-              .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-
-        })
+        .with(iToBMap -> iToBMap.entrySet()
+            .stream()
+            .map(e -> new AbstractMap.SimpleEntry<>(String.valueOf(e.getKey()), bMapper.map(e.getValue())))
+            .collect(Collectors.toMap(Entry::getKey, Entry::getValue)))
         .useMapper(bMapper)
         .mapper();
 

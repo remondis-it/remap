@@ -8,16 +8,15 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.remap.MappingException;
+import org.junit.jupiter.api.Test;
 
-public class MapsTest {
+class MapsTest {
 
   @Test
-  public void shouldDoMapperValidation() {
+  void shouldDoMapperValidation() {
     Mapper<A1, A1Mapped> a1Mapper = Mapping.from(A1.class)
         .to(A1Mapped.class)
         .mapper();
@@ -35,28 +34,28 @@ public class MapsTest {
         .useMapper(a2Mapper)
         .useMapper(a3Mapper)
         .mapper()).isInstanceOf(MappingException.class)
-            .hasMessageContaining(
-                "No mapper found for type mapping from com.remondis.remap.maps.nested.A1 to com.remondis.remap.maps.nested.A1Mapped.");
+        .hasMessageContaining(
+            "No mapper found for type mapping from com.remondis.remap.maps.nested.A1 to com.remondis.remap.maps.nested.A1Mapped.");
 
     assertThatThrownBy(() -> Mapping.from(A.class)
         .to(AMapped.class)
         .useMapper(a1Mapper)
         .useMapper(a3Mapper)
         .mapper()).isInstanceOf(MappingException.class)
-            .hasMessageContaining(
-                "No mapper found for type mapping from com.remondis.remap.maps.nested.A2 to com.remondis.remap.maps.nested.A2Mapped.");
+        .hasMessageContaining(
+            "No mapper found for type mapping from com.remondis.remap.maps.nested.A2 to com.remondis.remap.maps.nested.A2Mapped.");
 
     assertThatThrownBy(() -> Mapping.from(A.class)
         .to(AMapped.class)
         .useMapper(a1Mapper)
         .useMapper(a2Mapper)
         .mapper()).isInstanceOf(MappingException.class)
-            .hasMessageContaining(
-                "No mapper found for type mapping from com.remondis.remap.maps.nested.A3 to com.remondis.remap.maps.nested.A3Mapped.");
+        .hasMessageContaining(
+            "No mapper found for type mapping from com.remondis.remap.maps.nested.A3 to com.remondis.remap.maps.nested.A3Mapped.");
   }
 
   @Test
-  public void shouldMapNestedKeyValues() {
+  void shouldMapNestedKeyValues() {
     A1 a1 = new A1("key1");
     A2 key1 = new A2("value-key1");
     A3 value1 = new A3("value-value1");

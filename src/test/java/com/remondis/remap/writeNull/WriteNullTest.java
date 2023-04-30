@@ -1,22 +1,21 @@
 package com.remondis.remap.writeNull;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.remap.MappingConfiguration;
+import org.junit.jupiter.api.Test;
 
-public class WriteNullTest {
+class WriteNullTest {
 
   @Test
-  public void shouldWriteNull() {
+  void shouldWriteNull() {
     Mapper<Source, Destination> mapper = Mapping.from(Source.class)
         .to(Destination.class)
         .writeNullIfSourceIsNull()
@@ -37,7 +36,7 @@ public class WriteNullTest {
   }
 
   @Test
-  public void shouldComplainAboutWrongNullHandling() {
+  void shouldComplainAboutWrongNullHandling() {
 
     MappingConfiguration<Source, Destination> configuration = Mapping.from(Source.class)
         .to(Destination.class);
@@ -47,8 +46,8 @@ public class WriteNullTest {
     assertThatThrownBy(() -> AssertMapping.of(mapper)
         .expectToWriteNullIfSourceIsNull()
         .ensure()).isInstanceOf(AssertionError.class)
-            .hasMessageContaining(
-                "The mapper was expected to write null values if the source value is null, but the current mapper is configured to skip mappings if source value is null.");
+        .hasMessageContaining(
+            "The mapper was expected to write null values if the source value is null, but the current mapper is configured to skip mappings if source value is null.");
   }
 
 }

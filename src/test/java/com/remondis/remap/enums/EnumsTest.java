@@ -1,25 +1,25 @@
 package com.remondis.remap.enums;
 
+import static com.remondis.remap.enums.Gender.MALE;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.remap.MappingException;
+import org.junit.jupiter.api.Test;
 
-public class EnumsTest {
+class EnumsTest {
 
   @Test
-  public void shouldMapEnums() {
+  void shouldMapEnums() {
     Mapper<Person, PersonResource> mapper = Mapping.from(Person.class)
         .to(PersonResource.class)
         .mapper();
 
     String forename = "Armin";
     String name = "Loaf";
-    Gender gender = Gender.MALE;
+    Gender gender = MALE;
     Person person = new Person(forename, name, gender);
     PersonResource pr = mapper.map(person);
 
@@ -29,11 +29,11 @@ public class EnumsTest {
   }
 
   @Test
-  public void shouldThrowMappingException() {
+  void shouldThrowMappingException() {
     assertThatThrownBy(() -> Mapping.from(Person.class)
         .to(AnotherResource.class)
         .mapper()).isInstanceOf(MappingException.class)
-            .hasMessageStartingWith("No mapper found for type mapping from ");
+        .hasMessageStartingWith("No mapper found for type mapping from ");
   }
 
 }

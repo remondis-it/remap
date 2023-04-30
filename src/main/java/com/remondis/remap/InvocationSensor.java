@@ -64,7 +64,7 @@ public class InvocationSensor<T> {
   /**
    * Creates an {@link ElementMatcher.Junction} for the method description of all superclasses, interfaces and the given
    * type itself so that all of those methods are proxied by the {@link InvocationSensor}.
-   * 
+   *
    * @param type type to get the junction for
    * @return the junction with all superclasses and interfaces including the given typeD
    */

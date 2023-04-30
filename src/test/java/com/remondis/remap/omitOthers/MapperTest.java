@@ -2,16 +2,15 @@ package com.remondis.remap.omitOthers;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.Test;
-
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.Test;
 
-public class MapperTest {
+class MapperTest {
 
   @Test
-  public void shouldOmitOtherSourceProperties() {
+  void shouldOmitOtherSourceProperties() {
     assertThatThrownBy(() -> Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
@@ -20,12 +19,12 @@ public class MapperTest {
         .to(AResource::getName)
         .omitOtherSourceProperties()
         .mapper()).hasMessageContaining("- Property 'e' in AResource")
-            .hasMessageContaining("- Property 'c' in AResource")
-            .hasMessageContaining("- Property 'd' in AResource");
+        .hasMessageContaining("- Property 'c' in AResource")
+        .hasMessageContaining("- Property 'd' in AResource");
   }
 
   @Test
-  public void shouldOmitOtherDestinationProperties() {
+  void shouldOmitOtherDestinationProperties() {
     assertThatThrownBy(() -> Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
@@ -34,11 +33,11 @@ public class MapperTest {
         .to(AResource::getName)
         .omitOtherDestinationProperties()
         .mapper()).hasMessageContaining("- Property 'b' in A")
-            .hasMessageContaining("- Property 'a' in A");
+        .hasMessageContaining("- Property 'a' in A");
   }
 
   @Test
-  public void shouldOmitOtherSourceAndDestFields_withExpectOtherSourceAndDestFieldsToBeOmitted() {
+  void shouldOmitOtherSourceAndDestFields_withExpectOtherSourceAndDestFieldsToBeOmitted() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
@@ -60,7 +59,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldOmitOtherSourceAndDestFields_withExpectOthersToBeOmitted() {
+  void shouldOmitOtherSourceAndDestFields_withExpectOthersToBeOmitted() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
@@ -81,7 +80,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldOmitOthers_withExpectOthersToBeOmitted() {
+  void shouldOmitOthers_withExpectOthersToBeOmitted() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
@@ -101,7 +100,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldOmitOthers() {
+  void shouldOmitOthers() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
@@ -125,7 +124,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldDenyOmitOthersIfNotExpected() {
+  void shouldDenyOmitOthersIfNotExpected() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
@@ -141,12 +140,12 @@ public class MapperTest {
         .expectReassign(A::getDescription)
         .to(AResource::getName)
         .ensure()).isInstanceOf(AssertionError.class)
-            .hasMessageContaining("The following unexpected transformation were specified on the mapping:")
-            .hasMessageContaining("- Omitting Property 'a' in A")
-            .hasMessageContaining("- Omitting Property 'd' in AResource")
-            .hasMessageContaining("- Omitting Property 'c' in AResource")
-            .hasMessageContaining("- Omitting Property 'e' in AResource")
-            .hasMessageContaining("- Omitting Property 'b' in A");
+        .hasMessageContaining("The following unexpected transformation were specified on the mapping:")
+        .hasMessageContaining("- Omitting Property 'a' in A")
+        .hasMessageContaining("- Omitting Property 'd' in AResource")
+        .hasMessageContaining("- Omitting Property 'c' in AResource")
+        .hasMessageContaining("- Omitting Property 'e' in AResource")
+        .hasMessageContaining("- Omitting Property 'b' in A");
 
   }
 }
