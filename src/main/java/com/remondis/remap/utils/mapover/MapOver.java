@@ -1,11 +1,8 @@
-package com.remondis.remap.utils.mapOver;
+package com.remondis.remap.utils.mapover;
 
-import java.util.function.BiConsumer;
-import java.util.function.Function;
+import com.remondis.remap.utils.property.walker.BiRecursivePropertyWalker;
 
-import com.remondis.remap.utils.propertywalker.BiRecursivePropertyWalker;
-import com.remondis.remap.utils.propertywalker.PropertyAccess;
-import com.remondis.remap.utils.propertywalker.VisitorFunction;
+import lombok.Getter;
 
 /**
  * <p>
@@ -35,60 +32,27 @@ import com.remondis.remap.utils.propertywalker.VisitorFunction;
  *
  * @param <T> The root bean type
  */
-public class MapOver<R, T> {
+@Getter
+public class MapOver<R, T> implements MapOverStructure<R, T>, MapOverProperty<R, T>, MapOverCollectionByProperty<R, T>,
+    MapOverCollectionByFunction<R, T>, MapOverMap<R, T> {
 
-  private MapOver<R, R> root;
+  private final MapOver<R, R> root;
 
-  private BiRecursivePropertyWalker<T, T> walker;
+  private final BiRecursivePropertyWalker<T, T> walker;
 
-  private MapOver(Class<T> beanType) {
-    super();
+  @SuppressWarnings("unchecked")
+  protected MapOver(Class<T> beanType) {
     this.root = (MapOver<R, R>) this;
     this.walker = BiRecursivePropertyWalker.create(beanType);
   }
 
-  private MapOver(MapOver<R, R> root, BiRecursivePropertyWalker<T, T> walker) {
-    super();
+  protected MapOver(MapOver<R, R> root, BiRecursivePropertyWalker<T, T> walker) {
     this.root = root;
     this.walker = walker;
   }
 
-  public <TT> MapOver<R, T> mapProperty(Function<T, TT> propertyExtractor, BiConsumer<T, TT> propertyWriter) {
-    walker.addProperty(propertyExtractor, propertyWriter, propertyVisitor());
-    return this;
-  }
-
-  public <TT> MapOver<R, T> addPropertyAction(Function<T, TT> propertyExtractor, BiConsumer<T, TT> propertyWriter,
-      VisitorFunction<T, TT> action) {
-    walker.addProperty(propertyExtractor, propertyWriter, action);
-    return this;
-  }
-
-  public <TT> MapOver<R, TT> goInto(Function<T, TT> propertyExtractor, BiConsumer<T, TT> propertyWriter,
-      Class<TT> beanType) {
-    BiRecursivePropertyWalker<T, TT> goIntoWalker = walker.goInto(propertyExtractor, propertyWriter, beanType);
-    return new MapOver<R, TT>(root, (BiRecursivePropertyWalker<TT, TT>) goIntoWalker);
-  }
-
   public static <R> MapOver<R, R> create(Class<R> beanType) {
     return new MapOver<>(beanType);
-  }
-
-  private <TT> VisitorFunction<T, TT> propertyVisitor() {
-    return new VisitorFunction<T, TT>() {
-
-      @Override
-      public void consume(PropertyAccess<T, TT> access) {
-        TT sourceValue = access.sourceProperty()
-            .get();
-        access.targetProperty()
-            .set(sourceValue);
-      }
-    };
-  }
-
-  public MapOver<R, R> build() {
-    return root;
   }
 
   public void mapOver(T source, T target) {

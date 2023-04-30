@@ -1,6 +1,9 @@
-package com.remondis.remap.utils.propertywalker;
+package com.remondis.remap.utils.property.walker;
+
+import com.remondis.remap.utils.property.visitor.VisitorFunction;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.function.Function.identity;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,24 +18,22 @@ import java.util.function.Function;
  */
 public class BiRecursivePropertyWalker<R, T> {
 
-  BiRecursivePropertyWalker<R, ?> rootWalker;
-  Function<R, T> fromRootExctractor;
+  private final BiRecursivePropertyWalker<R, ?> rootWalker;
+  private final Function<R, T> fromRootExctractor;
 
-  Class<T> beanType;
-  List<BiPropertyVisitor<T, ?>> visitors;
+  private final Class<T> beanType;
+  private final List<BiPropertyVisitor<T, ?>> visitors;
 
   @SuppressWarnings("unchecked")
   private BiRecursivePropertyWalker(Class<T> beanType) {
-    super();
     this.beanType = beanType;
     this.rootWalker = this;
-    this.fromRootExctractor = (Function<R, T>) Function.identity();
+    this.fromRootExctractor = (Function<R, T>) identity();
     this.visitors = new LinkedList<>();
   }
 
   private <TT> BiRecursivePropertyWalker(BiRecursivePropertyWalker<R, ?> rootWalker, Function<R, TT> fromRootExctractor,
       Function<TT, T> propertyExtractor, Class<T> beanType) {
-    super();
     this.rootWalker = rootWalker;
     this.fromRootExctractor = fromRootExctractor.andThen(propertyExtractor);
     this.beanType = beanType;
@@ -46,15 +47,10 @@ public class BiRecursivePropertyWalker<R, T> {
     BiRecursivePropertyWalker<R, TT> recursivePropertyWalker = new BiRecursivePropertyWalker<>(rootWalker,
         fromRootExctractor, propertyExtractor, beanType);
 
-    addProperty(propertyExtractor, propertyWriter, new VisitorFunction<T, TT>() {
-      @Override
-      public void consume(PropertyAccess<T, TT> access) {
-        recursivePropertyWalker.execute(access.sourceProperty()
-            .get(),
-            access.targetProperty()
-                .get());
-      }
-    });
+    addProperty(propertyExtractor, propertyWriter, access -> recursivePropertyWalker.execute(access.sourceProperty()
+        .get(),
+        access.targetProperty()
+            .get()));
 
     return recursivePropertyWalker;
   }
@@ -67,20 +63,38 @@ public class BiRecursivePropertyWalker<R, T> {
     return this;
   }
 
-  @SuppressWarnings("unchecked")
+  public <P> BiRecursivePropertyWalker<R, T> addProperty(Function<T, P> propertyExtractorSource,
+      Function<T, P> propertyExtractorTarget, VisitorFunction<T, P> biConsumer) {
+    requireNonNull(propertyExtractorSource, "propertyExtractorSource may not be null!");
+    requireNonNull(propertyExtractorTarget, "propertyExtractorTarget may not be null!");
+    BiPropertyVisitor<T, P> pv = new BiPropertyVisitor<>(beanType, propertyExtractorSource, propertyExtractorTarget,
+        biConsumer);
+    visitors.add(pv);
+    return this;
+  }
+
+  public <P> BiRecursivePropertyWalker<R, T> addProperty(Function<T, P> propertyExtractorSource,
+      Function<T, P> propertyExtractorTarget, BiConsumer<T, P> propertyWriterSource,
+      BiConsumer<T, P> propertyWriterTarget, VisitorFunction<T, P> biConsumer) {
+    requireNonNull(propertyExtractorSource, "propertyExtractorSource may not be null!");
+    requireNonNull(propertyExtractorTarget, "propertyExtractorTarget may not be null!");
+    BiPropertyVisitor<T, P> pv = new BiPropertyVisitor<>(beanType, propertyExtractorSource, propertyExtractorTarget,
+        propertyWriterSource, propertyWriterTarget, biConsumer);
+    visitors.add(pv);
+    return this;
+  }
+
   public void execute(T source, T target) {
     visitors.parallelStream()
-        .forEach(visitor -> {
-          ((BiPropertyVisitor<T, T>) visitor).execute(source, target);
-        });
+        .forEach(visitor -> visitor.execute(source, target));
   }
 
   public static <T> BiRecursivePropertyWalker<T, T> create(Class<T> beanType) {
     return new BiRecursivePropertyWalker<>(beanType);
   }
 
+  @SuppressWarnings("unchecked")
   public BiRecursivePropertyWalker<R, R> build() {
     return (BiRecursivePropertyWalker<R, R>) rootWalker;
   }
-
 }
