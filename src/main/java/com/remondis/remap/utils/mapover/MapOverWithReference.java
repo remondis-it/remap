@@ -11,11 +11,12 @@ import java.util.function.Function;
 import static java.util.Objects.requireNonNull;
 
 @Getter
-public class MapOverWithReference<R, T> extends MapOver<R, T>
-    implements MapOverPropertyWithReference<MapOverWithReference<R, T>, R, T>,
+public class MapOverWithReference<R, T>
+    implements MapOver<R, T>, MapOverPropertyWithReference<MapOverWithReference<R, T>, R, T>,
     MapOverCollectionByPropertyWithReference<MapOverWithReference<R, T>, R, T>,
     MapOverCollectionByFunctionWithReference<MapOverWithReference<R, T>, R, T>,
     MapOverMapWithReference<MapOverWithReference<R, T>, R, T> {
+
   private final MapOverWithReference<R, R> root;
   private final BiRecursivePropertyWalker<T, T> walker;
   private final EntityManager entityManager;

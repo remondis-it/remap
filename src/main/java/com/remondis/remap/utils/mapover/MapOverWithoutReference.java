@@ -10,8 +10,8 @@ import java.util.function.Function;
 import static java.util.Objects.requireNonNull;
 
 @Getter
-public class MapOverWithoutReference<R, T> extends MapOver<R, T>
-    implements MapOverPropertyWithoutReference<MapOverWithoutReference<R, T>, R, T>,
+public class MapOverWithoutReference<R, T>
+    implements MapOver<R, T>, MapOverPropertyWithoutReference<MapOverWithoutReference<R, T>, R, T>,
     MapOverCollectionByPropertyWithoutReference<MapOverWithoutReference<R, T>, R, T>,
     MapOverCollectionByFunctionWithoutReference<MapOverWithoutReference<R, T>, R, T>,
     MapOverMapWithoutReference<MapOverWithoutReference<R, T>, R, T> {
