@@ -1,23 +1,24 @@
 package com.remondis.remap.utils.property.visitor;
 
-import com.remondis.remap.utils.mapover.MapOver;
-import com.remondis.remap.utils.property.walker.PropertyAccess;
-import lombok.RequiredArgsConstructor;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.toMap;
+import com.remondis.remap.utils.property.ChangeType;
+import com.remondis.remap.utils.property.change.CollectionChangeFunction;
+import com.remondis.remap.utils.property.walker.PropertyAccess;
+
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class MapOverMatchPropertyCollectionVisitor<T, TT> implements VisitorFunction<T, Collection<TT>> {
+public class MapOverMatchPropertyCollectionVisitor<T, TT, ID> implements VisitorFunction<T, Collection<TT>> {
 
   private final Function<TT, Object> matchProperty;
-  private final boolean addNew;
-  private final boolean orphanRemoval;
-  private final MapOver<TT, TT> mapper;
+  private final ChangeType changeType;
+  private final CollectionChangeFunction<TT, ID> changeFunction;
 
   @Override
   public void consume(PropertyAccess<T, Collection<TT>> access) {
@@ -32,20 +33,15 @@ public class MapOverMatchPropertyCollectionVisitor<T, TT> implements VisitorFunc
     for (TT sourceValue : sourceCollection) {
       Object key = matchProperty.apply(sourceValue);
       TT targetValue = targetMap.get(key);
-      if (targetValue == null && addNew) {
-        targetCollection.add(sourceValue);
+      if (targetValue == null && changeType.isAddNew()) {
+        changeFunction.addToCollection(sourceValue, targetCollection);
       } else {
-        if (mapper != null) {
-          mapper.mapOver(sourceValue, targetValue);
-        } else {
-          targetCollection.remove(targetValue);
-          targetCollection.add(sourceValue);
-        }
+        changeFunction.changeCollection(sourceValue, targetValue, targetCollection);
         targetMap.remove(key);
       }
     }
 
-    if (orphanRemoval) {
+    if (changeType.isRemoveOrphans()) {
       for (TT orphan : targetMap.values()) {
         targetCollection.remove(orphan);
       }

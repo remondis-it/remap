@@ -21,6 +21,7 @@ public class MapOverReferenceVisitor<T, TT, ID> implements VisitorFunction<T, TT
         .get();
 
     TT reference = (TT) entityManager.getReference(targetValue.getClass(), idExtractor.apply(sourceValue));
-    access.targetProperty().set(reference);
+    access.targetProperty()
+        .set(reference);
   }
 }
