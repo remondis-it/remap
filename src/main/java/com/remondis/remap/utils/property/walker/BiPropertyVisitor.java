@@ -21,6 +21,15 @@ public class BiPropertyVisitor<T, P> {
 
   private final VisitorFunction<T, P> visitorFunction;
 
+  public BiPropertyVisitor(Class<T> type, Function<T, P> propertyExtractor, VisitorFunction<T, P> visitorFunction) {
+    this.type = type;
+    this.propertyExtractorSource = propertyExtractor;
+    this.propertyExtractorTarget = propertyExtractor;
+    this.propertyWriterSource = null;
+    this.propertyWriterTarget = null;
+    this.visitorFunction = visitorFunction;
+  }
+
   public BiPropertyVisitor(Class<T> type, Function<T, P> propertyExtractorSource,
       Function<T, P> propertyExtractorTarget, VisitorFunction<T, P> visitorFunction) {
     this.type = type;

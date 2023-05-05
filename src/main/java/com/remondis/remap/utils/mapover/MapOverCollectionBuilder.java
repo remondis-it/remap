@@ -36,7 +36,7 @@ public class MapOverCollectionBuilder<M extends MapOverCommon<R, T>, R, T, TT> {
 
   public M byAction(VisitorFunction<T, Collection<TT>> action) {
     mapOver.getWalker()
-        .addProperty(propertyExtractor, propertyExtractor, action); // TODO reafactor dupl
+        .addProperty(propertyExtractor, action);
     return mapOver;
   }
 }

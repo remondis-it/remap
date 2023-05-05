@@ -63,6 +63,14 @@ public class BiRecursivePropertyWalker<R, T> {
     return this;
   }
 
+  public <P> BiRecursivePropertyWalker<R, T> addProperty(Function<T, P> propertyExtractor,
+      VisitorFunction<T, P> biConsumer) {
+    requireNonNull(propertyExtractor, "propertyExtractor may not be null!");
+    BiPropertyVisitor<T, P> pv = new BiPropertyVisitor<>(beanType, propertyExtractor, biConsumer);
+    visitors.add(pv);
+    return this;
+  }
+
   public <P> BiRecursivePropertyWalker<R, T> addProperty(Function<T, P> propertyExtractorSource,
       Function<T, P> propertyExtractorTarget, VisitorFunction<T, P> biConsumer) {
     requireNonNull(propertyExtractorSource, "propertyExtractorSource may not be null!");

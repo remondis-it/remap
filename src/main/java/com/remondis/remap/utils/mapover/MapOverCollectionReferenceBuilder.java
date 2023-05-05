@@ -24,8 +24,8 @@ public class MapOverCollectionReferenceBuilder<M extends MapOverWithReference<R,
 
   public <ID> M byReference(Function<TT, ID> idExtractor, ChangeType changeType) {
     mapOver.getWalker()
-        .addProperty(propertyExtractor, propertyExtractor, new MapOverCollectionVisitor<>(matchMethod, changeType,
-            new CollectionChangeFunction<>(mapOver.getEntityManager(), idExtractor))); // todo refactor extractor dupl
+        .addProperty(propertyExtractor, new MapOverCollectionVisitor<>(matchMethod, changeType,
+            new CollectionChangeFunction<>(mapOver.getEntityManager(), idExtractor)));
     return mapOver;
   }
 }
