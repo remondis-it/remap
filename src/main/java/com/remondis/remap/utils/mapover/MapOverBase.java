@@ -1,8 +1,10 @@
 package com.remondis.remap.utils.mapover;
 
 import static java.util.Objects.requireNonNull;
+import static lombok.AccessLevel.PROTECTED;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -10,7 +12,7 @@ import com.remondis.remap.utils.property.walker.BiRecursivePropertyWalker;
 
 import lombok.Getter;
 
-@Getter
+@Getter(PROTECTED)
 public class MapOverBase<R, T> extends MapOverCommon<R, T> {
 
   private final MapOverBase<R, R> root;
@@ -35,6 +37,11 @@ public class MapOverBase<R, T> extends MapOverCommon<R, T> {
   public <TT> MapOverCollectionMatchBuilder<MapOverBase<R, T>, R, T, TT> mapCollection(
       Function<T, Collection<TT>> propertyExtractor) {
     return new MapOverCollectionMatchBuilder<>(this, propertyExtractor);
+  }
+
+  public <ID, TT> MapOverMapBuilder<MapOverBase<R, T>, R, T, TT, ID> mapMap(
+      Function<T, Map<ID, TT>> propertyExtractor) {
+    return new MapOverMapBuilder<>(this, propertyExtractor);
   }
 
   @SuppressWarnings("unchecked")

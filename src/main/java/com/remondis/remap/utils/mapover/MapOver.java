@@ -36,8 +36,8 @@ public interface MapOver<R, T> {
     return new MapOverBase<>(beanType);
   }
 
-  static <R> MapOverWithReference<R, R> create(Class<R> beanType, EntityManager entityManager) {
-    return new MapOverWithReference<>(beanType, entityManager);
+  static <R> MapOverReference<R, R> create(Class<R> beanType, EntityManager entityManager) {
+    return new MapOverReference<>(beanType, entityManager);
   }
 
   void mapOver(T source, T target);

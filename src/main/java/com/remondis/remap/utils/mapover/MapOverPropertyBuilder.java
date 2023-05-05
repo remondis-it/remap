@@ -24,7 +24,8 @@ public class MapOverPropertyBuilder<M extends MapOverCommon<R, T>, R, T, TT> {
   }
 
   public M byAction(VisitorFunction<T, TT> action) {
-    mapOver.getWalker().addProperty(propertyExtractor, propertyWriter, action);
+    mapOver.getWalker()
+        .addProperty(propertyExtractor, propertyWriter, action);
     return mapOver;
   }
 }

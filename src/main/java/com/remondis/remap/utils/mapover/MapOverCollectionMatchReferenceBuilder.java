@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 import com.remondis.remap.utils.property.match.MatchMethod;
 
-public class MapOverCollectionMatchReferenceBuilder<M extends MapOverWithReference<R, T>, R, T, TT> {
+public class MapOverCollectionMatchReferenceBuilder<M extends MapOverReference<R, T>, R, T, TT> {
   protected final M mapOver;
   protected final Function<T, Collection<TT>> propertyExtractor;
 

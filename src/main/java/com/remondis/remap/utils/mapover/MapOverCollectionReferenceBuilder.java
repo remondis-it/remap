@@ -10,7 +10,7 @@ import com.remondis.remap.utils.property.change.CollectionChangeFunction;
 import com.remondis.remap.utils.property.match.MatchMethod;
 import com.remondis.remap.utils.property.visitor.MapOverCollectionVisitor;
 
-public class MapOverCollectionReferenceBuilder<M extends MapOverWithReference<R, T>, R, T, TT>
+public class MapOverCollectionReferenceBuilder<M extends MapOverReference<R, T>, R, T, TT>
     extends MapOverCollectionBuilder<M, R, T, TT> {
 
   public MapOverCollectionReferenceBuilder(M mapOver, Function<T, Collection<TT>> propertyExtractor,
