@@ -11,32 +11,31 @@ import java.util.function.Function;
 import static java.util.Objects.requireNonNull;
 
 @Getter
-public class MapOverWithReference<R, T>
-    implements MapOver<R, T>, MapOverPropertyWithReference<MapOverWithReference<R, T>, R, T>,
-    MapOverCollectionByPropertyWithReference<MapOverWithReference<R, T>, R, T>,
-    MapOverCollectionByFunctionWithReference<MapOverWithReference<R, T>, R, T>,
-    MapOverMapWithReference<MapOverWithReference<R, T>, R, T> {
+public class MapOverWithReference<R, T> extends MapOverImpl<R, T> {
 
   private final MapOverWithReference<R, R> root;
-  private final BiRecursivePropertyWalker<T, T> walker;
   private final EntityManager entityManager;
 
   @SuppressWarnings("unchecked")
   protected MapOverWithReference(Class<T> beanType, EntityManager entityManager) {
-    requireNonNull(beanType, "beanType must not be null!");
+    super(beanType);
     requireNonNull(entityManager, "entityManager must not be null!");
     this.root = (MapOverWithReference<R, R>) this;
-    this.walker = BiRecursivePropertyWalker.create(beanType);
     this.entityManager = entityManager;
   }
 
   protected MapOverWithReference(MapOverWithReference<R, R> root, BiRecursivePropertyWalker<T, T> walker,
       EntityManager entityManager) {
+    super(walker);
     requireNonNull(root, "root must not be null!");
     requireNonNull(entityManager, "entityManager must not be null!");
     this.root = root;
-    this.walker = walker;
     this.entityManager = entityManager;
+  }
+
+  public <TT, ID> MapOverPropertyWithReferenceBuilder<MapOverWithReference<R, T>, R, T, TT> mapProperty(
+      Function<T, TT> propertyExtractor, BiConsumer<T, TT> propertyWriter) {
+    return new MapOverPropertyWithReferenceBuilder<>(this, propertyExtractor, propertyWriter);
   }
 
   @SuppressWarnings("unchecked")

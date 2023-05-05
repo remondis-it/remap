@@ -1,5 +1,6 @@
 package com.remondis.remap.utils.mapover;
 
+import com.remondis.remap.utils.property.visitor.MapOverReferenceVisitor;
 import com.remondis.remap.utils.property.walker.BiRecursivePropertyWalker;
 
 import lombok.Getter;
@@ -10,26 +11,25 @@ import java.util.function.Function;
 import static java.util.Objects.requireNonNull;
 
 @Getter
-public class MapOverWithoutReference<R, T>
-    implements MapOver<R, T>, MapOverPropertyWithoutReference<MapOverWithoutReference<R, T>, R, T>,
-    MapOverCollectionByPropertyWithoutReference<MapOverWithoutReference<R, T>, R, T>,
-    MapOverCollectionByFunctionWithoutReference<MapOverWithoutReference<R, T>, R, T>,
-    MapOverMapWithoutReference<MapOverWithoutReference<R, T>, R, T> {
+public class MapOverWithoutReference<R, T> extends MapOverImpl<R, T> {
 
   private final MapOverWithoutReference<R, R> root;
-  private final BiRecursivePropertyWalker<T, T> walker;
 
   @SuppressWarnings("unchecked")
   protected MapOverWithoutReference(Class<T> beanType) {
-    requireNonNull(beanType, "beanType must not be null!");
+    super(beanType);
     this.root = (MapOverWithoutReference<R, R>) this;
-    this.walker = BiRecursivePropertyWalker.create(beanType);
   }
 
   protected MapOverWithoutReference(MapOverWithoutReference<R, R> root, BiRecursivePropertyWalker<T, T> walker) {
+    super(walker);
     requireNonNull(root, "root must not be null!");
     this.root = root;
-    this.walker = walker;
+  }
+
+  public <TT, ID> MapOverPropertyWithoutReferenceBuilder<MapOverWithoutReference<R, T>, R, T, TT> mapProperty(
+      Function<T, TT> propertyExtractor, BiConsumer<T, TT> propertyWriter) {
+    return new MapOverPropertyWithoutReferenceBuilder<>(this, propertyExtractor, propertyWriter);
   }
 
   @SuppressWarnings("unchecked")
@@ -42,4 +42,9 @@ public class MapOverWithoutReference<R, T>
   public MapOverWithoutReference<R, R> root() {
     return getRoot();
   }
+
+  public MapOver<R, R> build() {
+    return getRoot();
+  }
+
 }

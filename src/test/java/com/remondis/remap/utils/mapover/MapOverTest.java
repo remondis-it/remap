@@ -52,10 +52,14 @@ class MapOverTest {
 
     MapOver<A, A> mapOver = MapOver.create(A.class)
         .mapProperty(A::getString, A::setString)
+        .byOverwrite()
         .goInto(A::getB, A::setB, B.class)
+        .mapProperty(B::getInteger, B::setInteger)
+        .byOverwrite()
+        .goInto(B::getInteger, B::setInteger, Integer.class)
+        //TODO parent
         .mapProperty(B::getString, B::setString)
-        .root()
-        .mapProperty(A::getInteger, A::setInteger)
+        .byOverwrite()
         .build();
 
     mapOver.mapOver(a1, a2);

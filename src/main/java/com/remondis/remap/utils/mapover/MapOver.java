@@ -30,7 +30,7 @@ import jakarta.persistence.EntityManager;
  *
  * @param <T> The root bean type
  */
-public interface MapOver<R, T> extends MapOverBase<R, T> {
+public interface MapOver<R, T> {
 
   static <R> MapOverWithoutReference<R, R> create(Class<R> beanType) {
     return new MapOverWithoutReference<>(beanType);
@@ -40,11 +40,5 @@ public interface MapOver<R, T> extends MapOverBase<R, T> {
     return new MapOverWithReference<>(beanType, entityManager);
   }
 
-  default MapOver<R, R> build() {
-    return getRoot();
-  }
-
-  default void mapOver(T source, T target) {
-    getWalker().execute(source, target);
-  }
+  void mapOver(T source, T target);
 }
