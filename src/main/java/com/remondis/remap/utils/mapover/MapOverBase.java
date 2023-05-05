@@ -2,6 +2,7 @@ package com.remondis.remap.utils.mapover;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -26,9 +27,14 @@ public class MapOverBase<R, T> extends MapOverCommon<R, T> {
     this.root = root;
   }
 
-  public <TT> MapOverPropertyBuilder<MapOverBase<R, T>, R, T, TT> mapProperty(
-      Function<T, TT> propertyExtractor, BiConsumer<T, TT> propertyWriter) {
+  public <TT> MapOverPropertyBuilder<MapOverBase<R, T>, R, T, TT> mapProperty(Function<T, TT> propertyExtractor,
+      BiConsumer<T, TT> propertyWriter) {
     return new MapOverPropertyBuilder<>(this, propertyExtractor, propertyWriter);
+  }
+
+  public <TT> MapOverCollectionMatchBuilder<MapOverBase<R, T>, R, T, TT> mapCollection(
+      Function<T, Collection<TT>> propertyExtractor) {
+    return new MapOverCollectionMatchBuilder<>(this, propertyExtractor);
   }
 
   @SuppressWarnings("unchecked")
