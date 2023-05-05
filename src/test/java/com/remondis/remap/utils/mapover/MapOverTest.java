@@ -57,21 +57,17 @@ class MapOverTest {
         .byOverwrite()
         .goInto(A::getB, A::setB, B.class)
         .mapProperty(B::getInteger, B::setInteger)
-        .byMapper()
-        //TODO parent?
         .byOverwrite()
         .build();
 
-    MapOver<A, A> mapOver = MapOver.create(A.class, Mockito.mock(EntityManager.class))
+    MapOver<A, A> mapOverReference = MapOver.create(A.class, Mockito.mock(EntityManager.class))
         .mapProperty(A::getString, A::setString)
         .byOverwrite()
         .goInto(A::getB, A::setB, B.class)
         .mapProperty(B::getInteger, B::setInteger)
         .byOverwrite()
         .goInto(B::getInteger, B::setInteger, Integer.class)
-        //TODO parent
-        .mapProperty(B::getString, B::setString)
-        .byOverwrite()
+        .root()
         .build();
 
     mapOver.mapOver(a1, a2);
@@ -88,7 +84,9 @@ class MapOverTest {
   void shouldMapColelctionFromSourceToTarget() {
     // given
     MapOver<C, C> mapOver = MapOver.create(C.class)
-        .mapCollection(C::getCollection, B::getInteger)
+        .mapCollection(C::getCollection)
+        .matchedByProperty(B::getInteger)
+        .byOverwrite()
         .build();
 
     // when

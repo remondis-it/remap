@@ -5,6 +5,7 @@ import com.remondis.remap.utils.property.walker.BiRecursivePropertyWalker;
 import jakarta.persistence.EntityManager;
 import lombok.Getter;
 
+import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -38,6 +39,11 @@ public class MapOverWithReference<R, T> extends MapOverCommon<R, T> {
     return new MapOverPropertyReferenceBuilder<>(this, propertyExtractor, propertyWriter);
   }
 
+  public <TT> MapOverCollectionMatchReferenceBuilder<MapOverWithReference<R, T>, R, T, TT> mapCollection(
+      Function<T, Collection<TT>> propertyExtractor) {
+    return new MapOverCollectionMatchReferenceBuilder<>(this, propertyExtractor);
+  }
+
   @SuppressWarnings("unchecked")
   public <TT> MapOverWithReference<R, TT> goInto(Function<T, TT> propertyExtractor, BiConsumer<T, TT> propertyWriter,
       Class<TT> beanType) {
@@ -46,6 +52,10 @@ public class MapOverWithReference<R, T> extends MapOverCommon<R, T> {
   }
 
   public MapOverWithReference<R, R> root() {
+    return getRoot();
+  }
+
+  public MapOver<R, R> build() {
     return getRoot();
   }
 }
