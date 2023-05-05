@@ -10,7 +10,7 @@ import com.remondis.remap.utils.property.visitor.VisitorFunction;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class MapOverPropertyWithoutReferenceBuilder<M extends MapOverWithoutReference<R, T>, R, T, TT> {
+public class MapOverPropertyBuilder<M extends MapOverCommon<R, T>, R, T, TT> {
   protected final M mapOver;
   protected final Function<T, TT> propertyExtractor;
   protected final BiConsumer<T, TT> propertyWriter;

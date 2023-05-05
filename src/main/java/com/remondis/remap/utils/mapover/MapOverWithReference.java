@@ -11,7 +11,7 @@ import java.util.function.Function;
 import static java.util.Objects.requireNonNull;
 
 @Getter
-public class MapOverWithReference<R, T> extends MapOverImpl<R, T> {
+public class MapOverWithReference<R, T> extends MapOverCommon<R, T> {
 
   private final MapOverWithReference<R, R> root;
   private final EntityManager entityManager;
@@ -33,9 +33,9 @@ public class MapOverWithReference<R, T> extends MapOverImpl<R, T> {
     this.entityManager = entityManager;
   }
 
-  public <TT, ID> MapOverPropertyWithReferenceBuilder<MapOverWithReference<R, T>, R, T, TT> mapProperty(
+  public <TT> MapOverPropertyReferenceBuilder<MapOverWithReference<R, T>, R, T, TT> mapProperty(
       Function<T, TT> propertyExtractor, BiConsumer<T, TT> propertyWriter) {
-    return new MapOverPropertyWithReferenceBuilder<>(this, propertyExtractor, propertyWriter);
+    return new MapOverPropertyReferenceBuilder<>(this, propertyExtractor, propertyWriter);
   }
 
   @SuppressWarnings("unchecked")

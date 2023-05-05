@@ -32,8 +32,8 @@ import jakarta.persistence.EntityManager;
  */
 public interface MapOver<R, T> {
 
-  static <R> MapOverWithoutReference<R, R> create(Class<R> beanType) {
-    return new MapOverWithoutReference<>(beanType);
+  static <R> MapOverBase<R, R> create(Class<R> beanType) {
+    return new MapOverBase<>(beanType);
   }
 
   static <R> MapOverWithReference<R, R> create(Class<R> beanType, EntityManager entityManager) {

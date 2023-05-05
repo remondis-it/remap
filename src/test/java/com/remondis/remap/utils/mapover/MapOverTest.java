@@ -15,8 +15,10 @@ import java.util.function.Function;
 import com.remondis.remap.basic.A;
 import com.remondis.remap.basic.B;
 import com.remondis.remap.basic.C;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class MapOverTest {
   private A a1, a2;
@@ -51,6 +53,16 @@ class MapOverTest {
     assertNotEquals(a1.getInteger(), a2.getInteger());
 
     MapOver<A, A> mapOver = MapOver.create(A.class)
+        .mapProperty(A::getString, A::setString)
+        .byOverwrite()
+        .goInto(A::getB, A::setB, B.class)
+        .mapProperty(B::getInteger, B::setInteger)
+        .byMapper()
+        //TODO parent?
+        .byOverwrite()
+        .build();
+
+    MapOver<A, A> mapOver = MapOver.create(A.class, Mockito.mock(EntityManager.class))
         .mapProperty(A::getString, A::setString)
         .byOverwrite()
         .goInto(A::getB, A::setB, B.class)

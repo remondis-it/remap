@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 import static com.remondis.remap.utils.property.ChangeType.ALL;
 
-public interface MapOverMapWithoutReference<M extends MapOver<R, T>, R, T> extends MapOverBase<R, T> {
+public interface MapOverMapWithoutReference<M extends MapOver<R, T>, R, T> extends MapOverCommon<R, T> {
 
   // Override
   default <TT> M mapMap(Function<T, Map<Object, TT>> propertyExtractor) {
