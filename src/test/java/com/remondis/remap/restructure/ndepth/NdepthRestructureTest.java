@@ -1,9 +1,7 @@
 package com.remondis.remap.restructure.ndepth;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertSame;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
@@ -12,11 +10,12 @@ import com.remondis.remap.MappingModel;
 import com.remondis.remap.restructure.Address;
 import com.remondis.remap.restructure.Bean;
 import com.remondis.resample.Samples;
+import org.junit.jupiter.api.Test;
 
-public class NdepthRestructureTest {
+class NdepthRestructureTest {
 
   @Test
-  public void shouldReturnMappingModel_n_depth_for_Restructure_n_depth() {
+  void shouldReturnMappingModel_n_depth_for_Restructure_n_depth() {
 
     Mapper<Bean, Bean2> mapper = createMapper();
     MappingModel<Bean, Bean2>.TransformationSearchResult result = mapper.getMappingModel()
@@ -25,7 +24,7 @@ public class NdepthRestructureTest {
   }
 
   @Test
-  public void shouldRestructure_n_depth() {
+  void shouldRestructure_n_depth() {
 
     Mapper<Bean, Bean2> mapper = createMapper();
 
@@ -50,7 +49,7 @@ public class NdepthRestructureTest {
   }
 
   @Test
-  public void shouldAssertRestructuring() {
+  void shouldAssertRestructuring() {
     AssertMapping.of(createMapper())
         .expectOtherSourceFieldsToBeOmitted()
         .expectRestructure(Bean2::getPerson)
@@ -60,18 +59,19 @@ public class NdepthRestructureTest {
   }
 
   @Test
-  public void shouldComplainAboutUnexpectedMappingConfiguration() {
+  void shouldComplainAboutUnexpectedMappingConfiguration() {
     assertThatThrownBy(() -> AssertMapping.of(createMapper())
         .expectOtherSourceFieldsToBeOmitted()
         .expectRestructure(Bean2::getPerson)
         .implicitly()
-        .ensure()).hasMessage("The mapping from source type com.remondis.remap.restructure.Bean\n"
+        .ensure())
+        .hasMessage("The mapping from source type com.remondis.remap.restructure.Bean\n"
             + "used for restructuring of field Property 'person' in com.remondis.remap.restructure.ndepth.Bean2\n"
             + "was configured to apply specific mapping configuration but was expected to create implicit mapping.");
   }
 
   @Test
-  public void shouldCompainAboutDifferentMappings() {
+  void shouldCompainAboutDifferentMappings() {
     Mapper<Bean, Bean2> mapper = Mapping.from(Bean.class)
         .to(Bean2.class)
         .omitOtherSourceProperties()
@@ -89,7 +89,8 @@ public class NdepthRestructureTest {
         .applying(config -> config.expectRestructure(Person::getAddress)
             .applying(bean2AddressMapper -> bean2AddressMapper.expectReassign(Bean::getCity)
                 .to(Address::getCity)))
-        .ensure()).hasMessage("The mapping from source type com.remondis.remap.restructure.Bean\n"
+        .ensure())
+        .hasMessage("The mapping from source type com.remondis.remap.restructure.Bean\n"
             + "used for restructuring of field in Property 'person' in com.remondis.remap.restructure.ndepth.Bean2\n"
             + "did not meet assertions:\n"
             + "The following expected transformation were not specified on the mapping:\n"
@@ -97,14 +98,15 @@ public class NdepthRestructureTest {
   }
 
   @Test
-  public void shouldComplainAboutUnexpectedNestedMappingConfiguration() {
+  void shouldComplainAboutUnexpectedNestedMappingConfiguration() {
     assertThatThrownBy(() -> AssertMapping.of(createMapper())
         .expectOtherSourceFieldsToBeOmitted()
         .expectRestructure(Bean2::getPerson)
         .applying(config -> config.expectRestructure(Person::getAddress)
             .applying(bean2AddressMapper -> bean2AddressMapper.expectReassign(Bean::getCity)
                 .to(Address::getCity)))
-        .ensure()).hasMessage("The mapping from source type com.remondis.remap.restructure.Bean\n"
+        .ensure())
+        .hasMessage("The mapping from source type com.remondis.remap.restructure.Bean\n"
             + "used for restructuring of field in Property 'person' in com.remondis.remap.restructure.ndepth.Bean2\n"
             + "did not meet assertions:\n" + "The mapping from source type com.remondis.remap.restructure.Bean\n"
             + "used for restructuring of field Property 'address' in com.remondis.remap.restructure.ndepth.Person\n"

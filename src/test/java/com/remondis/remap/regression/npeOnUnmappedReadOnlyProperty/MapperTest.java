@@ -2,17 +2,14 @@ package com.remondis.remap.regression.npeOnUnmappedReadOnlyProperty;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.Test;
-
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.Test;
 
-public class MapperTest {
+class MapperTest {
   @Test
-  public void test() {
-    assertThatThrownBy(() -> {
-      Mapping.from(A.class)
-          .to(B.class)
-          .mapper();
-    }).hasMessageStartingWith("The following properties are unmapped:");
+  void test() {
+    assertThatThrownBy(() -> Mapping.from(A.class)
+        .to(B.class)
+        .mapper()).hasMessageStartingWith("The following properties are unmapped:");
   }
 }

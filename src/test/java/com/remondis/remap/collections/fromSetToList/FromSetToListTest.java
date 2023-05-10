@@ -4,15 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-import org.junit.Test;
-
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.Test;
 
-public class FromSetToListTest {
+class FromSetToListTest {
 
   @Test
-  public void test() {
+  void test() {
     A a = new A();
     a.add(new A1("a1"));
     a.add(new A1("a2"));

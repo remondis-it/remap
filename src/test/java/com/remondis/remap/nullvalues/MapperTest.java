@@ -1,17 +1,17 @@
 package com.remondis.remap.nullvalues;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.junit.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.Test;
 
-public class MapperTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class MapperTest {
 
   private static final Long ZAHL_IN_A = -88L;
   private static final Integer B_INTEGER = -999;
@@ -22,7 +22,7 @@ public class MapperTest {
   private static final String STRING = "a string";
 
   @Test
-  public void shouldSkipReplaceNullValues() {
+  void shouldSkipReplaceNullValues() {
     AtomicBoolean called = new AtomicBoolean(false);
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
@@ -48,11 +48,11 @@ public class MapperTest {
     AResource ar = mapper.map(a);
     assertFalse(called.get());
 
-    assertEquals(null, a.getMoreInA());
-    assertEquals(null, ar.getMoreInAResource());
+    assertNull(a.getMoreInA());
+    assertNull(ar.getMoreInAResource());
 
-    assertEquals(null, a.getNamedB());
-    assertEquals(null, ar.getOtherNamedB());
+    assertNull(a.getNamedB());
+    assertNull(ar.getOtherNamedB());
 
     assertEquals(STRING, a.getString());
     assertEquals(STRING, ar.getString());
@@ -73,7 +73,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldNotSkipReplaceNullValues() {
+  void shouldNotSkipReplaceNullValues() {
     AtomicBoolean called = new AtomicBoolean(false);
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
@@ -99,11 +99,11 @@ public class MapperTest {
     AResource ar = mapper.map(a);
     assertTrue(called.get());
 
-    assertEquals(null, a.getMoreInA());
-    assertEquals(null, ar.getMoreInAResource());
+    assertNull(a.getMoreInA());
+    assertNull(ar.getMoreInAResource());
 
-    assertEquals(null, a.getNamedB());
-    assertEquals(null, ar.getOtherNamedB());
+    assertNull(a.getNamedB());
+    assertNull(ar.getOtherNamedB());
 
     assertEquals(STRING, a.getString());
     assertEquals(STRING, ar.getString());
@@ -124,7 +124,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldReassignNullValue() {
+  void shouldReassignNullValue() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .reassign(A::getMoreInA)
@@ -145,11 +145,11 @@ public class MapperTest {
 
     AResource ar = mapper.map(a);
 
-    assertEquals(null, a.getMoreInA());
-    assertEquals(null, ar.getMoreInAResource());
+    assertNull(a.getMoreInA());
+    assertNull(ar.getMoreInAResource());
 
-    assertEquals(null, a.getNamedB());
-    assertEquals(null, ar.getOtherNamedB());
+    assertNull(a.getNamedB());
+    assertNull(ar.getOtherNamedB());
 
     assertEquals(STRING, a.getString());
     assertEquals(STRING, ar.getString());

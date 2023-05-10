@@ -62,8 +62,8 @@ public class ReplaceBuilder<S, D, RD, RS> {
    */
   public <E extends Exception> MappingConfiguration<S, D> withPropertyPath(PropertyPath<RD, RS, E> propertyPath) {
     denyNull("propertyPath", propertyPath);
-    PropertyPathTransformation<RS, RD, RD> replace = new PropertyPathTransformation<RS, RD, RD>(mapping,
-        sourceProperty.property, destProperty.property, propertyPath);
+    PropertyPathTransformation<RS, RD, RD> replace = new PropertyPathTransformation<>(mapping, sourceProperty.property,
+        destProperty.property, propertyPath);
     mapping.addMapping(sourceProperty.property, destProperty.property, replace);
     return mapping;
   }
@@ -83,7 +83,7 @@ public class ReplaceBuilder<S, D, RD, RS> {
   public <X, E extends Exception> PropertyPathAndApplyBuilder<S, D, RD, X, RS, E> withPropertyPathAnd(
       PropertyPath<X, RS, E> propertyPath) {
     denyNull("propertyPath", propertyPath);
-    return new PropertyPathAndApplyBuilder<S, D, RD, X, RS, E>(mapping, sourceProperty, destProperty, propertyPath);
+    return new PropertyPathAndApplyBuilder<>(mapping, sourceProperty, destProperty, propertyPath);
   }
 
   /**

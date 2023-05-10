@@ -109,8 +109,6 @@ public class GenericParameterContext {
   /**
    * Finds the generic return type of a method in nested generics. For example this method returns {@link String} when
    * called on a method like <code>List&lt;List&lt;Set&lt;String&gt;&gt;&gt; get();</code>.
-   *
-   * @param method The method to analyze.
    */
   void findNextGenericTypeFromMethod(int genericParameterIndex) {
     // If the first type is requested, initialize context.

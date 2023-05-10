@@ -93,9 +93,7 @@ public class AssertConfiguration<S, D> {
     PropertyDescriptor sourceProperty = getPropertyFromFieldSelector(Target.SOURCE, ASSIGN, getMapping().getSource(),
         sourceSelector, mapper.getMapping()
             .isFluentSettersAllowed());
-    ReassignAssertBuilder<S, D, RS> reassignBuilder = new ReassignAssertBuilder<S, D, RS>(sourceProperty,
-        getMapping().getDestination(), this);
-    return reassignBuilder;
+    return new ReassignAssertBuilder<>(sourceProperty, getMapping().getDestination(), this);
   }
 
   /**
@@ -136,8 +134,7 @@ public class AssertConfiguration<S, D> {
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION, TRANSFORM,
         getMapping().getDestination(), destinationSelector, mapper.getMapping()
             .isFluentSettersAllowed());
-    SetAssertBuilder<S, D, RD> builder = new SetAssertBuilder<>(destProperty, this);
-    return builder;
+    return new SetAssertBuilder<>(destProperty, this);
   }
 
   /**
@@ -153,8 +150,7 @@ public class AssertConfiguration<S, D> {
     TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION, TRANSFORM,
         getMapping().getDestination(), destinationSelector, mapper.getMapping()
             .isFluentSettersAllowed());
-    RestructureAssertBuilder<S, D, RD> builder = new RestructureAssertBuilder<>(destProperty, this);
-    return builder;
+    return new RestructureAssertBuilder<>(destProperty, this);
   }
 
   /**
@@ -177,9 +173,7 @@ public class AssertConfiguration<S, D> {
         ReplaceBuilder.TRANSFORM, getMapping().getDestination(), destinationSelector, mapper.getMapping()
             .isFluentSettersAllowed());
 
-    ReplaceCollectionAssertBuilder<S, D, RD, RS> builder = new ReplaceCollectionAssertBuilder<>(sourceProperty,
-        destProperty, this);
-    return builder;
+    return new ReplaceCollectionAssertBuilder<>(sourceProperty, destProperty, this);
   }
 
   private void _add(Transformation transformation) {
@@ -313,8 +307,7 @@ public class AssertConfiguration<S, D> {
   }
 
   private void checkVerifications() {
-    verificaions.stream()
-        .forEach(AssertVerification::verify);
+    verificaions.forEach(AssertVerification::verify);
   }
 
   private void checkImplicitMappingStrategy() {
@@ -354,17 +347,12 @@ public class AssertConfiguration<S, D> {
   /**
    * This method checks the replace functions is null-safe if null strategy is not skip-when-null.
    */
-  @SuppressWarnings("rawtypes")
   private void checkReplaceFunctions() {
     Set<Transformation> mappings = mapper.getMapping()
         .getMappings();
     mappings.stream()
-        .filter(t -> {
-          return (t instanceof SkipWhenNullTransformation);
-        })
-        .map(t -> {
-          return (SkipWhenNullTransformation) t;
-        })
+        .filter(SkipWhenNullTransformation.class::isInstance)
+        .map(SkipWhenNullTransformation.class::cast)
         .forEach(r -> {
           Function<?, ?> transformation = r.getTransformation();
           if (!r.isSkipWhenNull()) {
@@ -401,35 +389,23 @@ public class AssertConfiguration<S, D> {
         .getMappings();
 
     mappings.stream()
-        .filter(t -> {
-          return (t instanceof SkipWhenNullTransformation);
-        })
-        .map(t -> {
-          return (SkipWhenNullTransformation) t;
-        })
+        .filter(SkipWhenNullTransformation.class::isInstance)
+        .map(t -> (SkipWhenNullTransformation) t)
         .forEach(replace -> {
           Optional<SkipWhenNullTransformation> sameTransformation = assertedTransformations().stream()
-              .filter(t -> {
-                return (t instanceof SkipWhenNullTransformation);
-              })
-              .map(t -> {
-                return (SkipWhenNullTransformation) t;
-              })
-              .filter(r -> {
-                return r.getSourceProperty()
-                    .equals(replace.getSourceProperty());
-              })
-              .filter(r -> {
-                return r.getDestinationProperty()
-                    .equals(replace.getDestinationProperty());
-              })
+              .filter(SkipWhenNullTransformation.class::isInstance)
+              .map(t -> (SkipWhenNullTransformation) t)
+              .filter(r -> r.getSourceProperty()
+                  .equals(replace.getSourceProperty()))
+              .filter(r -> r.getDestinationProperty()
+                  .equals(replace.getDestinationProperty()))
               .findFirst();
           if (sameTransformation.isPresent()) {
             SkipWhenNullTransformation assertedReplaceTransformation = sameTransformation.get();
             // Check if the configured replace transformation has the same skip-null configuration than the asserted
             // one and throw if not
             if (replace.isSkipWhenNull() != assertedReplaceTransformation.isSkipWhenNull()) {
-              throw new AssertionError(DIFFERENT_NULL_STRATEGY + replace.toString());
+              throw new AssertionError(DIFFERENT_NULL_STRATEGY + replace);
             }
           }
         });
@@ -489,11 +465,9 @@ public class AssertConfiguration<S, D> {
 
   private String listCollection(Set<Transformation> transformations) {
     StringBuilder b = new StringBuilder();
-    transformations.stream()
-        .forEach(t -> {
-          b.append("- " + t.toString())
-              .append("\n");
-        });
+    transformations.forEach(t -> b.append("- ")
+        .append(t.toString())
+        .append("\n"));
     return b.toString();
   }
 

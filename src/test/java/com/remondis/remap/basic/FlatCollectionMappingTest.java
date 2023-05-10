@@ -2,15 +2,13 @@ package com.remondis.remap.basic;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
-
-import org.junit.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
@@ -18,11 +16,12 @@ import com.remondis.remap.Mapping;
 import com.remondis.remap.flatCollectionMapping.Destination;
 import com.remondis.remap.flatCollectionMapping.Id;
 import com.remondis.remap.flatCollectionMapping.Source;
+import org.junit.jupiter.api.Test;
 
 public class FlatCollectionMappingTest {
 
   @Test
-  public void shouldMapCollectionByFunction() {
+  void shouldMapCollectionByFunction() {
     Mapper<Source, Destination> mapper = Mapping.from(Source.class)
         .to(Destination.class)
         .replaceCollection(Source::getIds, Destination::getIds)
@@ -43,32 +42,26 @@ public class FlatCollectionMappingTest {
   }
 
   @Test
-  public void shouldDetectIllegalArguments() {
-    assertThatThrownBy(() -> {
-      Mapping.from(Source.class)
-          .to(Destination.class)
-          .replaceCollection(null, Destination::getIds);
-    }).isInstanceOf(IllegalArgumentException.class)
+  void shouldDetectIllegalArguments() {
+    assertThatThrownBy(() -> Mapping.from(Source.class)
+        .to(Destination.class)
+        .replaceCollection(null, Destination::getIds)).isInstanceOf(IllegalArgumentException.class)
         .hasNoCause();
 
-    assertThatThrownBy(() -> {
-      Mapping.from(Source.class)
-          .to(Destination.class)
-          .replaceCollection(Source::getIds, null);
-    }).isInstanceOf(IllegalArgumentException.class)
+    assertThatThrownBy(() -> Mapping.from(Source.class)
+        .to(Destination.class)
+        .replaceCollection(Source::getIds, null)).isInstanceOf(IllegalArgumentException.class)
         .hasNoCause();
 
-    assertThatThrownBy(() -> {
-      Mapping.from(Source.class)
-          .to(Destination.class)
-          .replaceCollection(Source::getIds, Destination::getIds)
-          .with(null);
-    }).isInstanceOf(IllegalArgumentException.class)
+    assertThatThrownBy(() -> Mapping.from(Source.class)
+        .to(Destination.class)
+        .replaceCollection(Source::getIds, Destination::getIds)
+        .with(null)).isInstanceOf(IllegalArgumentException.class)
         .hasNoCause();
   }
 
   @Test
-  public void shouldNotSkipNullItems() {
+  void shouldNotSkipNullItems() {
     Mapper<Source, Destination> mapper = Mapping.from(Source.class)
         .to(Destination.class)
         .replaceCollection(Source::getIds, Destination::getIds)
@@ -92,7 +85,7 @@ public class FlatCollectionMappingTest {
   }
 
   @Test
-  public void shouldSkipNullItems() {
+  void shouldSkipNullItems() {
     Mapper<Source, Destination> mapper = Mapping.from(Source.class)
         .to(Destination.class)
         .replaceCollection(Source::getIds, Destination::getIds)
@@ -114,7 +107,7 @@ public class FlatCollectionMappingTest {
   }
 
   @Test
-  public void nullCollection() {
+  void nullCollection() {
     Mapper<Source, Destination> mapper = Mapping.from(Source.class)
         .to(Destination.class)
         .replaceCollection(Source::getIds, Destination::getIds)
@@ -127,26 +120,24 @@ public class FlatCollectionMappingTest {
   }
 
   @Test
-  public void shouldDetectDifferentNullStrategy() {
+  void shouldDetectDifferentNullStrategy() {
     Mapper<Source, Destination> mapper = Mapping.from(Source.class)
         .to(Destination.class)
         .replaceCollection(Source::getIds, Destination::getIds)
         .with(idBuilder())
         .mapper();
 
-    assertThatThrownBy(() -> {
-      AssertMapping.of(mapper)
-          .expectReplaceCollection(Source::getIds, Destination::getIds)
-          .andSkipWhenNull()
-          .ensure();
-    }).isInstanceOf(AssertionError.class)
+    assertThatThrownBy(() -> AssertMapping.of(mapper)
+        .expectReplaceCollection(Source::getIds, Destination::getIds)
+        .andSkipWhenNull()
+        .ensure()).isInstanceOf(AssertionError.class)
         .hasMessageContaining(
             "The replace transformation specified by the mapper has a different null value strategy than the expected transformation:")
         .hasNoCause();
   }
 
   public static Function<Long, Id> idBuilder() {
-    return id -> new Id(id);
+    return Id::new;
   }
 
 }

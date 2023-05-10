@@ -107,12 +107,12 @@ public class MappingModel<S, D> {
         .collect(Collectors.toList());
     MappingModel<S, D>.TransformationSearchResult candidates = new TransformationSearchResult(transformations);
     boolean allMatch = transformations.stream()
-        .allMatch(t -> t instanceof OmitTransformation);
+        .allMatch(OmitTransformation.class::isInstance);
 
     if (allMatch) {
       return mapping.getMappings()
           .stream()
-          .filter(t -> t instanceof RestructureTransformation)
+          .filter(RestructureTransformation.class::isInstance)
           .map(t -> (RestructureTransformation) t)
           .map(rT -> rT.getRestructureMapper()
               .getMappingModel()
@@ -152,7 +152,7 @@ public class MappingModel<S, D> {
    * @return Returns a new {@link Predicate}.
    */
   public static Predicate<String> nameEqualsPredicate(String sourceFieldName) {
-    return s -> sourceFieldName.equals(s);
+    return sourceFieldName::equals;
   }
 
   /**
@@ -163,16 +163,14 @@ public class MappingModel<S, D> {
    * @return Returns a new {@link Predicate}.
    */
   public static Predicate<String> nameEqualsPredicateIgnoreCase(String sourceFieldName) {
-    return s -> sourceFieldName.equalsIgnoreCase(s);
+    return sourceFieldName::equalsIgnoreCase;
   }
 
   private Predicate<Transformation> toPredicate(Predicate<String> propertyNamePredicate,
       Function<Transformation, PropertyDescriptor> pdExtractor) {
     requireNonNull(propertyNamePredicate, "predicate must not be null!");
-    return t -> {
-      return propertyNamePredicate.test(pdExtractor.apply(t)
-          .getName());
-    };
+    return t -> propertyNamePredicate.test(pdExtractor.apply(t)
+        .getName());
   }
 
   private Predicate<Transformation> toSourcePredicate(Predicate<String> sourcePropertySelector) {

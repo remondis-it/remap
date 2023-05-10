@@ -1,15 +1,14 @@
 package com.remondis.remap.visibility;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.Test;
 
-public class VisibilityTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class VisibilityTest {
   @Test
-  public void testVisibility() {
+  void testVisibility() {
     Mapper<C, CResource> mapper = Mapping.from(C.class)
         .to(CResource.class)
         .mapper();

@@ -18,7 +18,7 @@ public class FluentSetterDto {
   }
 
   public int getI() {
-    return integer;
+    return i;
   }
 
   public FluentSetterDto setI(int i) {

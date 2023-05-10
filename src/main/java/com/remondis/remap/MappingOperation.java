@@ -12,5 +12,5 @@ public enum MappingOperation {
    * Signals that the value should be used as mapping result. If value ist <code>null</code>, <code>null</code> should
    * be used as mapping result value.
    */
-  VALUE;
+  VALUE
 }

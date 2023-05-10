@@ -1,10 +1,11 @@
 package com.remondis.remap.fluent;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
@@ -12,10 +13,10 @@ import com.remondis.remap.Mapping;
 import com.remondis.remap.MappingConfiguration;
 import com.remondis.remap.MappingException;
 
-public class ChainedSetterTest {
+class ChainedSetterTest {
 
   @Test
-  public void testChainedSetter() {
+  void testChainedSetter() {
     Mapper<FluentSetterDto, FluentSetterDto> m = Mapping.from(FluentSetterDto.class)
         .to(FluentSetterDto.class)
         .allowFluentSetters()
@@ -30,41 +31,35 @@ public class ChainedSetterTest {
   }
 
   @Test
-  public void shouldComplainAboutEnabledFluentSetters() {
+  void shouldComplainAboutEnabledFluentSetters() {
     Mapper<FluentSetterDto, FluentSetterDto> mapper = Mapping.from(FluentSetterDto.class)
         .to(FluentSetterDto.class)
         .allowFluentSetters()
         .mapper();
 
-    Assertions.assertThatThrownBy(() -> {
-      AssertMapping.of(mapper)
-          .ensure();
-    })
-        .isInstanceOf(AssertionError.class)
+    assertThatThrownBy(() -> AssertMapping.of(mapper)
+        .ensure()).isInstanceOf(AssertionError.class)
         .hasMessageContaining(
             "The mapper was expected to only support Java Bean compliant setter methods, but the current mapper is configured to also support fluent setter methods.");
   }
 
   @Test
-  public void shouldComplainAboutDisabledFluentSetters() {
+  void shouldComplainAboutDisabledFluentSetters() {
     Mapper<FluentSetterDto, FluentSetterDto> mapper = Mapping.from(FluentSetterDto.class)
         .to(FluentSetterDto.class)
         .omitOthers()
         .mapper();
 
-    Assertions.assertThatThrownBy(() -> {
-      AssertMapping.of(mapper)
-          .expectOthersToBeOmitted()
-          .expectFluentSettersAllowed()
-          .ensure();
-    })
-        .isInstanceOf(AssertionError.class)
+    assertThatThrownBy(() -> AssertMapping.of(mapper)
+        .expectOthersToBeOmitted()
+        .expectFluentSettersAllowed()
+        .ensure()).isInstanceOf(AssertionError.class)
         .hasMessageContaining(
             "The mapper was expected to support fluent setter methods, but the current mapper is configured to only handle Java Bean compliant setter methods.");
   }
 
   @Test
-  public void shouldTestTheMapperWithoutErrors() {
+  void shouldTestTheMapperWithoutErrors() {
     Mapper<FluentSetterDto, FluentSetterDto> mapper = Mapping.from(FluentSetterDto.class)
         .to(FluentSetterDto.class)
         .omitOthers()
@@ -75,15 +70,15 @@ public class ChainedSetterTest {
         .ensure();
   }
 
-  @Test(expected = MappingException.class)
-  public void shouldComplainAboutUnmappedProperties_dueToFluentSettersDisabled() {
-    Mapping.from(FluentSetterDto.class)
+  @Test
+  void shouldComplainAboutUnmappedProperties_dueToFluentSettersDisabled() {
+    assertThrows(MappingException.class, () -> Mapping.from(FluentSetterDto.class)
         .to(FluentSetterDto.class)
-        .mapper();
+        .mapper());
   }
 
   @Test
-  public void shouldNotComplainAboutMissingMappings_ifFluentSettersEnabled() {
+  void shouldNotComplainAboutMissingMappings_ifFluentSettersEnabled() {
     Mapping.from(FluentSetterDto.class)
         .to(FluentSetterDto.class)
         .allowFluentSetters()
@@ -91,7 +86,7 @@ public class ChainedSetterTest {
   }
 
   @Test
-  public void fluentSettersShouldBeDisabledByDefault_backwardsCompatibility() {
+  void fluentSettersShouldBeDisabledByDefault_backwardsCompatibility() {
     MappingConfiguration<FluentSetterDto, FluentSetterDto> mappingConfiguration = Mapping.from(FluentSetterDto.class)
         .to(FluentSetterDto.class);
     assertFalse(mappingConfiguration.isFluentSettersAllowed());

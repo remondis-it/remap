@@ -1,10 +1,11 @@
 package com.remondis.remap.collections;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
@@ -12,22 +13,22 @@ import com.remondis.remap.MappingException;
 import com.remondis.remap.basic.B;
 import com.remondis.remap.basic.BResource;
 
-public class CollectionsTest {
+class CollectionsTest {
 
   /**
    * There was a bug in collection mappings. It was possible to declare a
    * collection mapping while the mapper for the specified list elements was
    * missing.
    */
-  @Test(expected = MappingException.class)
-  public void shouldCheckForRequiredMappers() {
-    Mapping.from(A.class)
+  @Test
+  void shouldCheckForRequiredMappers() {
+    assertThrows(MappingException.class, () -> Mapping.from(A.class)
         .to(AResource.class)
-        .mapper();
+        .mapper());
   }
 
   @Test
-  public void shouldMapNestedCollections() {
+  void shouldMapNestedCollections() {
 
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
@@ -75,7 +76,7 @@ public class CollectionsTest {
   }
 
   @Test
-  public void shouldMapCollections() {
+  void shouldMapCollections() {
 
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)

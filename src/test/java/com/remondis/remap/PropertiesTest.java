@@ -1,24 +1,24 @@
 package com.remondis.remap;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.beans.PropertyDescriptor;
 import java.util.Optional;
 
-import org.junit.FixMethodOrder;
-import org.junit.Test;
-import org.junit.runners.MethodSorters;
-
 import com.remondis.remap.fluent.FluentSetterDto;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class PropertiesTest {
+import static com.remondis.remap.Target.DESTINATION;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@TestMethodOrder(MethodOrderer.MethodName.class)
+class PropertiesTest {
 
   @Test
-  public void a() {
+  void a() {
     Optional<PropertyDescriptor> pdFluentSetterNotThere = Properties
-        .getProperties(FluentSetterDto.class, Target.DESTINATION, false)
+        .getProperties(FluentSetterDto.class, DESTINATION, false)
         .stream()
         .filter(pd -> pd.getName()
             .equals("b1"))
@@ -27,23 +27,20 @@ public class PropertiesTest {
   }
 
   @Test
-  public void b() {
+  void b() {
     // Changes the property descriptor persistently (vm-wide?).
     // Some cache is working here
-    Optional<PropertyDescriptor> pdFluentSetter = Properties
-        .getProperties(FluentSetterDto.class, Target.DESTINATION, true)
+    Optional<PropertyDescriptor> pdFluentSetter = Properties.getProperties(FluentSetterDto.class, DESTINATION, true)
         .stream()
         .filter(pd -> pd.getName()
             .equals("b1"))
         .findFirst();
     assertTrue(pdFluentSetter.isPresent());
-
   }
 
   @Test
-  public void c() {
-    Optional<PropertyDescriptor> pdFluentSetter = Properties
-        .getProperties(FluentSetterDto.class, Target.DESTINATION, false)
+  void c() {
+    Optional<PropertyDescriptor> pdFluentSetter = Properties.getProperties(FluentSetterDto.class, DESTINATION, false)
         .stream()
         .filter(pd -> pd.getName()
             .equals("b1"))

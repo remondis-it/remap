@@ -12,7 +12,7 @@ public class A {
     super();
   }
 
-  public void addNestedLists(@SuppressWarnings("unchecked") Map<String, B>... lists) {
+  public void addNestedLists(Map<String, B>... lists) {
     this.nestedLists = Arrays.asList(lists);
   }
 
@@ -54,11 +54,9 @@ public class A {
       return false;
     A other = (A) obj;
     if (nestedLists == null) {
-      if (other.nestedLists != null)
-        return false;
-    } else if (!nestedLists.equals(other.nestedLists))
-      return false;
-    return true;
+      return other.nestedLists == null;
+    } else
+      return nestedLists.equals(other.nestedLists);
   }
 
 }

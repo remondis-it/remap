@@ -2,15 +2,14 @@ package com.remondis.remap.regression.methodCallsInConstructor;
 
 import java.util.function.Function;
 
-import org.junit.Test;
-
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.Test;
 
-public class MethodCallsInConstructorTest {
+class MethodCallsInConstructorTest {
 
   @Test
-  public void shouldNotComplainAboutInternalMethodsInConstructor() {
+  void shouldNotComplainAboutInternalMethodsInConstructor() {
     Mapper<A, A> mapper = Mapping.from(A.class)
         .to(A.class)
         .replace(A::getaString, A::getaString)
@@ -18,7 +17,6 @@ public class MethodCallsInConstructorTest {
         .mapper();
 
     mapper.map(new A("AString"));
-
   }
 
 }

@@ -1,18 +1,17 @@
 package com.remondis.remap.regression.capitalLetterBug;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
+import org.junit.jupiter.api.Test;
 
-public class MapperTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class MapperTest {
 
   private static final String STRING = "aString";
 
   @Test
-  public void shouldMapProperties() {
+  void shouldMapProperties() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .reassign(A::getAString)
