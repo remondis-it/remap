@@ -25,5 +25,5 @@ public class MapOverCommon<R, T> implements MapOver<R, T> {
   @Override
   public void mapOver(T source, T target) {
     walker.execute(source, target);
-  }
+  } //TODO handl collection/Map etc`?
 }

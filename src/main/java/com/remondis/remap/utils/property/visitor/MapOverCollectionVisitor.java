@@ -33,7 +33,7 @@ public class MapOverCollectionVisitor<T, TT, ID> implements VisitorFunction<T, C
   }
 
   public void consumeWithMatchProperty(PropertyAccess<T, Collection<TT>> access,
-      Function<TT, Object> matchPropertyExtractor) {
+      Function<TT, Object> matchPropertyExtractor) { //TODO order
     Collection<TT> sourceCollection = access.sourceProperty()
         .get();
     Collection<TT> targetCollection = access.targetProperty()
