@@ -539,7 +539,6 @@ public class MappingConfiguration<S, D> {
   static <R, T> TypedPropertyDescriptor<R> getTypedPropertyFromFieldSelector(InvocationSensor<?> invocationSensor,
       Target target, String configurationMethod, Class<T> sensorType, TypedSelector<R, T> selector,
       boolean fluentSetters) {
-    invocationSensor.reset();
     T sensor = (T) invocationSensor.getSensor();
     // perform the selector lambda on the sensor
     R returnValue = selector.selectField(sensor);
@@ -582,7 +581,6 @@ public class MappingConfiguration<S, D> {
 
   static <T> PropertyDescriptor getPropertyFromFieldSelector(InvocationSensor<?> invocationSensor, Target target,
       String configurationMethod, Class<T> sensorType, FieldSelector<T> selector, boolean fluentSetters) {
-    invocationSensor.reset();
     T sensor = (T) invocationSensor.getSensor();
     // perform the selector lambda on the sensor
     selector.selectField(sensor);
@@ -684,7 +682,7 @@ public class MappingConfiguration<S, D> {
    * mapping if the source value is <code>null</code>.
    *
    * @return Returns this {@link MappingConfiguration} object for further configuration.
-   * 
+   *
    * @deprecated This method is deprecated, because the map-into feature of ReMap is not correctly implemented and will
    *             be removed in future release.
    */
