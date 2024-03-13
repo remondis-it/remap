@@ -20,17 +20,12 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 
 public class InterceptionHandler<T> {
 
-  Class<?> type;
-
   T proxyObject;
 
   ThreadLocal<List<String>> threadLocalPropertyNames = new ThreadLocal<>();
 
-  /**
-   * Resets the thread local list of property names.
-   */
-  void reset() {
-    threadLocalPropertyNames.remove();
+  public InterceptionHandler() {
+    super();
   }
 
   /**
@@ -82,6 +77,13 @@ public class InterceptionHandler<T> {
     } else {
       return unmodifiableList(list);
     }
+  }
+
+  /**
+   * Resets the thread local list of property names.
+   */
+  void reset() {
+    threadLocalPropertyNames.remove();
   }
 
   public boolean hasTrackedProperties() {
