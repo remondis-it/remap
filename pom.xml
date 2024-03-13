@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.remondis</groupId>
     <artifactId>remap</artifactId>
-    <version>4.3.4</version>
+    <version>4.3.5</version>
     <packaging>jar</packaging>
     <name>ReMap</name>
     <description>A declarative mapping library for converting objects field by field.</description>
@@ -282,18 +282,18 @@
         <dependency>
             <groupId>com.remondis</groupId>
             <artifactId>propertypath</artifactId>
-            <version>0.1.3</version>
+            <version>0.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>4.3.16.RELEASE</version>
+            <version>6.1.4</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>4.3.16.RELEASE</version>
+            <version>6.1.4</version>
             <scope>provided</scope>
         </dependency>
 
