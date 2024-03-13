@@ -104,6 +104,10 @@ public class MappingConfiguration<S, D> {
    */
   private boolean allowFluentSetters;
 
+  private InvocationSensor<?> sourceInvocationSensor;
+
+  private InvocationSensor<?> destinationInvocationSensor;
+
   MappingConfiguration(Class<S> source, Class<D> destination) {
     this.source = source;
     this.destination = destination;
@@ -111,6 +115,20 @@ public class MappingConfiguration<S, D> {
     this.mappedSourceProperties = new HashSet<>();
     this.mappedDestinationProperties = new HashSet<>();
     this.mappers = new Hashtable<>();
+  }
+
+  private InvocationSensor<?> getSourceInvocationSensor() {
+    if (sourceInvocationSensor == null) {
+      this.sourceInvocationSensor = new InvocationSensor<>(source);
+    }
+    return sourceInvocationSensor;
+  }
+
+  private InvocationSensor<?> getDestinationeInvocationSensor() {
+    if (destinationInvocationSensor == null) {
+      this.destinationInvocationSensor = new InvocationSensor<>(destination);
+    }
+    return destinationInvocationSensor;
   }
 
   /**
@@ -124,8 +142,8 @@ public class MappingConfiguration<S, D> {
   public MappingConfiguration<S, D> omitInDestination(FieldSelector<D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
 
-    PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(Target.DESTINATION, OMIT_FIELD_DEST,
-        destination, destinationSelector, allowFluentSetters);
+    PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(getDestinationeInvocationSensor(),
+        Target.DESTINATION, OMIT_FIELD_DEST, destination, destinationSelector, allowFluentSetters);
     OmitTransformation omitDestination = OmitTransformation.omitDestination(this, propertyDescriptor);
     omitMapping(mappedDestinationProperties, propertyDescriptor, omitDestination);
     return this;
@@ -219,8 +237,8 @@ public class MappingConfiguration<S, D> {
   public MappingConfiguration<S, D> omitInSource(FieldSelector<S> sourceSelector) {
     denyNull("sourceSelector", sourceSelector);
     // Omit in source
-    PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(Target.SOURCE, OMIT_FIELD_SOURCE, this.source,
-        sourceSelector, allowFluentSetters);
+    PropertyDescriptor propertyDescriptor = getPropertyFromFieldSelector(getSourceInvocationSensor(), Target.SOURCE,
+        OMIT_FIELD_SOURCE, this.source, sourceSelector, allowFluentSetters);
     OmitTransformation omitSource = OmitTransformation.omitSource(this, propertyDescriptor);
     omitMapping(mappedSourceProperties, propertyDescriptor, omitSource);
     return this;
@@ -235,8 +253,8 @@ public class MappingConfiguration<S, D> {
    */
   public <RS> ReassignBuilder<S, D> reassign(FieldSelector<S> sourceSelector) {
     denyNull("sourceSelector", sourceSelector);
-    PropertyDescriptor typedSourceProperty = getPropertyFromFieldSelector(Target.SOURCE, ReassignBuilder.ASSIGN,
-        this.source, sourceSelector, allowFluentSetters);
+    PropertyDescriptor typedSourceProperty = getPropertyFromFieldSelector(getSourceInvocationSensor(), Target.SOURCE,
+        ReassignBuilder.ASSIGN, this.source, sourceSelector, allowFluentSetters);
     ReassignBuilder<S, D> reassignBuilder = new ReassignBuilder<>(typedSourceProperty, destination, this);
     return reassignBuilder;
   }
@@ -258,10 +276,10 @@ public class MappingConfiguration<S, D> {
     denyNull("sourceSelector", sourceSelector);
     denyNull("destinationSelector", destinationSelector);
 
-    TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE,
-        ReplaceBuilder.TRANSFORM, this.source, sourceSelector, allowFluentSetters);
-    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
-        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector, allowFluentSetters);
+    TypedPropertyDescriptor<RS> sourceProperty = getTypedPropertyFromFieldSelector(getSourceInvocationSensor(),
+        Target.SOURCE, ReplaceBuilder.TRANSFORM, this.source, sourceSelector, allowFluentSetters);
+    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(getDestinationeInvocationSensor(),
+        Target.DESTINATION, ReplaceBuilder.TRANSFORM, this.destination, destinationSelector, allowFluentSetters);
 
     ReplaceBuilder<S, D, RD, RS> builder = new ReplaceBuilder<>(sourceProperty, destProperty, this);
     return builder;
@@ -279,8 +297,8 @@ public class MappingConfiguration<S, D> {
    */
   public <RD> SetBuilder<S, D, RD> set(TypedSelector<RD, D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
-    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
-        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector, allowFluentSetters);
+    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(getDestinationeInvocationSensor(),
+        Target.DESTINATION, ReplaceBuilder.TRANSFORM, this.destination, destinationSelector, allowFluentSetters);
     SetBuilder<S, D, RD> builder = new SetBuilder<>(destProperty, this);
     return builder;
   }
@@ -296,8 +314,8 @@ public class MappingConfiguration<S, D> {
    */
   public <RD> RestructureBuilder<S, D, RD> restructure(TypedSelector<RD, D> destinationSelector) {
     denyNull("destinationSelector", destinationSelector);
-    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
-        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector, allowFluentSetters);
+    TypedPropertyDescriptor<RD> destProperty = getTypedPropertyFromFieldSelector(getDestinationeInvocationSensor(),
+        Target.DESTINATION, ReplaceBuilder.TRANSFORM, this.destination, destinationSelector, allowFluentSetters);
     return new RestructureBuilder<S, D, RD>(this, destProperty);
   }
 
@@ -317,10 +335,12 @@ public class MappingConfiguration<S, D> {
       TypedSelector<Collection<RS>, S> sourceSelector, TypedSelector<Collection<RD>, D> destinationSelector) {
     denyNull("sourceSelector", sourceSelector);
     denyNull("destinationSelector", destinationSelector);
-    TypedPropertyDescriptor<Collection<RS>> sourceProperty = getTypedPropertyFromFieldSelector(Target.SOURCE,
-        ReplaceBuilder.TRANSFORM, this.source, sourceSelector, allowFluentSetters);
-    TypedPropertyDescriptor<Collection<RD>> destProperty = getTypedPropertyFromFieldSelector(Target.DESTINATION,
-        ReplaceBuilder.TRANSFORM, this.destination, destinationSelector, allowFluentSetters);
+    TypedPropertyDescriptor<Collection<RS>> sourceProperty = getTypedPropertyFromFieldSelector(
+        getSourceInvocationSensor(), Target.SOURCE, ReplaceBuilder.TRANSFORM, this.source, sourceSelector,
+        allowFluentSetters);
+    TypedPropertyDescriptor<Collection<RD>> destProperty = getTypedPropertyFromFieldSelector(
+        getDestinationeInvocationSensor(), Target.DESTINATION, ReplaceBuilder.TRANSFORM, this.destination,
+        destinationSelector, allowFluentSetters);
 
     ReplaceCollectionBuilder<S, D, RD, RS> builder = new ReplaceCollectionBuilder<>(sourceProperty, destProperty, this);
     return builder;
@@ -379,6 +399,8 @@ public class MappingConfiguration<S, D> {
     }
 
     validateMapping();
+    sourceInvocationSensor = null;
+    destinationInvocationSensor = null;
     return new Mapper<>(this);
   }
 
@@ -510,7 +532,15 @@ public class MappingConfiguration<S, D> {
   static <R, T> TypedPropertyDescriptor<R> getTypedPropertyFromFieldSelector(Target target, String configurationMethod,
       Class<T> sensorType, TypedSelector<R, T> selector, boolean fluentSetters) {
     InvocationSensor<T> invocationSensor = new InvocationSensor<T>(sensorType);
-    T sensor = invocationSensor.getSensor();
+    return getTypedPropertyFromFieldSelector(invocationSensor, target, configurationMethod, sensorType, selector,
+        fluentSetters);
+  }
+
+  static <R, T> TypedPropertyDescriptor<R> getTypedPropertyFromFieldSelector(InvocationSensor<?> invocationSensor,
+      Target target, String configurationMethod, Class<T> sensorType, TypedSelector<R, T> selector,
+      boolean fluentSetters) {
+    invocationSensor.reset();
+    T sensor = (T) invocationSensor.getSensor();
     // perform the selector lambda on the sensor
     R returnValue = selector.selectField(sensor);
     // if any property interaction was tracked...
@@ -546,7 +576,14 @@ public class MappingConfiguration<S, D> {
   static <T> PropertyDescriptor getPropertyFromFieldSelector(Target target, String configurationMethod,
       Class<T> sensorType, FieldSelector<T> selector, boolean fluentSetters) {
     InvocationSensor<T> invocationSensor = new InvocationSensor<T>(sensorType);
-    T sensor = invocationSensor.getSensor();
+    return getPropertyFromFieldSelector(invocationSensor, target, configurationMethod, sensorType, selector,
+        fluentSetters);
+  }
+
+  static <T> PropertyDescriptor getPropertyFromFieldSelector(InvocationSensor<?> invocationSensor, Target target,
+      String configurationMethod, Class<T> sensorType, FieldSelector<T> selector, boolean fluentSetters) {
+    invocationSensor.reset();
+    T sensor = (T) invocationSensor.getSensor();
     // perform the selector lambda on the sensor
     selector.selectField(sensor);
     // if any property interaction was tracked...
