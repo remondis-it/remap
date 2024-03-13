@@ -72,7 +72,7 @@ public class InterceptionHandler<T> {
     return proxyObject;
   }
 
-  public List<String> getTrackesPropertyNames() {
+  public List<String> getTrackedPropertyNames() {
     List<String> list = threadLocalPropertyNames.get();
     // Reset thread local after access.
     reset();

@@ -5,9 +5,9 @@ import static java.util.Objects.isNull;
 import static net.bytebuddy.matcher.ElementMatchers.isDeclaredBy;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.method.MethodDescription;
@@ -23,8 +23,7 @@ import net.bytebuddy.matcher.ElementMatcher;
  */
 public class InvocationSensor<T> {
 
-  private static Set<InterceptionHandler<?>> interceptionHandlerCache = new HashSet<>(); // ggf. HashSet durch etwas
-                                                                                         // thread-safes austauschen?
+  static Map<Class<?>, InterceptionHandler<?>> interceptionHandlerCache = new ConcurrentHashMap<>();
 
   private InterceptionHandler<T> interceptionHandler;
 
@@ -41,19 +40,23 @@ public class InvocationSensor<T> {
       classLoader = superType.getClassLoader();
     }
     try {
-      InterceptionHandler<T> interceptionHandler = new InterceptionHandler<>();
-      T po = null;
-      po = new ByteBuddy().subclass(superType)
-          .method(isDeclaredByClassHierarchy(superType))
-          .intercept(MethodDelegation.to(interceptionHandler))
-          .make()
-          .load(classLoader, ClassLoadingStrategy.Default.INJECTION)
-          .getLoaded()
-          .getDeclaredConstructor()
-          .newInstance();
-      interceptionHandler.setProxyObject(po);
-      interceptionHandlerCache.add(interceptionHandler);
-      this.interceptionHandler = interceptionHandler;
+      if (interceptionHandlerCache.containsKey(superType)) {
+        this.interceptionHandler = (InterceptionHandler<T>) interceptionHandlerCache.get(superType);
+      } else {
+        InterceptionHandler<T> interceptionHandler = new InterceptionHandler<>();
+        T po = null;
+        po = new ByteBuddy().subclass(superType)
+            .method(isDeclaredByClassHierarchy(superType))
+            .intercept(MethodDelegation.to(interceptionHandler))
+            .make()
+            .load(classLoader, ClassLoadingStrategy.Default.INJECTION)
+            .getLoaded()
+            .getDeclaredConstructor()
+            .newInstance();
+        interceptionHandler.setProxyObject(po);
+        interceptionHandlerCache.put(superType, interceptionHandler);
+        this.interceptionHandler = interceptionHandler;
+      }
 
     } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
       throw new MappingException(
@@ -97,7 +100,7 @@ public class InvocationSensor<T> {
    * @return Returns the tracked property names.
    */
   List<String> getTrackedPropertyNames() {
-    List<String> trackesPropertyNames = interceptionHandler.getTrackesPropertyNames();
+    List<String> trackesPropertyNames = interceptionHandler.getTrackedPropertyNames();
     return trackesPropertyNames;
   }
 
