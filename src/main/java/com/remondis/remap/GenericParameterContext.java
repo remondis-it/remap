@@ -53,7 +53,7 @@ public class GenericParameterContext {
     }
   }
 
-  private boolean isEmpty() {
+  boolean isEmpty() {
     return stack.isEmpty();
   }
 
