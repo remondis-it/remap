@@ -151,6 +151,14 @@ public class MappingException extends RuntimeException {
     GenericParameterContext rootSrcCtx = new GenericParameterContext(sourceProperty.getReadMethod());
     GenericParameterContext rootDestCtx = new GenericParameterContext(destinationProperty.getReadMethod());
     StringBuilder builder = new StringBuilder("Incompatible nested collections found mapping\n\t");
+    String rootSourceGenericCtx = rootSrcCtx.isEmpty() ? "unknown" : rootSrcCtx.get()
+        .toString();
+    String rootDestGenericCtx = rootDestCtx.isEmpty() ? "unknown" : rootDestCtx.get()
+        .toString();
+    String sourceGenericCtx = sourceCtx.isEmpty() ? "unknown" : sourceCtx.get()
+        .toString();
+    String destGenericCtx = destCtx.isEmpty() ? "unknown" : destCtx.get()
+        .toString();
     builder.append(asString(sourceProperty))
         .append(" to ~>\n\t")
         .append(asString(destinationProperty))
@@ -165,18 +173,14 @@ public class MappingException extends RuntimeException {
         .append("\nType nesting is\n\t")
         .append("-> in source type: ")
         .append("\n\t")
-        .append(rootSrcCtx.get()
-            .toString())
+        .append(rootSourceGenericCtx)
         .append("\n\t-> in destination type: ")
         .append("\n\t")
-        .append(rootDestCtx.get()
-            .toString())
+        .append(rootDestGenericCtx)
         .append("\n\tcannot map \n\t")
-        .append(sourceCtx.get()
-            .toString())
+        .append(sourceGenericCtx)
         .append("\n\tto\n\t")
-        .append(destCtx.get()
-            .toString());
+        .append(destGenericCtx);
     return new MappingException(builder.toString());
   }
 
