@@ -1,5 +1,8 @@
 package com.remondis.remap;
 
+import static com.remondis.remap.ReflectionUtil.isGetter;
+import static com.remondis.remap.ReflectionUtil.isSetter;
+import static com.remondis.remap.ReflectionUtil.toPropertyName;
 import static java.util.Objects.isNull;
 
 import java.beans.BeanInfo;
@@ -140,10 +143,41 @@ class Properties {
             }
           })
           .collect(Collectors.toSet());
+
+      for (Class<?> iface : inspectType.getInterfaces()) {
+        for (Method method : iface.getDeclaredMethods()) {
+          if (Modifier.isStatic(method.getModifiers())) {
+            continue;
+          }
+
+          if (isGetter(method) || isSetter(method)) {
+            String propertyName = toPropertyName(method);
+            PropertyDescriptor existing = findPropertyDescriptor(result, propertyName);
+
+            if (isGetter(method) && existing == null) {
+              result.add(new PropertyDescriptor(propertyName, method, null));
+            } else if (isSetter(method) && existing != null) {
+              existing.setWriteMethod(method);
+            }
+          }
+        }
+      }
+
       return result;
     } catch (IntrospectionException e) {
       throw new MappingException(String.format("Cannot introspect the type %s.", inspectType.getName()));
     }
+  }
+
+  /**
+   * Finds a PropertyDescriptor object in the existing set list
+   */
+  private static PropertyDescriptor findPropertyDescriptor(Set<PropertyDescriptor> properties, String propertyName) {
+    return properties.stream()
+        .filter(pd -> pd.getName()
+            .equals(propertyName))
+        .findFirst()
+        .orElse(null);
   }
 
   /**
