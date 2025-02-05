@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.remondis</groupId>
     <artifactId>remap</artifactId>
-    <version>4.3.7</version>
+    <version>4.4.0</version>
     <packaging>jar</packaging>
     <name>ReMap</name>
     <description>A declarative mapping library for converting objects field by field.</description>
@@ -175,6 +175,8 @@
                     <debug>true</debug>
                     <optimize>true</optimize>
                     <encoding>${project.build.sourceEncoding}</encoding>
+                    <source>9</source>
+                    <target>9</target>
                 </configuration>
             </plugin>
 
@@ -283,6 +285,11 @@
             <groupId>com.remondis</groupId>
             <artifactId>propertypath</artifactId>
             <version>0.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version> <!-- Aktuellste Version nutzen -->
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

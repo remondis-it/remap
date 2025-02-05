@@ -769,6 +769,11 @@ This workaround was tested and should work for most cases. Please file an issue 
 
 # Migration guide
 
+## Sidenote for 4.4.0
+ReMap now finds attributes from implemented interfaces when mapping entities. In previous versions (Java 17 and below), these attributes were not detected. With this change, attributes from implemented interfaces are now correctly identified.
+
+Potential impact: If an entity implements an interface with an attribute that is not used in the mapping, it  need to be explicitly omitted now.
+
 ## Sidenote for 4.3.0
 ReMap was extended to support fluent-style setter methods. Older versions of ReMap only support Java Bean compliant setter methods with return type `void`. Now fluent style setter methods are supported in a way, that a setter method might have a return type.
 
