@@ -2,6 +2,7 @@ package com.remondis.remap;
 
 import static com.remondis.remap.Properties.asString;
 import static com.remondis.remap.ReflectionUtil.getCollector;
+import static java.util.Objects.nonNull;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
@@ -42,10 +43,16 @@ public class ReassignTransformation extends Transformation {
   protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
+    Object destinationValue = null;
+
+    if (nonNull(destination)) {
+      destinationValue = readOrFail(destinationProperty, destination);
+    }
+
     MappedResult result = MappedResult.skip();
 
     if (sourceValue != null) {
-      result = performValueTransformation(sourceValue, destination);
+      result = performValueTransformation(sourceValue, destinationValue);
     }
 
     if (result.hasValue() || mapping.isWriteNull()) {
@@ -70,11 +77,11 @@ public class ReassignTransformation extends Transformation {
       GenericParameterContext sourceCtx, GenericParameterContext destinationCtx) {
     if (hasMapperFor(sourceType, destinationType)) {
       InternalMapper mapper = getMapperFor(sourceType, destinationType);
-      return mapper.map(sourceValue, null);
+      return mapper.map(sourceValue, destination);
     } else if (isMap(sourceValue)) {
       return convertMap(sourceValue, sourceCtx, destinationCtx);
     } else if (isCollection(sourceValue)) {
-      return convertCollection(sourceValue, sourceCtx, destinationCtx);
+      return convertCollection(sourceValue, sourceCtx, destination, destinationCtx);
     } else {
       return convertValueMapOver(sourceType, sourceValue, destinationType, destination);
     }
@@ -83,25 +90,38 @@ public class ReassignTransformation extends Transformation {
   @SuppressWarnings({
       "unchecked", "rawtypes"
   })
-  private Object convertCollection(Object sourceValue, GenericParameterContext sourceCtx,
+  private Object convertCollection(Object sourceValue, GenericParameterContext sourceCtx, Object destinationValue,
       GenericParameterContext destinationCtx) {
     Class<?> destinationCollectionType = destinationCtx.getCurrentType();
-    Collection collection = Collection.class.cast(sourceValue);
-    Collector collector = getCollector(destinationCollectionType);
-    return collection.stream()
-        .map(o -> {
-          GenericParameterContext newSourceCtx = sourceCtx.goInto(0);
-          Class<?> sourceElementType = newSourceCtx.getCurrentType();
-          GenericParameterContext newDestCtx = destinationCtx.goInto(0);
-          Class<?> destinationElementType = newDestCtx.getCurrentType();
-          return _convert(sourceElementType, o, destinationElementType, null, newSourceCtx, newDestCtx);
-        })
-        .collect(collector);
+    Collection collectionSource = Collection.class.cast(sourceValue);
+    if (nonNull(destinationValue)) {
+      Collection collectionDestionation = Collection.class.cast(sourceValue);
+      // TODO: For each source element find destination element to map-over
+      // TODO: Problem: In case of nested collections we cannot identify the correct destination element for map-over
+      // TODO: Validate that collectionElementIdentifiers do not accept nested lists.
+      collectionSource.stream()
+          .forEach(element -> {
+            GenericParameterContext newSourceCtx = sourceCtx.goInto(0);
+            Class<?> sourceElementType = newSourceCtx.getCurrentType();
+            GenericParameterContext newDestCtx = destinationCtx.goInto(0);
+            Class<?> destinationElementType = newDestCtx.getCurrentType();
+            _convert(sourceElementType, element, destinationElementType, null, newSourceCtx, newDestCtx);
+          });
+      return collectionDestionation;
+    } else {
+      Collector collector = getCollector(destinationCollectionType);
+      return collectionSource.stream()
+          .map(o -> {
+            GenericParameterContext newSourceCtx = sourceCtx.goInto(0);
+            Class<?> sourceElementType = newSourceCtx.getCurrentType();
+            GenericParameterContext newDestCtx = destinationCtx.goInto(0);
+            Class<?> destinationElementType = newDestCtx.getCurrentType();
+            return _convert(sourceElementType, o, destinationElementType, null, newSourceCtx, newDestCtx);
+          })
+          .collect(collector);
+    }
   }
 
-  @SuppressWarnings({
-      "rawtypes", "unchecked"
-  })
   private Object convertMap(Object sourceValue, GenericParameterContext sourceCtx,
       GenericParameterContext destinationCtx) {
 

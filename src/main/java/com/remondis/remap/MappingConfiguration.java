@@ -10,10 +10,12 @@ import static com.remondis.remap.ReflectionUtil.newInstance;
 import static java.util.Objects.nonNull;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -77,6 +79,11 @@ public class MappingConfiguration<S, D> {
   private Set<PropertyDescriptor> mappedDestinationProperties;
 
   /**
+   * This list holds the collection identifier strategies used by map-over on collections.
+   */
+  private List<CollectionElementIdentifier<?, ?>> collectionElementIdentifiers;
+
+  /**
    * This flag indicates that all other source properties that are not part of the mapping should be omitted. Attention:
    * Do not omit implicit mappings.
    */
@@ -115,6 +122,7 @@ public class MappingConfiguration<S, D> {
     this.mappedSourceProperties = new HashSet<>();
     this.mappedDestinationProperties = new HashSet<>();
     this.mappers = new Hashtable<>();
+    this.collectionElementIdentifiers = new LinkedList<>();
   }
 
   private InvocationSensor<?> getSourceInvocationSensor() {
@@ -851,8 +859,45 @@ public class MappingConfiguration<S, D> {
     return new Hashtable<>(this.mappers);
   }
 
+  /**
+   * Returns the configuration whether the mapper writes null values if the source value is <code>null</code> or leaves
+   * the destination value unmodified if source is <code>null</code>.
+   * 
+   * @return Returns <code>true</code> if the mapper writes null values depending on source value, otherwise
+   *         <code>false</code>.
+   * 
+   */
   public boolean isWriteNull() {
     return this.writeNullIfSourceIsNull;
+  }
+
+  public <RS> CollectionElementIdentifierBuilder<S, D, RS> useCollectionElementIdentifier(
+      TypedSelector<Collection<RS>, S> sourceCollectionSelector) {
+    denyNull("sourceSelector", sourceCollectionSelector);
+    TypedPropertyDescriptor<Collection<RS>> sourceProperty = getTypedPropertyFromFieldSelector(
+        getSourceInvocationSensor(), Target.SOURCE, "collectionElementIdentifier", this.source,
+        sourceCollectionSelector, allowFluentSetters);
+
+    return new CollectionElementIdentifierBuilder<S, D, RS>(this, sourceProperty);
+  }
+
+  public <RS, ES> MappingConfiguration<S, D> addCollectionElementIdentifier(
+      TypedPropertyDescriptor<Collection<RS>> sourceProperty, TypedSelector<ES, RS> identifyingAttributeSelector) {
+
+    Method collectionReadMethod = sourceProperty.property.getReadMethod();
+
+    GenericParameterContext ctx = new GenericParameterContext(collectionReadMethod);
+    ctx.findNextGenericTypeFromMethod(0);
+    Class<RS> listElementType = (Class<RS>) ctx.getCurrentType();
+
+    InvocationSensor<RS> invocationSensor = new InvocationSensor<>(listElementType);
+
+    TypedPropertyDescriptor<ES> elementProperty = getTypedPropertyFromFieldSelector(invocationSensor, Target.SOURCE,
+        "collectionElementIdentifier", listElementType, identifyingAttributeSelector, allowFluentSetters);
+
+    this.collectionElementIdentifiers.add(new CollectionElementIdentifier<>(sourceProperty, elementProperty));
+
+    return this;
   }
 
 }
