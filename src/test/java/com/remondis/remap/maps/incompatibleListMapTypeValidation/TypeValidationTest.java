@@ -2,7 +2,7 @@ package com.remondis.remap.maps.incompatibleListMapTypeValidation;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.Mapping;
 import com.remondis.remap.MappingException;

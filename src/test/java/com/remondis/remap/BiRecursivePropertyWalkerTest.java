@@ -1,11 +1,11 @@
 package com.remondis.remap;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.basic.A;
 import com.remondis.remap.basic.B;

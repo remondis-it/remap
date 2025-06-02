@@ -1,9 +1,9 @@
 package com.remondis.remap.basic;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -11,7 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
@@ -30,19 +30,21 @@ public class MapperTest {
   public static final int NUMBER = 210;
   public static final String STRING = "a string";
 
-  @Test(expected = MappingException.class)
+  @Test
   public void shouldDenyMapNull() {
-    Mapper<A, AResource> mapper = Mapping.from(A.class)
-        .to(AResource.class)
-        .reassign(A::getMoreInA)
-        .to(AResource::getMoreInAResource)
-        .reassign(A::getZahlInA)
-        .to(AResource::getZahlInAResource)
-        .useMapper(Mapping.from(B.class)
-            .to(BResource.class)
-            .mapper())
-        .mapper();
-    mapper.map((A) null);
+    assertThatThrownBy(() -> {
+      Mapper<A, AResource> mapper = Mapping.from(A.class)
+          .to(AResource.class)
+          .reassign(A::getMoreInA)
+          .to(AResource::getMoreInAResource)
+          .reassign(A::getZahlInA)
+          .to(AResource::getZahlInAResource)
+          .useMapper(Mapping.from(B.class)
+              .to(BResource.class)
+              .mapper())
+          .mapper();
+      mapper.map((A) null);
+    }).isInstanceOf(MappingException.class);
   }
 
   @Test
@@ -184,44 +186,50 @@ public class MapperTest {
   /**
    * Ensures that the mapper does not allow an omitted field in the source to be reassigned.
    */
-  @Test(expected = MappingException.class)
+  @Test
   public void reassignAnOmmitedFieldInSource() {
-    Mapping.from(AReassign.class)
-        .to(AResourceReassign.class)
-        .omitInSource(AReassign::getFirstNumberInA)
-        .reassign(AReassign::getFirstNumberInA)
-        .to(AResourceReassign::getFirstNumberInAResource)
-        .reassign(AReassign::getSecondNumberInA)
-        .to(AResourceReassign::getSecondNumberInAResource)
-        .mapper();
+    assertThatThrownBy(() -> {
+      Mapping.from(AReassign.class)
+          .to(AResourceReassign.class)
+          .omitInSource(AReassign::getFirstNumberInA)
+          .reassign(AReassign::getFirstNumberInA)
+          .to(AResourceReassign::getFirstNumberInAResource)
+          .reassign(AReassign::getSecondNumberInA)
+          .to(AResourceReassign::getSecondNumberInAResource)
+          .mapper();
+    }).isInstanceOf(MappingException.class);
   }
 
   /**
    * Ensures that the mapper does not allow an omitted field in the destination to be reassigned.
    */
-  @Test(expected = MappingException.class)
+  @Test
   public void reassignToAnOmmitedFieldInDestination() {
-    Mapping.from(AReassign.class)
-        .to(AResourceReassign.class)
-        .omitInDestination(ar -> ar.getFirstNumberInAResource())
-        .reassign(AReassign::getFirstNumberInA)
-        .to(AResourceReassign::getFirstNumberInAResource)
-        .reassign(AReassign::getSecondNumberInA)
-        .to(AResourceReassign::getSecondNumberInAResource)
-        .mapper();
+    assertThatThrownBy(() -> {
+      Mapping.from(AReassign.class)
+          .to(AResourceReassign.class)
+          .omitInDestination(ar -> ar.getFirstNumberInAResource())
+          .reassign(AReassign::getFirstNumberInA)
+          .to(AResourceReassign::getFirstNumberInAResource)
+          .reassign(AReassign::getSecondNumberInA)
+          .to(AResourceReassign::getSecondNumberInAResource)
+          .mapper();
+    }).isInstanceOf(MappingException.class);
   }
 
   /**
    * Ensures that the mapper detects an unmapped field in the destination while the all source fields are mapped.
    */
-  @Test(expected = MappingException.class)
+  @Test
   public void reassignAndOneDestinationFieldIsUnmapped() {
-    Mapping.from(AReassign.class)
-        .to(AResourceReassign.class)
-        .reassign(AReassign::getFirstNumberInA)
-        .to(AResourceReassign::getSecondNumberInAResource)
-        .omitInSource(AReassign::getSecondNumberInA)
-        .mapper();
+    assertThatThrownBy(() -> {
+      Mapping.from(AReassign.class)
+          .to(AResourceReassign.class)
+          .reassign(AReassign::getFirstNumberInA)
+          .to(AResourceReassign::getSecondNumberInAResource)
+          .omitInSource(AReassign::getSecondNumberInA)
+          .mapper();
+    }).isInstanceOf(MappingException.class);
   }
 
   @SuppressWarnings("rawtypes")

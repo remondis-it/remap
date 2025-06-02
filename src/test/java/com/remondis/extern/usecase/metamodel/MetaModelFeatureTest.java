@@ -2,13 +2,13 @@ package com.remondis.extern.usecase.metamodel;
 
 import static com.remondis.remap.MappingModel.nameEqualsPredicate;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.function.Predicate;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.MappedResult;
 import com.remondis.remap.Mapper;
@@ -210,8 +210,8 @@ public class MetaModelFeatureTest {
   }
 
   private void assertSingleResult(MappingModel<Source, Destination>.TransformationSearchResult mappingModel) {
-    assertTrue("Mapping model should have a single result!", mappingModel.hasSingleResult());
-    assertFalse("Mapping model should not have multiple results!", mappingModel.hasMultipleResults());
+    assertTrue(mappingModel.hasSingleResult(), () -> "Mapping model should have a single result!");
+    assertFalse(mappingModel.hasMultipleResults(), () -> "Mapping model should not have multiple results!");
   }
 
   private void assertMappingValue(MappedResult mappedResult, Object expectedValue) {
@@ -220,15 +220,15 @@ public class MetaModelFeatureTest {
   }
 
   private void assertMappingHasValue(MappedResult mappedResult) {
-    assertTrue("Mapping result should have a value!", mappedResult.hasValue());
+    assertTrue(mappedResult.hasValue(), () -> "Mapping result should have a value!");
   }
 
   private void assertResult(MappingModel<Source, Destination>.TransformationSearchResult mappingModel) {
-    assertTrue("Mapping model should have a result!", mappingModel.hasResult());
+    assertTrue(mappingModel.hasResult(), () -> "Mapping model should have a result!");
   }
 
   private void assertMultiResult(MappingModel<Source, Destination>.TransformationSearchResult mappingModel) {
-    assertFalse("Mapping model should have multiple results!", mappingModel.hasSingleResult());
+    assertFalse(mappingModel.hasSingleResult(), () -> "Mapping model should have multiple results!");
   }
 
 }

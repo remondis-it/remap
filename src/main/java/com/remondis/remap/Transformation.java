@@ -51,6 +51,10 @@ abstract class Transformation {
     return sourceProperty.getPropertyType();
   }
 
+  protected void readSourceOrFail(Object source, Object value) {
+    readOrFail(sourceProperty, source);
+  }
+
   protected Object readOrFail(PropertyDescriptor property, Object source) {
     try {
       Method readMethod = property.getReadMethod();
@@ -63,11 +67,15 @@ abstract class Transformation {
     }
   }
 
-  protected void writeOrFail(PropertyDescriptor property, Object source, Object value) {
+  protected void writeDestinationOrFail(Object writeTarget, Object value) {
+    writeOrFailDEPRECATED(destinationProperty, writeTarget, value);
+  }
+
+  protected void writeOrFailDEPRECATED(PropertyDescriptor property, Object writeTarget, Object value) {
     try {
       Method writeMethod = property.getWriteMethod();
       writeMethod.setAccessible(true);
-      writeMethod.invoke(source, value);
+      writeMethod.invoke(writeTarget, value);
     } catch (InvocationTargetException e) {
       throw MappingException.invocationTarget(property, e);
     } catch (Exception e) {
@@ -79,11 +87,11 @@ abstract class Transformation {
    * Performs the transformation for the specified source and destination.
    *
    * @param source The source object
-   * @param destination The destination object.
+   * @return The mapping result of this transformation
    * @throws MappingException Thrown on any transformation error.
    */
-  public void performTransformation(Object source, Object destination) throws MappingException {
-    performTransformation(sourceProperty, source, destinationProperty, destination);
+  public MappedResult performTransformation(Object source) throws MappingException {
+    return performTransformation(sourceProperty, source, destinationProperty);
   }
 
   /**
@@ -92,11 +100,11 @@ abstract class Transformation {
    * @param sourceProperty The source property
    * @param source The source object to map from.
    * @param destinationProperty The destination property
-   * @param destination The destination object to map to.
+   * @return The mapping result of this transformation
    * @throws MappingException Thrown on any mapping exception.
    */
-  protected abstract void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException;
+  protected abstract MappedResult performTransformation(PropertyDescriptor sourceProperty, Object source,
+      PropertyDescriptor destinationProperty) throws MappingException;
 
   /**
    * Performs a single value transformation. This method is used to provide single field mappings via
@@ -104,12 +112,11 @@ abstract class Transformation {
    * mapping values.
    *
    * @param source The source object to map from.
-   * @param destination The destination object to map to.
    * @return Returns a {@link MappedResult} specifying the mapping value or signals to skip the mapping, because the
    *         transformation does not produce a destination value.
    * @throws MappingException Thrown on any mapping exception.
    */
-  protected abstract MappedResult performValueTransformation(Object source, Object destination) throws MappingException;
+  protected abstract MappedResult performValueTransformation(Object source) throws MappingException;
 
   /**
    * Lets this transformation validate its configuration. If the state of this transformation is invalid,

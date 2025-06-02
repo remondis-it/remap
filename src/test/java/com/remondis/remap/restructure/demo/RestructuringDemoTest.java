@@ -1,10 +1,11 @@
 package com.remondis.remap.restructure.demo;
 
+import org.junit.jupiter.api.Test;
+
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.resample.Samples;
-import org.junit.Test;
 
 public class RestructuringDemoTest {
 

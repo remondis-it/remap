@@ -1,7 +1,6 @@
 package com.remondis.remap;
 
 import static com.remondis.remap.Lang.denyNull;
-import static java.util.Objects.nonNull;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -66,8 +65,7 @@ public class RestructureAssertBuilder<S, D, RD> {
       asserts
           .addVerification(new RestructureVerification(restructureTransformation.get(), restructureMappingAssertions));
     }
-    asserts.addAssertion(new RestructureTransformation<>(asserts.getMapping(), null, destProperty.property, null,
-        nonNull(restructureMappingAssertions)));
+    asserts.addAssertion(new RestructureTransformation<>(asserts.getMapping(), null, destProperty.property));
     return asserts;
   }
 

@@ -776,17 +776,38 @@ public class MappingConfiguration<S, D> {
    * @return Returns a newly created destination object.
    */
   D map(S source, D destination) {
-    D destinationObject = destination;
     if (source == null) {
       throw MappingException.denyMappingOfNull();
     }
-    if (destination == null) {
-      destinationObject = createDestination();
-    }
+    Map<Transformation, MappedResult> mappingResult = new Hashtable<>();
     for (Transformation t : mappings) {
-      t.performTransformation(source, destinationObject);
+      MappedResult mappedResult = t.performTransformation(source);
+      mappingResult.put(t, mappedResult);
     }
-    return destinationObject;
+
+    // Create result object after Transformation to ensure lifecycle compatibility with records.
+    if (destination == null) {
+      if (this.destination.getClass()
+          .isRecord()) {
+
+      } else {
+        destination = createDestination();
+      }
+    }
+
+    final D writeDestination = destination;
+    mappingResult.entrySet()
+        .stream()
+        .forEach(entry -> {
+          Transformation key = entry.getKey();
+          MappedResult mappedResult = entry.getValue();
+          Object value = mappedResult.getValue();
+          if (mappedResult.hasValue() || isWriteNull()) {
+            key.writeDestinationOrFail(writeDestination, value);
+          }
+        });
+
+    return destination;
   }
 
   private D createDestination() {

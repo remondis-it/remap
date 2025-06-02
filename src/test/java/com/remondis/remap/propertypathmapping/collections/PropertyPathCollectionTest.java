@@ -2,13 +2,13 @@ package com.remondis.remap.propertypathmapping.collections;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
@@ -20,7 +20,7 @@ public class PropertyPathCollectionTest {
 
   private Mapper<CollectionSource, CollectionDestination> mapper;
 
-  @Before
+  @BeforeEach
   public void setup() {
     this.mapper = Mapping.from(CollectionSource.class)
         .to(CollectionDestination.class)

@@ -1,6 +1,6 @@
 package com.remondis.remap.regression.omitReadOnlyGetterBug;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.Mapping;
 

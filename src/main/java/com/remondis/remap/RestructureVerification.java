@@ -26,19 +26,6 @@ public class RestructureVerification<S, RD> implements AssertVerification {
   @Override
   public void verify() throws AssertionError {
     Mapper mapper = restructureTransformation.getRestructureMapper();
-    boolean actual = restructureTransformation.isApplyingSpecificConfiguration();
-    boolean expected = this.applyingSpecificConfiguration;
-    if (expected != actual) {
-      PropertyDescriptor destinationProperty = restructureTransformation.getDestinationProperty();
-      throw new AssertionError(String.format(
-          "The mapping from source type %s\nused for restructuring of field %s\nwas configured to %s but was expected to %s.",
-          mapper.getMapping()
-              .getSource()
-              .getName(),
-          asString(destinationProperty, true), (actual ? APPLY_SPECIFIC : CREATE_IMPLICIT),
-          (expected ? APPLY_SPECIFIC : CREATE_IMPLICIT)));
-    }
-
     AssertConfiguration assertConfig = new AssertConfiguration(mapper);
 
     RestructuringAssertConfiguration restructuringAssertConfiguration = new RestructuringAssertConfiguration(

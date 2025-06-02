@@ -1,11 +1,11 @@
 package com.remondis.remap.propertypathmapping.withtransformation;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
@@ -17,7 +17,7 @@ public class PropertyPathWithTransformationTest {
 
   private Mapper<Person, PersonView> mapper;
 
-  @Before
+  @BeforeEach
   public void setup() {
     this.mapper = Mapping.from(Person.class)
         .to(PersonView.class)

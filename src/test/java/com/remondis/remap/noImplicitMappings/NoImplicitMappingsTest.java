@@ -2,14 +2,14 @@ package com.remondis.remap.noImplicitMappings;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
@@ -19,7 +19,7 @@ public class NoImplicitMappingsTest {
 
   private Mapper<B, B> bMapper;
 
-  @Before
+  @BeforeEach
   public void setup() {
     this.bMapper = Mapping.from(B.class)
         .to(B.class)

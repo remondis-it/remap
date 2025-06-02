@@ -2,6 +2,7 @@ package com.remondis.remap;
 
 import static com.remondis.remap.Properties.asString;
 import static com.remondis.remap.ReflectionUtil.getCollector;
+import static java.util.Objects.isNull;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
@@ -39,27 +40,29 @@ public class ReassignTransformation extends Transformation {
   }
 
   @Override
-  protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+  protected MappedResult performTransformation(PropertyDescriptor sourceProperty, Object source,
+      PropertyDescriptor destinationProperty) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
     MappedResult result = MappedResult.skip();
 
     if (sourceValue != null) {
-      result = performValueTransformation(sourceValue, destination);
+      result = performValueTransformation(sourceValue);
+      return result;
+    } else {
+      return MappedResult.skip();
     }
-
-    if (result.hasValue() || mapping.isWriteNull()) {
-      writeOrFail(destinationProperty, destination, result.getValue());
-    }
+    // if (result.hasValue() || mapping.isWriteNull()) {
+    // writeOrFail(destinationProperty, destination, result.getValue());
+    // }
   }
 
   @Override
-  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
+  protected MappedResult performValueTransformation(Object source) throws MappingException {
     Object destinationValue;
     GenericParameterContext sourceCtx = new GenericParameterContext(sourceProperty.getReadMethod());
     GenericParameterContext destinationCtx = new GenericParameterContext(destinationProperty.getReadMethod());
-    destinationValue = _convert(sourceCtx.getCurrentType(), source, destinationCtx.getCurrentType(), destination,
-        sourceCtx, destinationCtx);
+    destinationValue = _convert(sourceCtx.getCurrentType(), source, destinationCtx.getCurrentType(), null, sourceCtx,
+        destinationCtx);
     return MappedResult.value(destinationValue);
   }
 
@@ -152,8 +155,12 @@ public class ReassignTransformation extends Transformation {
     } else {
       // Object types must be mapped by a registered mapper before setting the value.
       InternalMapper delegateMapper = getMapperFor(sourceType, destinationType);
-      Object destinationValueMapped = readOrFail(destinationProperty, destinationValue);
-      return delegateMapper.map(sourceValue, destinationValueMapped);
+      if (isNull(destinationValue)) {
+        return delegateMapper.map(sourceValue);
+      } else {
+        Object destinationValueMapped = readOrFail(destinationProperty, destinationValue);
+        return delegateMapper.map(sourceValue, destinationValueMapped);
+      }
     }
   }
 
