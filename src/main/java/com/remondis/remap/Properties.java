@@ -3,6 +3,7 @@ package com.remondis.remap;
 import static com.remondis.remap.ReflectionUtil.isGetter;
 import static com.remondis.remap.ReflectionUtil.isSetter;
 import static com.remondis.remap.ReflectionUtil.toPropertyName;
+import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Objects.isNull;
 
 import java.beans.BeanInfo;
@@ -12,6 +13,10 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -145,21 +150,68 @@ class Properties {
           .collect(Collectors.toSet());
 
       for (Class<?> iface : inspectType.getInterfaces()) {
+        Map<String, GetterSetterHolder> getterSetterHolderMap = new HashMap<>();
         for (Method method : iface.getDeclaredMethods()) {
-          if (Modifier.isStatic(method.getModifiers())) {
+          if (isStatic(method.getModifiers())) {
             continue;
           }
 
-          if (isGetter(method) || isSetter(method)) {
-            String propertyName = toPropertyName(method);
-            PropertyDescriptor existing = findPropertyDescriptor(result, propertyName);
+          boolean isGetter = isGetter(method);
+          boolean isSetter = isSetter(method);
 
-            if (isGetter(method) && existing == null) {
-              result.add(new PropertyDescriptor(propertyName, method, null));
-            } else if (isSetter(method) && existing != null) {
-              existing.setWriteMethod(method);
+          if (isGetter || isSetter) {
+            String propertyName = toPropertyName(method);
+            GetterSetterHolder getterSetterHolder = getterSetterHolderMap.computeIfAbsent(propertyName,
+                x -> new GetterSetterHolder());
+            if (isGetter) {
+              getterSetterHolder.setGetter(method);
+            } else if (isSetter) {
+              getterSetterHolder.setSetter(method);
             }
           }
+        }
+
+        for (Map.Entry<String, GetterSetterHolder> getterSetterHolderEntry : getterSetterHolderMap.entrySet()) {
+          String propertyName = getterSetterHolderEntry.getKey();
+          GetterSetterHolder getterSetterHolder = getterSetterHolderEntry.getValue();
+
+          PropertyDescriptor existing = findPropertyDescriptor(result, propertyName);
+          PropertyDescriptor newPropertyDescriptor;
+          if (existing == null) {
+            throw new IllegalStateException("Property " + propertyName + " not found");
+          }
+          result.remove(existing);
+
+          Method getter;
+          if (getterSetterHolder.getGetter() == null) {
+            getter = existing.getReadMethod();
+          } else {
+            Method oldGetter = existing.getReadMethod();
+            Method newGetter = getterSetterHolder.getGetter();
+
+            if (Objects.equals(oldGetter.getReturnType(), newGetter.getReturnType())) {
+              getter = newGetter;
+            } else { // Generic getter of interface is not used
+              getter = existing.getReadMethod();
+            }
+          }
+
+          Method setter;
+          if (getterSetterHolder.getSetter() == null) {
+            setter = existing.getWriteMethod();
+          } else {
+            Method oldSetter = existing.getWriteMethod();
+            Method newSetter = getterSetterHolder.getSetter();
+
+            if (Objects.equals(oldSetter.getReturnType(), newSetter.getReturnType())) {
+              setter = newSetter;
+            } else { // Generic getter of interface is not used
+              setter = existing.getWriteMethod();
+            }
+          }
+
+          newPropertyDescriptor = new PropertyDescriptor(propertyName, getter, setter);
+          result.add(newPropertyDescriptor);
         }
       }
 
@@ -213,6 +265,27 @@ class Properties {
 
   private static boolean hasSetter(PropertyDescriptor pd) {
     return pd.getWriteMethod() != null;
+  }
+
+  private static class GetterSetterHolder {
+    private Method getter;
+    private Method setter;
+
+    public Method getGetter() {
+      return getter;
+    }
+
+    public void setGetter(Method getter) {
+      this.getter = getter;
+    }
+
+    public Method getSetter() {
+      return setter;
+    }
+
+    public void setSetter(Method setter) {
+      this.setter = setter;
+    }
   }
 
 }
