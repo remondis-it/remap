@@ -90,8 +90,8 @@ abstract class Transformation {
    * @return The mapping result of this transformation
    * @throws MappingException Thrown on any transformation error.
    */
-  public MappedResult performTransformation(Object source) throws MappingException {
-    return performTransformation(sourceProperty, source, destinationProperty);
+  public MappedResult performTransformation(Object source, Object destination) throws MappingException {
+    return performTransformation(sourceProperty, source, destinationProperty, destination);
   }
 
   /**
@@ -104,7 +104,7 @@ abstract class Transformation {
    * @throws MappingException Thrown on any mapping exception.
    */
   protected abstract MappedResult performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty) throws MappingException;
+      PropertyDescriptor destinationProperty, Object destination) throws MappingException;
 
   /**
    * Performs a single value transformation. This method is used to provide single field mappings via
@@ -116,7 +116,7 @@ abstract class Transformation {
    *         transformation does not produce a destination value.
    * @throws MappingException Thrown on any mapping exception.
    */
-  protected abstract MappedResult performValueTransformation(Object source) throws MappingException;
+  protected abstract MappedResult performValueTransformation(Object source, Object destination) throws MappingException;
 
   /**
    * Lets this transformation validate its configuration. If the state of this transformation is invalid,

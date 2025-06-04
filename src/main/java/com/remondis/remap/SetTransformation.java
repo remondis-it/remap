@@ -29,8 +29,8 @@ class SetTransformation<S, D, RD> extends Transformation {
 
   @Override
   protected MappedResult performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty) throws MappingException {
-    MappedResult result = performValueTransformation(source);
+      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+    MappedResult result = performValueTransformation(source, destination);
     return result;
     // if (result.hasValue()) {
     // writeOrFail(destinationProperty, destination, result.getValue());
@@ -39,7 +39,7 @@ class SetTransformation<S, D, RD> extends Transformation {
 
   @Override
   @SuppressWarnings("unchecked")
-  protected MappedResult performValueTransformation(Object source) throws MappingException {
+  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
     Object destinationValue = transformation.apply((S) source);
     return MappedResult.value(destinationValue);
   }

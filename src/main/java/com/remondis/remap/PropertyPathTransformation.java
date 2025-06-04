@@ -60,10 +60,10 @@ public class PropertyPathTransformation<RS, X, RD> extends Transformation {
 
   @Override
   protected MappedResult performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty) throws MappingException {
+      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
 
-    MappedResult result = performValueTransformation(sourceValue);
+    MappedResult result = performValueTransformation(sourceValue, destination);
     return result;
     // if (result.hasValue()) {
     // writeOrFail(destinationProperty, destination, result.getValue());
@@ -71,7 +71,7 @@ public class PropertyPathTransformation<RS, X, RD> extends Transformation {
   }
 
   @Override
-  protected MappedResult performValueTransformation(Object source) throws MappingException {
+  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
     if (source == null) {
       // Skip if source value is null. Property paths are null-friendly.
       return MappedResult.skip();

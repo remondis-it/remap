@@ -41,12 +41,12 @@ public class ReassignTransformation extends Transformation {
 
   @Override
   protected MappedResult performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty) throws MappingException {
+      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
     MappedResult result = MappedResult.skip();
 
     if (sourceValue != null) {
-      result = performValueTransformation(sourceValue);
+      result = performValueTransformation(sourceValue, destination);
       return result;
     } else {
       return MappedResult.skip();
@@ -57,11 +57,11 @@ public class ReassignTransformation extends Transformation {
   }
 
   @Override
-  protected MappedResult performValueTransformation(Object source) throws MappingException {
+  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
     Object destinationValue;
     GenericParameterContext sourceCtx = new GenericParameterContext(sourceProperty.getReadMethod());
     GenericParameterContext destinationCtx = new GenericParameterContext(destinationProperty.getReadMethod());
-    destinationValue = _convert(sourceCtx.getCurrentType(), source, destinationCtx.getCurrentType(), null, sourceCtx,
+    destinationValue = _convert(sourceCtx.getCurrentType(), source, destinationCtx.getCurrentType(), destination, sourceCtx,
         destinationCtx);
     return MappedResult.value(destinationValue);
   }

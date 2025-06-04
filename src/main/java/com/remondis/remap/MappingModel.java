@@ -330,7 +330,7 @@ public class MappingModel<S, D> {
      */
     public MappedResult performValueTransformation(Object value) {
       Transformation singleMatch = getSingleMatch();
-      return singleMatch.performValueTransformation(value);
+      return singleMatch.performValueTransformation(value, null);
     }
 
     private Transformation getSingleMatch() {

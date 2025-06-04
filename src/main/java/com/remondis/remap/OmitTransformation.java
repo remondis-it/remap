@@ -63,12 +63,12 @@ class OmitTransformation extends Transformation {
 
   @Override
   protected MappedResult performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty) throws MappingException {
+      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     return MappedResult.skip();
   }
 
   @Override
-  protected MappedResult performValueTransformation(Object source) throws MappingException {
+  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
     return MappedResult.skip();
   }
 

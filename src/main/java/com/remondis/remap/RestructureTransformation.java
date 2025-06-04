@@ -27,8 +27,8 @@ class RestructureTransformation<S, D, RD> extends Transformation {
 
   @Override
   protected MappedResult performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty) throws MappingException {
-    MappedResult result = performValueTransformation(source);
+      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+    MappedResult result = performValueTransformation(source, destination);
     return result;
     // if (result.hasValue()) {
     // writeOrFail(destinationProperty, destination, result.getValue());
@@ -36,7 +36,7 @@ class RestructureTransformation<S, D, RD> extends Transformation {
   }
 
   @Override
-  protected MappedResult performValueTransformation(Object source) throws MappingException {
+  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
     RD destinationValue = null;
     destinationValue = restructureMapper.map((S) source);
     return MappedResult.value(destinationValue);
