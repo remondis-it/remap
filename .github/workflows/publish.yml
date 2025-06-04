@@ -6,13 +6,13 @@ on:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Maven Central Repository
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'adopt'
           server-id: ossrh
           server-username: MAVEN_USERNAME
@@ -24,7 +24,7 @@ jobs:
       - name: Import GPG Key
         run: gpg --import --batch secret.asc
       # Step that does that actual cache save and restore
-      - uses: actions/cache@v1
+      - uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
