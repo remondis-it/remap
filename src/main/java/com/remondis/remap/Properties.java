@@ -11,7 +11,10 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -116,57 +119,126 @@ class Properties {
    */
   static Set<PropertyDescriptor> getProperties(Class<?> inspectType, Target targetType, boolean fluentSetters) {
     try {
-      BeanInfo beanInfo = Introspector.getBeanInfo(inspectType);
-      PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
-      Stream<PropertyDescriptor> stream = Arrays.asList(propertyDescriptors)
-          .stream();
-      // Scan the property descriptors if support fluent setters are enabled and add the fluent setter-method.
-      if (fluentSetters && targetType == Target.DESTINATION) {
-        stream = stream.map(pd -> {
-          if (pd.getWriteMethod() == null) {
-            // if the fluent setter feature is activated, the property descriptor is replaces on demand, to also reflect
-            // setters with a return value.
-            return checkForAndSetFluentWriteMethod(inspectType, pd);
-          } else {
-            return pd;
-          }
-        });
-      }
-      Set<PropertyDescriptor> result = stream.filter(pd -> !pd.getName()
-          .equals("class"))
-          .filter(Properties::hasGetter)
-          .filter(pd -> {
-            if (Target.SOURCE.equals(targetType)) {
-              return true;
-            } else {
-              return hasSetter(pd);
-            }
-          })
-          .collect(Collectors.toSet());
-
-      for (Class<?> iface : inspectType.getInterfaces()) {
-        for (Method method : iface.getDeclaredMethods()) {
-          if (Modifier.isStatic(method.getModifiers())) {
-            continue;
-          }
-
-          if (isGetter(method) || isSetter(method)) {
-            String propertyName = toPropertyName(method);
-            PropertyDescriptor existing = findPropertyDescriptor(result, propertyName);
-
-            if (isGetter(method) && existing == null) {
-              result.add(new PropertyDescriptor(propertyName, method, null));
-            } else if (isSetter(method) && existing != null) {
-              existing.setWriteMethod(method);
-            }
-          }
-        }
-      }
-
+      Set<PropertyDescriptor> result = extractBaseProperties(inspectType, targetType, fluentSetters);
+      mergeInterfaceProperties(inspectType, result);
       return result;
     } catch (IntrospectionException e) {
       throw new MappingException(String.format("Cannot introspect the type %s.", inspectType.getName()));
     }
+  }
+
+  /**
+   * Extracts the initial set of properties using JavaBeans introspection.
+   */
+  private static Set<PropertyDescriptor> extractBaseProperties(Class<?> type, Target targetType, boolean fluentSetters)
+      throws IntrospectionException {
+
+    BeanInfo beanInfo = Introspector.getBeanInfo(type);
+    Stream<PropertyDescriptor> stream = Arrays.stream(beanInfo.getPropertyDescriptors());
+
+    if (fluentSetters && targetType == Target.DESTINATION) {
+      stream = stream.map(pd -> pd.getWriteMethod() == null ? checkForAndSetFluentWriteMethod(type, pd) : pd);
+    }
+
+    return stream.filter(pd -> !"class".equals(pd.getName()))
+        .filter(Properties::hasGetter)
+        .filter(pd -> Target.SOURCE.equals(targetType) || hasSetter(pd))
+        .collect(Collectors.toSet());
+  }
+
+  /**
+   * Merges properties from implemented interfaces into the existing property set.
+   */
+  private static void mergeInterfaceProperties(Class<?> inspectType, Set<PropertyDescriptor> result) {
+    for (Class<?> iface : inspectType.getInterfaces()) {
+      Map<String, GetterSetterHolder> accessorsByProperty = new HashMap<>();
+
+      for (Method method : iface.getDeclaredMethods()) {
+        if (Modifier.isStatic(method.getModifiers())) {
+          continue;
+        }
+        boolean isGetter = isGetter(method);
+        boolean isSetter = isSetter(method);
+        if (!isGetter && !isSetter) {
+          continue;
+        }
+
+        String name = toPropertyName(method);
+        GetterSetterHolder holder = accessorsByProperty.computeIfAbsent(name, k -> new GetterSetterHolder());
+
+        if (isGetter)
+          holder.setGetter(method);
+        if (isSetter)
+          holder.setSetter(method);
+      }
+
+      for (Map.Entry<String, GetterSetterHolder> entry : accessorsByProperty.entrySet()) {
+        String name = entry.getKey();
+        GetterSetterHolder holder = entry.getValue();
+
+        PropertyDescriptor existing = findPropertyDescriptor(result, name);
+
+        if (existing == null) {
+          try {
+            PropertyDescriptor pd = new PropertyDescriptor(name, holder.getGetter(), holder.getSetter());
+            result.add(pd);
+          } catch (IntrospectionException e) {
+            throw new MappingException("Failed to create interface PropertyDescriptor for: " + name, e);
+          }
+        } else {
+          result.remove(existing);
+          Method getter = chooseGetter(existing.getReadMethod(), holder.getGetter());
+          Method setter = chooseSetter(existing.getWriteMethod(), holder.getSetter());
+          try {
+            result.add(new PropertyDescriptor(name, getter, setter));
+          } catch (IntrospectionException e) {
+            throw new MappingException("Failed to create PropertyDescriptor for: " + name, e);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Selects a getter method preferring compatible interface override if available.
+   */
+  private static Method chooseGetter(Method oldGetter, Method newGetter) {
+    if (newGetter == null)
+      return oldGetter;
+    if (oldGetter == null)
+      return newGetter;
+
+    Type oldType = oldGetter.getGenericReturnType();
+    Type newType = newGetter.getGenericReturnType();
+
+    if (oldType instanceof Class<?> && newType instanceof Class<?> && ((Class<?>) oldType).getName()
+        .equals(((Class<?>) newType).getName())) {
+      return newGetter;
+    }
+
+    return oldGetter;
+  }
+
+  /**
+   * Selects a setter method preferring compatible interface override if available.
+   */
+  private static Method chooseSetter(Method oldSetter, Method newSetter) {
+    if (newSetter == null)
+      return oldSetter;
+    if (oldSetter == null)
+      return newSetter;
+
+    if (oldSetter.getParameterCount() == 1 && newSetter.getParameterCount() == 1) {
+      Type oldType = oldSetter.getGenericParameterTypes()[0];
+      Type newType = newSetter.getGenericParameterTypes()[0];
+
+      if (oldType instanceof Class<?> && newType instanceof Class<?> && ((Class<?>) oldType).getName()
+          .equals(((Class<?>) newType).getName())) {
+        return newSetter;
+      }
+    }
+
+    return oldSetter;
   }
 
   /**
@@ -213,6 +285,27 @@ class Properties {
 
   private static boolean hasSetter(PropertyDescriptor pd) {
     return pd.getWriteMethod() != null;
+  }
+
+  private static class GetterSetterHolder {
+    private Method getter;
+    private Method setter;
+
+    public Method getGetter() {
+      return getter;
+    }
+
+    public void setGetter(Method getter) {
+      this.getter = getter;
+    }
+
+    public Method getSetter() {
+      return setter;
+    }
+
+    public void setSetter(Method setter) {
+      this.setter = setter;
+    }
   }
 
 }

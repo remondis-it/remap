@@ -1,11 +1,11 @@
 <project
-    xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.remondis</groupId>
     <artifactId>remap</artifactId>
-    <version>4.4.0</version>
+    <version>4.4.1</version>
     <packaging>jar</packaging>
     <name>ReMap</name>
     <description>A declarative mapping library for converting objects field by field.</description>
@@ -35,8 +35,8 @@
     </developers>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
     </properties>
     <distributionManagement>
         <repository>
@@ -45,7 +45,7 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-      <profiles>
+    <profiles>
         <profile>
             <id>sign</id>
             <activation>
@@ -121,7 +121,8 @@
                             </manifest>
                             <manifestEntries>
                                 <Bundle-Vendor>REMONDIS IT Services GmbH
-                                    &amp; Co. KG</Bundle-Vendor>
+                                    &amp; Co. KG
+                                </Bundle-Vendor>
                                 <Bundle-DocURL>https://github.com/remondis-it/remap</Bundle-DocURL>
                                 <Automatic-Module-Name>com.remondis.remap</Automatic-Module-Name>
                             </manifestEntries>
@@ -145,7 +146,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore />
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
@@ -211,6 +212,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.1</version>
+                <configuration>
+                    <argLine>
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                    </argLine>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -228,8 +234,8 @@
                                     <failWhenParentIsSnapshot>false</failWhenParentIsSnapshot>
                                     <message>No Snapshots Allowed!</message>
                                     <excludes>
-										<!-- We want to exclude child module dependencies from this check,
-											as we're always using SNAPSHOT versions (except when performing a release) -->
+                                        <!-- We want to exclude child module dependencies from this check,
+                                            as we're always using SNAPSHOT versions (except when performing a release) -->
                                         <exclude>${project.groupId}:*</exclude>
                                     </excludes>
                                 </requireReleaseDeps>
@@ -297,7 +303,7 @@
             <scope>provided</scope>
         </dependency>
 
-		<!-- Test scoped dependencies -->
+        <!-- Test scoped dependencies -->
         <dependency>
             <groupId>com.remondis</groupId>
             <artifactId>resample</artifactId>
