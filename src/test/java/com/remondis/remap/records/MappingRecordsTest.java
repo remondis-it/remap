@@ -25,6 +25,7 @@ public class MappingRecordsTest {
 
   @Test
   public void test_mapping_into_record() {
+
     Mapper<TestClass, TestRecord> mapper = Mapping.from(TestClass.class)
         .to(TestRecord.class)
         .mapper();
@@ -34,6 +35,32 @@ public class MappingRecordsTest {
     TestRecord actual = mapper.map(input);
 
     assertThat(actual).isNotNull()
+        .extracting(TestRecord::nummer)
+        .isEqualTo("123");
+
+  }
+
+  @Test
+  public void test_mapping_into_nested_record() {
+
+    Mapper<TestClassChild, TestRecord> mapperNested = Mapping.from(TestClassChild.class)
+        .to(TestRecord.class)
+        .mapper();
+    Mapper<TestClassSourceParent, TestClassDestinationParent> mapperParent = Mapping.from(TestClassSourceParent.class)
+        .to(TestClassDestinationParent.class)
+        .useMapper(mapperNested)
+        .mapper();
+
+    String expected = "123";
+
+    TestClassChild child = new TestClassChild();
+    child.setNummer(expected);
+    TestClassSourceParent input = new TestClassSourceParent();
+    input.setChild(child);
+    TestClassDestinationParent actual = mapperParent.map(input);
+
+    assertThat(actual).isNotNull()
+        .extracting(TestClassDestinationParent::getChild)
         .extracting(TestRecord::nummer)
         .isEqualTo("123");
 
@@ -54,4 +81,39 @@ public class MappingRecordsTest {
     }
   }
 
+  public static class TestClassDestinationParent {
+    private TestRecord child;
+
+    public TestRecord getChild() {
+      return child;
+    }
+
+    public void setChild(TestRecord child) {
+      this.child = child;
+    }
+  }
+
+  public static class TestClassSourceParent {
+    private TestClassChild child;
+
+    public TestClassChild getChild() {
+      return child;
+    }
+
+    public void setChild(TestClassChild child) {
+      this.child = child;
+    }
+  }
+
+  public static class TestClassChild {
+    private String nummer;
+
+    public String getNummer() {
+      return nummer;
+    }
+
+    public void setNummer(String nummer) {
+      this.nummer = nummer;
+    }
+  }
 }

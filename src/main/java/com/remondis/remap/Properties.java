@@ -11,6 +11,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.RecordComponent;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -116,53 +117,71 @@ class Properties {
    */
   static Set<PropertyDescriptor> getProperties(Class<?> inspectType, Target targetType, boolean fluentSetters) {
     try {
-      BeanInfo beanInfo = Introspector.getBeanInfo(inspectType);
-      PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
-      Stream<PropertyDescriptor> stream = Arrays.asList(propertyDescriptors)
-          .stream();
-      // Scan the property descriptors if support fluent setters are enabled and add the fluent setter-method.
-      if (fluentSetters && targetType == Target.DESTINATION) {
-        stream = stream.map(pd -> {
-          if (pd.getWriteMethod() == null) {
-            // if the fluent setter feature is activated, the property descriptor is replaces on demand, to also reflect
-            // setters with a return value.
-            return checkForAndSetFluentWriteMethod(inspectType, pd);
-          } else {
-            return pd;
-          }
-        });
-      }
-      Set<PropertyDescriptor> result = stream.filter(pd -> !pd.getName()
-          .equals("class"))
-          .filter(Properties::hasGetter)
-          .filter(pd -> {
-            if (Target.SOURCE.equals(targetType)) {
-              return true;
+      Set<PropertyDescriptor> result = null;
+      if (inspectType.isRecord()) {
+        RecordComponent[] recordComponents = inspectType.getRecordComponents();
+        result = Arrays.stream(recordComponents)
+            .map(rc -> {
+              Method accessorMethod = rc.getAccessor();
+              String propertyName = rc.getName();
+              PropertyDescriptor pd;
+              try {
+                pd = new PropertyDescriptor(propertyName, accessorMethod, null);
+                return pd;
+              } catch (IntrospectionException e) {
+                throw MappingException.introspectionFailed(inspectType, e);
+              }
+            })
+            .collect(Collectors.toSet());
+      } else {
+        BeanInfo beanInfo = Introspector.getBeanInfo(inspectType);
+        PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+        Stream<PropertyDescriptor> stream = Arrays.asList(propertyDescriptors)
+            .stream();
+        // Scan the property descriptors if support fluent setters are enabled and add the fluent setter-method.
+        if (fluentSetters && targetType == Target.DESTINATION) {
+          stream = stream.map(pd -> {
+            if (pd.getWriteMethod() == null) {
+              // if the fluent setter feature is activated, the property descriptor is replaces on demand, to also
+              // reflect
+              // setters with a return value.
+              return checkForAndSetFluentWriteMethod(inspectType, pd);
             } else {
-              return hasSetter(pd);
+              return pd;
             }
-          })
-          .collect(Collectors.toSet());
+          });
+        }
+        result = stream.filter(pd -> !pd.getName()
+            .equals("class"))
+            .filter(Properties::hasGetter)
+            .filter(pd -> {
+              if (Target.SOURCE.equals(targetType)) {
+                return true;
+              } else {
+                return hasSetter(pd);
+              }
+            })
+            .collect(Collectors.toSet());
 
-      for (Class<?> iface : inspectType.getInterfaces()) {
-        for (Method method : iface.getDeclaredMethods()) {
-          if (Modifier.isStatic(method.getModifiers())) {
-            continue;
-          }
+        for (Class<?> iface : inspectType.getInterfaces()) {
+          for (Method method : iface.getDeclaredMethods()) {
+            if (Modifier.isStatic(method.getModifiers())) {
+              continue;
+            }
 
-          if (isGetter(method) || isSetter(method)) {
-            String propertyName = toPropertyName(method);
-            PropertyDescriptor existing = findPropertyDescriptor(result, propertyName);
+            if (isGetter(method) || isSetter(method)) {
+              String propertyName = toPropertyName(method);
+              PropertyDescriptor existing = findPropertyDescriptor(result, propertyName);
 
-            if (isGetter(method) && existing == null) {
-              result.add(new PropertyDescriptor(propertyName, method, null));
-            } else if (isSetter(method) && existing != null) {
-              existing.setWriteMethod(method);
+              if (isGetter(method) && existing == null) {
+                result.add(new PropertyDescriptor(propertyName, method, null));
+              } else if (isSetter(method) && existing != null) {
+                existing.setWriteMethod(method);
+              }
             }
           }
         }
       }
-
       return result;
     } catch (IntrospectionException e) {
       throw new MappingException(String.format("Cannot introspect the type %s.", inspectType.getName()));

@@ -19,15 +19,16 @@ public final class Types<S> {
   }
 
   private void denyNoDefaultConstructor(Class<?> type) {
-    try {
-      Constructor<?> constructor = type.getConstructor();
-      if (constructor == null) {
-        throw MappingException.noDefaultConstructor(type);
+    if (!type.isRecord()) {
+      try {
+        Constructor<?> constructor = type.getConstructor();
+        if (constructor == null) {
+          throw MappingException.noDefaultConstructor(type);
+        }
+      } catch (Exception e) {
+        throw MappingException.noDefaultConstructor(type, e);
       }
-    } catch (Exception e) {
-      throw MappingException.noDefaultConstructor(type, e);
     }
-
   }
 
   /**

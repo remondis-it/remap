@@ -5,6 +5,7 @@ import static com.remondis.remap.Properties.asStringWithType;
 import static com.remondis.remap.Properties.createUnmappedMessage;
 import static com.remondis.remap.Properties.getPropertyClass;
 
+import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -182,6 +183,10 @@ public class MappingException extends RuntimeException {
         .append("\n\tto\n\t")
         .append(destGenericCtx);
     return new MappingException(builder.toString());
+  }
+
+  public static MappingException introspectionFailed(Class type, IntrospectionException e) {
+    return new MappingException(String.format("Property introspection failed for type '%s'", type.getName()), e);
   }
 
 }

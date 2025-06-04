@@ -788,9 +788,8 @@ public class MappingConfiguration<S, D> {
     }
 
     // Create result object after Transformation to ensure lifecycle compatibility with records.
-    Class<?> destinationType = this.destination.getClass();
-    if (destinationType.isRecord()) {
-      destination = createRecord(mappingResult, destinationType);
+    if (this.destination.isRecord()) {
+      destination = createRecord(mappingResult, this.destination);
     } else {
       if (destination == null) {
         destination = createDestination();
