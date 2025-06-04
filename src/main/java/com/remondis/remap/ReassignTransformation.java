@@ -61,8 +61,8 @@ public class ReassignTransformation extends Transformation {
     Object destinationValue;
     GenericParameterContext sourceCtx = new GenericParameterContext(sourceProperty.getReadMethod());
     GenericParameterContext destinationCtx = new GenericParameterContext(destinationProperty.getReadMethod());
-    destinationValue = _convert(sourceCtx.getCurrentType(), source, destinationCtx.getCurrentType(), destination, sourceCtx,
-        destinationCtx);
+    destinationValue = _convert(sourceCtx.getCurrentType(), source, destinationCtx.getCurrentType(), destination,
+        sourceCtx, destinationCtx);
     return MappedResult.value(destinationValue);
   }
 
