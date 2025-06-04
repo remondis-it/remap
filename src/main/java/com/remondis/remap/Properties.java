@@ -177,16 +177,23 @@ class Properties {
         GetterSetterHolder holder = entry.getValue();
 
         PropertyDescriptor existing = findPropertyDescriptor(result, name);
+
         if (existing == null) {
-          continue;
-        }
-        result.remove(existing);
-        Method getter = chooseGetter(existing.getReadMethod(), holder.getGetter());
-        Method setter = chooseSetter(existing.getWriteMethod(), holder.getSetter());
-        try {
-          result.add(new PropertyDescriptor(name, getter, setter));
-        } catch (IntrospectionException e) {
-          throw new MappingException("Failed to create PropertyDescriptor for: " + name, e);
+          try {
+            PropertyDescriptor pd = new PropertyDescriptor(name, holder.getGetter(), holder.getSetter());
+            result.add(pd);
+          } catch (IntrospectionException e) {
+            throw new MappingException("Failed to create interface PropertyDescriptor for: " + name, e);
+          }
+        } else {
+          result.remove(existing);
+          Method getter = chooseGetter(existing.getReadMethod(), holder.getGetter());
+          Method setter = chooseSetter(existing.getWriteMethod(), holder.getSetter());
+          try {
+            result.add(new PropertyDescriptor(name, getter, setter));
+          } catch (IntrospectionException e) {
+            throw new MappingException("Failed to create PropertyDescriptor for: " + name, e);
+          }
         }
       }
     }
