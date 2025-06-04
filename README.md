@@ -769,6 +769,9 @@ This workaround was tested and should work for most cases. Please file an issue 
 
 # Migration guide
 
+## Sidenote for 4.4.1
+Fix Scenario where class A extends class B and implements class C but class B does not implement class C 
+
 ## Sidenote for 4.4.0
 ReMap now finds attributes from implemented interfaces when mapping entities. In previous versions (Java 17 and below), these attributes were not detected. With this change, attributes from implemented interfaces are now correctly identified.
 
