@@ -1,12 +1,17 @@
 package com.remondis.remap;
 
+import static com.remondis.remap.Properties.getProperties;
+import static com.remondis.remap.Target.DESTINATION;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.beans.PropertyDescriptor;
 import java.util.Optional;
 import java.util.Set;
- 
+
 import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.fluent.FluentSetterDto;
@@ -16,7 +21,8 @@ public class PropertiesTest {
 
   @Test
   public void a() {
-    Optional<PropertyDescriptor> pdFluentSetterNotThere = getProperties(FluentSetterDto.class, DESTINATION, false)
+    Optional<PropertyDescriptor> pdFluentSetterNotThere = Properties
+        .getProperties(FluentSetterDto.class, DESTINATION, false)
         .stream()
         .filter(pd -> pd.getName()
             .equals("b1"))
@@ -28,7 +34,8 @@ public class PropertiesTest {
   public void b() {
     // Changes the property descriptor persistently (vm-wide?).
     // Some cache is working here
-    Optional<PropertyDescriptor> pdFluentSetter = getProperties(FluentSetterDto.class, DESTINATION, true).stream()
+    Optional<PropertyDescriptor> pdFluentSetter = Properties.getProperties(FluentSetterDto.class, DESTINATION, true)
+        .stream()
         .filter(pd -> pd.getName()
             .equals("b1"))
         .findFirst();
@@ -38,7 +45,8 @@ public class PropertiesTest {
 
   @Test
   public void c() {
-    Optional<PropertyDescriptor> pdFluentSetter = getProperties(FluentSetterDto.class, DESTINATION, false).stream()
+    Optional<PropertyDescriptor> pdFluentSetter = Properties.getProperties(FluentSetterDto.class, DESTINATION, false)
+        .stream()
         .filter(pd -> pd.getName()
             .equals("b1"))
         .findFirst();
@@ -52,7 +60,7 @@ public class PropertiesTest {
     // when
     getProperties(InternalDummyB.class, DESTINATION, false); // fill cache with correct values
     getProperties(InternalDummyA.class, DESTINATION, false); // override with bad properties from interface
-    Set<PropertyDescriptor> actual = getProperties(InternalDummyB.class, DESTINATION, false);
+    Set<PropertyDescriptor> actual = getProperties(InternalDummyB.class, Target.DESTINATION, false);
     // then
     assertEquals(InternalDummyB.class, actual.stream()
         .findFirst()
@@ -134,6 +142,7 @@ public class PropertiesTest {
   public class InternalDummyC implements InternalDummyInterface2<Integer> {
     private Integer c;
 
+    @Override
     public Integer getC() {
       return c;
     }
