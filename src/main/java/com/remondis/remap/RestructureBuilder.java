@@ -68,7 +68,7 @@ public class RestructureBuilder<S, D, RD> {
         });
     restructureMappingConfiguration.accept(config);
     Transformation restructureTransformation = new RestructureTransformation<>(config, null,
-        typedPropertyDescriptor.property, null, applyingSpecificConfiguration);
+        typedPropertyDescriptor.property);
     mappingConfiguration.addDestinationMapping(typedPropertyDescriptor.property, restructureTransformation);
     return mappingConfiguration;
   }

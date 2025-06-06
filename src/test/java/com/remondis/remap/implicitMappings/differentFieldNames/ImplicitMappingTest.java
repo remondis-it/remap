@@ -1,14 +1,14 @@
 package com.remondis.remap.implicitMappings.differentFieldNames;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
@@ -22,7 +22,7 @@ public class ImplicitMappingTest {
 
   private Mapper<A, AResource> aMapper;
 
-  @Before
+  @BeforeEach
   public void setup() {
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)

@@ -1,17 +1,17 @@
 package com.remondis.remap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * This is the test of class {@link Mapper}.
@@ -20,7 +20,7 @@ public class MapperTest {
 
   private Mapper<StringDto, StringDto> mapper;
 
-  @Before
+  @BeforeEach
   public void setup() {
     this.mapper = Mapping.from(StringDto.class)
         .to(StringDto.class)

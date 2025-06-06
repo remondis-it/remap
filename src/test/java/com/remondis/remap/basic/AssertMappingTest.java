@@ -1,8 +1,9 @@
 package com.remondis.remap.basic;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertConfiguration;
 import com.remondis.remap.AssertMapping;
@@ -341,58 +342,60 @@ public class AssertMappingTest {
 
   }
 
-  @Test(expected = AssertionError.class)
+  @Test
   public void shouldDetectExpectedNoSkipWhenNull() {
+    assertThrows(AssertionError.class, () -> {
+      Mapper<B, BResource> bMapper = Mapping.from(B.class)
+          .to(BResource.class)
+          .mapper();
+      Mapper<A, AResource> mapper = Mapping.from(A.class)
+          .to(AResource.class)
+          .reassign(A::getString)
+          .to(AResource::getAnotherString)
+          .replace(A::getInteger, AResource::getIntegerAsString)
+          .withSkipWhenNull(String::valueOf)
+          .omitInSource(A::getOmitted)
+          .omitInDestination(AResource::getOmitted)
+          .useMapper(bMapper)
+          .mapper();
 
-    Mapper<B, BResource> bMapper = Mapping.from(B.class)
-        .to(BResource.class)
-        .mapper();
-    Mapper<A, AResource> mapper = Mapping.from(A.class)
-        .to(AResource.class)
-        .reassign(A::getString)
-        .to(AResource::getAnotherString)
-        .replace(A::getInteger, AResource::getIntegerAsString)
-        .withSkipWhenNull(String::valueOf)
-        .omitInSource(A::getOmitted)
-        .omitInDestination(AResource::getOmitted)
-        .useMapper(bMapper)
-        .mapper();
-
-    AssertConfiguration<A, AResource> asserts = AssertMapping.of(mapper)
-        .expectReassign(A::getString)
-        .to(AResource::getAnotherString)
-        .expectReplace(A::getInteger, AResource::getIntegerAsString)
-        .andTest(String::valueOf)
-        .expectOmitInSource(A::getOmitted)
-        .expectOmitInDestination(AResource::getOmitted);
-    asserts.ensure();
+      AssertConfiguration<A, AResource> asserts = AssertMapping.of(mapper)
+          .expectReassign(A::getString)
+          .to(AResource::getAnotherString)
+          .expectReplace(A::getInteger, AResource::getIntegerAsString)
+          .andTest(String::valueOf)
+          .expectOmitInSource(A::getOmitted)
+          .expectOmitInDestination(AResource::getOmitted);
+      asserts.ensure();
+    });
   }
 
-  @Test(expected = AssertionError.class)
+  @Test
   public void shouldDetectExpectedSkipWhenNull() {
+    assertThrows(AssertionError.class, () -> {
+      Mapper<B, BResource> bMapper = Mapping.from(B.class)
+          .to(BResource.class)
+          .mapper();
+      Mapper<A, AResource> mapper = Mapping.from(A.class)
+          .to(AResource.class)
+          .reassign(A::getString)
+          .to(AResource::getAnotherString)
+          .replace(A::getInteger, AResource::getIntegerAsString)
+          .with(String::valueOf)
+          .omitInSource(A::getOmitted)
+          .omitInDestination(AResource::getOmitted)
+          .useMapper(bMapper)
+          .mapper();
 
-    Mapper<B, BResource> bMapper = Mapping.from(B.class)
-        .to(BResource.class)
-        .mapper();
-    Mapper<A, AResource> mapper = Mapping.from(A.class)
-        .to(AResource.class)
-        .reassign(A::getString)
-        .to(AResource::getAnotherString)
-        .replace(A::getInteger, AResource::getIntegerAsString)
-        .with(String::valueOf)
-        .omitInSource(A::getOmitted)
-        .omitInDestination(AResource::getOmitted)
-        .useMapper(bMapper)
-        .mapper();
-
-    AssertConfiguration<A, AResource> asserts = AssertMapping.of(mapper)
-        .expectReassign(A::getString)
-        .to(AResource::getAnotherString)
-        .expectReplace(A::getInteger, AResource::getIntegerAsString)
-        .andSkipWhenNull()
-        .expectOmitInSource(A::getOmitted)
-        .expectOmitInDestination(AResource::getOmitted);
-    asserts.ensure();
+      AssertConfiguration<A, AResource> asserts = AssertMapping.of(mapper)
+          .expectReassign(A::getString)
+          .to(AResource::getAnotherString)
+          .expectReplace(A::getInteger, AResource::getIntegerAsString)
+          .andSkipWhenNull()
+          .expectOmitInSource(A::getOmitted)
+          .expectOmitInDestination(AResource::getOmitted);
+      asserts.ensure();
+    });
   }
 
   @Test

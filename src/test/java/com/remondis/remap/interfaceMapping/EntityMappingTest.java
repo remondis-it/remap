@@ -1,10 +1,10 @@
 package com.remondis.remap.interfaceMapping;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
@@ -15,7 +15,7 @@ public class EntityMappingTest {
   private Mapper<EntityA, EntityADTO> entityMapperWithoutId;
   private Mapper<EntityA, EntityWithIdDTO> entityMapperWithId;
 
-  @Before
+  @BeforeEach
   public void setup() {
     this.entityMapperWithoutId = Mapping.from(EntityA.class)
         .to(EntityADTO.class)

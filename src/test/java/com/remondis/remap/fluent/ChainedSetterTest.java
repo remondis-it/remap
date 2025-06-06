@@ -1,10 +1,11 @@
 package com.remondis.remap.fluent;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
@@ -75,11 +76,13 @@ public class ChainedSetterTest {
         .ensure();
   }
 
-  @Test(expected = MappingException.class)
+  @Test
   public void shouldComplainAboutUnmappedProperties_dueToFluentSettersDisabled() {
-    Mapping.from(FluentSetterDto.class)
-        .to(FluentSetterDto.class)
-        .mapper();
+    assertThatThrownBy(() -> {
+      Mapping.from(FluentSetterDto.class)
+          .to(FluentSetterDto.class)
+          .mapper();
+    }).isInstanceOf(MappingException.class);
   }
 
   @Test

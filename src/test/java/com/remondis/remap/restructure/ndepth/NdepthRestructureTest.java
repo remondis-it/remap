@@ -1,9 +1,9 @@
 package com.remondis.remap.restructure.ndepth;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
@@ -65,9 +65,15 @@ public class NdepthRestructureTest {
         .expectOtherSourceFieldsToBeOmitted()
         .expectRestructure(Bean2::getPerson)
         .implicitly()
-        .ensure()).hasMessage("The mapping from source type com.remondis.remap.restructure.Bean\n"
-            + "used for restructuring of field Property 'person' in com.remondis.remap.restructure.ndepth.Bean2\n"
-            + "was configured to apply specific mapping configuration but was expected to create implicit mapping.");
+        .ensure()).hasMessageContainingAll("The mapping from source type com.remondis.remap.restructure.Bean",
+            "used for restructuring of field in Property 'person' in com.remondis.remap.restructure.ndepth.Bean2",
+            "did not meet assertions:", "The following unexpected transformation were specified on the mapping:",
+            "- Restructure complex object for field Property 'address' in Person using the following mapping",
+            "Mapping from Bean", "to Address", " with transformation:", "- Reassigning Property 'houseNumber' in Bean",
+            "to Property 'houseNumber' in Address", "- Reassigning Property 'city' in Bean",
+            "to Property 'city' in Address", "- Reassigning Property 'street' in Bean",
+            "to Property 'street' in Address", "- Omitting Property 'name' in Bean",
+            "- Omitting Property 'forename' in Bean", "All properties are mapped!");
   }
 
   @Test
@@ -89,11 +95,10 @@ public class NdepthRestructureTest {
         .applying(config -> config.expectRestructure(Person::getAddress)
             .applying(bean2AddressMapper -> bean2AddressMapper.expectReassign(Bean::getCity)
                 .to(Address::getCity)))
-        .ensure()).hasMessage("The mapping from source type com.remondis.remap.restructure.Bean\n"
-            + "used for restructuring of field in Property 'person' in com.remondis.remap.restructure.ndepth.Bean2\n"
-            + "did not meet assertions:\n"
-            + "The following expected transformation were not specified on the mapping:\n"
-            + "- Restructure complex object for field Property 'address' in Person.\n");
+        .ensure()).hasMessageContainingAll("The mapping from source type com.remondis.remap.restructure.Bean",
+            "used for restructuring of field in Property 'person' in com.remondis.remap.restructure.ndepth.Bean2",
+            "did not meet assertions:", "The following expected transformation were not specified on the mapping:",
+            "- Restructure complex object for field Property 'address' in Person.");
   }
 
   @Test
@@ -107,8 +112,10 @@ public class NdepthRestructureTest {
         .ensure()).hasMessage("The mapping from source type com.remondis.remap.restructure.Bean\n"
             + "used for restructuring of field in Property 'person' in com.remondis.remap.restructure.ndepth.Bean2\n"
             + "did not meet assertions:\n" + "The mapping from source type com.remondis.remap.restructure.Bean\n"
-            + "used for restructuring of field Property 'address' in com.remondis.remap.restructure.ndepth.Person\n"
-            + "was configured to create implicit mapping but was expected to apply specific mapping configuration.");
+            + "used for restructuring of field in Property 'address' in com.remondis.remap.restructure.ndepth.Person\n"
+            + "did not meet assertions:\n"
+            + "The following expected transformation were not specified on the mapping:\n"
+            + "- Reassigning Property 'city' in Bean\n" + "           to Property 'city' in Address\n");
   }
 
   private Mapper<Bean, Bean2> createMapper() {

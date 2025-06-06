@@ -35,15 +35,16 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
   }
 
   @Override
-  protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
+  protected MappedResult performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
 
     MappedResult result = performValueTransformation(sourceValue, destination);
+    return result;
 
-    if (result.hasValue()) {
-      writeOrFail(destinationProperty, destination, result.getValue());
-    }
+    // if (result.hasValue()) {
+    // writeOrFail(destinationProperty, destination, result.getValue());
+    // }
   }
 
   @SuppressWarnings({

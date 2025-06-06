@@ -11,6 +11,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.RecordComponent;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -119,8 +120,14 @@ class Properties {
    */
   static Set<PropertyDescriptor> getProperties(Class<?> inspectType, Target targetType, boolean fluentSetters) {
     try {
-      Set<PropertyDescriptor> result = extractBaseProperties(inspectType, targetType, fluentSetters);
-      mergeInterfaceProperties(inspectType, result);
+      Set<PropertyDescriptor> result = null;
+      if (inspectType.isRecord()) {
+        result = getPropertiesFromRecord(inspectType);
+      } else {
+        result = extractBaseProperties(inspectType, targetType, fluentSetters);
+        mergeInterfaceProperties(inspectType, result);
+        return result;
+      }
       return result;
     } catch (IntrospectionException e) {
       throw new MappingException(String.format("Cannot introspect the type %s.", inspectType.getName()));
@@ -277,6 +284,25 @@ class Properties {
       throw new RuntimeException(e);
     }
     return pd;
+  }
+
+  private static Set<PropertyDescriptor> getPropertiesFromRecord(Class<?> inspectType) {
+    Set<PropertyDescriptor> result;
+    RecordComponent[] recordComponents = inspectType.getRecordComponents();
+    result = Arrays.stream(recordComponents)
+        .map(rc -> {
+          Method accessorMethod = rc.getAccessor();
+          String propertyName = rc.getName();
+          PropertyDescriptor pd;
+          try {
+            pd = new PropertyDescriptor(propertyName, accessorMethod, null);
+            return pd;
+          } catch (IntrospectionException e) {
+            throw MappingException.introspectionFailed(inspectType, e);
+          }
+        })
+        .collect(Collectors.toSet());
+    return result;
   }
 
   private static boolean hasGetter(PropertyDescriptor pd) {

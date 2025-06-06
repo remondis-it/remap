@@ -2,6 +2,7 @@ package com.remondis.remap;
 
 import static com.remondis.remap.Properties.asString;
 import static com.remondis.remap.ReflectionUtil.getCollector;
+import static java.util.Objects.isNull;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
@@ -39,18 +40,20 @@ public class ReassignTransformation extends Transformation {
   }
 
   @Override
-  protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
+  protected MappedResult performTransformation(PropertyDescriptor sourceProperty, Object source,
       PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
     MappedResult result = MappedResult.skip();
 
     if (sourceValue != null) {
       result = performValueTransformation(sourceValue, destination);
+      return result;
+    } else {
+      return MappedResult.skip();
     }
-
-    if (result.hasValue() || mapping.isWriteNull()) {
-      writeOrFail(destinationProperty, destination, result.getValue());
-    }
+    // if (result.hasValue() || mapping.isWriteNull()) {
+    // writeOrFail(destinationProperty, destination, result.getValue());
+    // }
   }
 
   @Override
@@ -152,8 +155,12 @@ public class ReassignTransformation extends Transformation {
     } else {
       // Object types must be mapped by a registered mapper before setting the value.
       InternalMapper delegateMapper = getMapperFor(sourceType, destinationType);
-      Object destinationValueMapped = readOrFail(destinationProperty, destinationValue);
-      return delegateMapper.map(sourceValue, destinationValueMapped);
+      if (isNull(destinationValue)) {
+        return delegateMapper.map(sourceValue);
+      } else {
+        Object destinationValueMapped = readOrFail(destinationProperty, destinationValue);
+        return delegateMapper.map(sourceValue, destinationValueMapped);
+      }
     }
   }
 

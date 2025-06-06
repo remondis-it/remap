@@ -1,6 +1,6 @@
 package com.remondis.remap.regression.omitOthersOmitsImplicitMappings;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;

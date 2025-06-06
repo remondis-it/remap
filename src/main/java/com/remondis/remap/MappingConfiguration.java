@@ -10,6 +10,8 @@ import static com.remondis.remap.ReflectionUtil.newInstance;
 import static java.util.Objects.nonNull;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.RecordComponent;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -776,17 +778,73 @@ public class MappingConfiguration<S, D> {
    * @return Returns a newly created destination object.
    */
   D map(S source, D destination) {
-    D destinationObject = destination;
     if (source == null) {
       throw MappingException.denyMappingOfNull();
     }
-    if (destination == null) {
-      destinationObject = createDestination();
-    }
+    Map<Transformation, MappedResult> mappingResult = new Hashtable<>();
     for (Transformation t : mappings) {
-      t.performTransformation(source, destinationObject);
+      MappedResult mappedResult = t.performTransformation(source, destination);
+      mappingResult.put(t, mappedResult);
     }
-    return destinationObject;
+
+    // Create result object after Transformation to ensure lifecycle compatibility with records.
+    if (this.destination.isRecord()) {
+      destination = createRecord(mappingResult, this.destination);
+    } else {
+      if (destination == null) {
+        destination = createDestination();
+      }
+      writeMappingToDestination(destination, mappingResult);
+    }
+    return destination;
+  }
+
+  private void writeMappingToDestination(D destination, Map<Transformation, MappedResult> mappingResult) {
+    final D writeDestination = destination;
+    mappingResult.entrySet()
+        .stream()
+        .forEach(entry -> {
+          Transformation key = entry.getKey();
+          MappedResult mappedResult = entry.getValue();
+          Object value = mappedResult.getValue();
+          if (shouldWriteMappedResult(mappedResult)) {
+            key.writeDestinationOrFail(writeDestination, value);
+          }
+        });
+  }
+
+  private D createRecord(Map<Transformation, MappedResult> mappingResult, Class<?> destinationType) {
+    RecordComponent[] recordComponents = destinationType.getRecordComponents();
+    Class<?>[] rcTypes = new Class[recordComponents.length];
+    Object[] rcValues = new Object[recordComponents.length];
+    for (int i = 0; i < recordComponents.length; i++) {
+      RecordComponent rc = recordComponents[i];
+      String name = rc.getName();
+      Class rcType = rc.getType();
+      Transformation transformation = mappingResult.keySet()
+          .stream()
+          .filter(t -> t.getDestinationPropertyName()
+              .equals(name))
+          .findFirst()
+          .get();
+      MappedResult mappedResult = mappingResult.get(transformation);
+      Object value = mappedResult.getValue();
+      rcTypes[i] = rcType;
+      rcValues[i] = value;
+    }
+    try {
+      Constructor constructor = destinationType.getDeclaredConstructor(rcTypes);
+      Object recordInstance = constructor.newInstance(rcValues);
+      return (D) recordInstance;
+    } catch (InstantiationException e) {
+      throw MappingException.noDefaultConstructor(destinationType, e);
+    } catch (Exception e) {
+      throw MappingException.newInstanceFailed(destinationType, e);
+    }
+  }
+
+  private boolean shouldWriteMappedResult(MappedResult mappedResult) {
+    return mappedResult.hasValue() || isWriteNull();
   }
 
   private D createDestination() {

@@ -3,12 +3,12 @@ package com.remondis.remap.propertypathmapping.withtransformation.collections;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
@@ -19,7 +19,7 @@ public class PropertyPathWithTransformationCollectionTest {
 
   private Mapper<Person, PersonView> mapper;
 
-  @Before
+  @BeforeEach
   public void setup() {
     this.mapper = Mapping.from(Person.class)
         .to(PersonView.class)
