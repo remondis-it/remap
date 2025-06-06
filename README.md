@@ -769,8 +769,15 @@ This workaround was tested and should work for most cases. Please file an issue 
 
 # Migration guide
 
+## Sidenote for 4.4.2
+ReMap now supports Java records. Result objects are now created after the value mapping is performed, to support creation of record instances using parameterized constructors. Property detection was changed to support selection of record get-methods.
+
 ## Sidenote for 4.4.1
-Fix Scenario where class A extends class B and implements class C but class B does not implement class C 
+In earlier versions, ReMap did not take Get/Set methods into account if one of the methods was provided by an interface.
+In this case, it could happen that the methods were used from the wrong source. 
+An example scenario is where class A extends class B and implements class C but class B does not implement class C.
+
+This scenarios were fixed in this version.
 
 ## Sidenote for 4.4.0
 ReMap now finds attributes from implemented interfaces when mapping entities. In previous versions (Java 17 and below), these attributes were not detected. With this change, attributes from implemented interfaces are now correctly identified.

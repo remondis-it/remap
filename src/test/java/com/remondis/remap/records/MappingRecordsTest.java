@@ -13,6 +13,23 @@ import com.remondis.remap.Mapping;
 public class MappingRecordsTest {
 
   @Test
+  public void test_mapping_into_record_using_property_selection() {
+    Mapper<TestClass, TestRecord> mapper = Mapping.from(TestClass.class)
+        .to(TestRecord.class)
+        .noImplicitMappings()
+        .reassign(TestClass::getNummer)
+        .to(TestRecord::nummer)
+        .mapper();
+    TestClass input = new TestClass();
+    input.setNummer("123");
+    TestRecord actual = mapper.map(input);
+
+    assertThat(actual).isNotNull()
+        .extracting(TestRecord::nummer)
+        .isEqualTo("123");
+  }
+
+  @Test
   public void test_mapping_from_record() {
     Mapper<TestRecord, TestClass> mapper = Mapping.from(TestRecord.class)
         .to(TestClass.class)
