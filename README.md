@@ -769,6 +769,9 @@ This workaround was tested and should work for most cases. Please file an issue 
 
 # Migration guide
 
+## Sidenote for 4.4.2
+- Improved `MappingException` messages for collections containing `null` elements. The exception now includes the specific field name (e.g., `stringList`) and source/destination types, making debugging easier.
+
 ## Sidenote for 4.4.1
 Fix Scenario where class A extends class B and implements class C but class B does not implement class C 
 
