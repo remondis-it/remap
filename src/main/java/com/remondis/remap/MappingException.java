@@ -146,6 +146,17 @@ public class MappingException extends RuntimeException {
     return new MappingException(String.format("The collection type %s is unsupported.", collectionType.getName()));
   }
 
+  static MappingException nullElementInCollection(PropertyDescriptor sourceProperty,
+      PropertyDescriptor destinationProperty) {
+    Class<?> sourceDeclaringClass = sourceProperty.getReadMethod()
+        .getDeclaringClass();
+    Class<?> destDeclaringClass = destinationProperty.getReadMethod()
+        .getDeclaringClass();
+    return new MappingException(String.format(
+        "Cannot map null element in collection field '%s' from source type '%s' to destination type '%s'.",
+        sourceProperty.getName(), sourceDeclaringClass.getSimpleName(), destDeclaringClass.getSimpleName()));
+  }
+
   static MappingException incompatibleCollectionMapping(PropertyDescriptor sourceProperty,
       GenericParameterContext sourceCtx, PropertyDescriptor destinationProperty, GenericParameterContext destCtx) {
     GenericParameterContext rootSrcCtx = new GenericParameterContext(sourceProperty.getReadMethod());

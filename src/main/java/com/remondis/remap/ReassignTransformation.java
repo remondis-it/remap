@@ -91,12 +91,7 @@ public class ReassignTransformation extends Transformation {
     return collection.stream()
         .map(o -> {
           if (o == null) {
-            Class<?> sourceDeclaringClass = getDeclaringClass(this.sourceProperty);
-            Class<?> destDeclaringClass = getDeclaringClass(this.destinationProperty);
-            throw new MappingException(String.format(
-                "Cannot map null element in collection field '%s' from source type '%s' to destination type '%s'.",
-                this.sourceProperty.getName(), sourceDeclaringClass.getSimpleName(),
-                destDeclaringClass.getSimpleName()));
+            throw MappingException.nullElementInCollection(this.sourceProperty, this.destinationProperty);
           }
           GenericParameterContext newSourceCtx = sourceCtx.goInto(0);
           Class<?> sourceElementType = newSourceCtx.getCurrentType();
@@ -105,17 +100,6 @@ public class ReassignTransformation extends Transformation {
           return _convert(sourceElementType, o, destinationElementType, null, newSourceCtx, newDestCtx);
         })
         .collect(collector);
-  }
-
-  private Class<?> getDeclaringClass(PropertyDescriptor pd) {
-    Method method = pd.getReadMethod();
-    if (method == null) {
-      method = pd.getWriteMethod();
-    }
-    if (method == null) {
-      return pd.getPropertyType() != null ? pd.getPropertyType() : Object.class;
-    }
-    return method.getDeclaringClass();
   }
 
   @SuppressWarnings({
