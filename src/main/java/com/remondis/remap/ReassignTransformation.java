@@ -86,10 +86,13 @@ public class ReassignTransformation extends Transformation {
   private Object convertCollection(Object sourceValue, GenericParameterContext sourceCtx,
       GenericParameterContext destinationCtx) {
     Class<?> destinationCollectionType = destinationCtx.getCurrentType();
-    Collection collection = Collection.class.cast(sourceValue);
+    Collection collection = (Collection) sourceValue;
     Collector collector = getCollector(destinationCollectionType);
     return collection.stream()
         .map(o -> {
+          if (o == null) {
+            throw MappingException.nullElementInCollection(this.sourceProperty, this.destinationProperty);
+          }
           GenericParameterContext newSourceCtx = sourceCtx.goInto(0);
           Class<?> sourceElementType = newSourceCtx.getCurrentType();
           GenericParameterContext newDestCtx = destinationCtx.goInto(0);
