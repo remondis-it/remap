@@ -35,3 +35,8 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+      - name: Finsh package
+	    run: |
+	      curl -u "${{ secrets.OSSRH_USERNAME }}:${{ secrets.OSSRH_TOKEN }}" \
+	           -X POST \
+	           https://central.sonatype.com/manual/upload/defaultRepository/com.remondis
