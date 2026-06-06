@@ -769,6 +769,10 @@ This workaround was tested and should work for most cases. Please file an issue 
 
 # Migration guide
 
+## Sidenote for 4.4.3
+- Added **aggregated validation support** for all ReMap mappers.  
+  Instead of failing on the first invalid mapper, ReMap now collects all `MappingException`s during initialization and throws a single aggregated error after all mappers are created.
+
 ## Sidenote for 4.4.2
 - Improved `MappingException` messages for collections containing `null` elements. The exception now includes the specific field name (e.g., `stringList`) and source/destination types, making debugging easier.
 

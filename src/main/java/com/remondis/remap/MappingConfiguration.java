@@ -398,7 +398,11 @@ public class MappingConfiguration<S, D> {
       addOmitForDestination();
     }
 
-    validateMapping();
+    try {
+      validateMapping();
+    } catch (MappingException ex) {
+      ValidationAggregator.add(source, destination, ex);
+    }
     sourceInvocationSensor = null;
     destinationInvocationSensor = null;
     return new Mapper<>(this);

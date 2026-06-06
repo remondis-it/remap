@@ -1,6 +1,9 @@
 package com.remondis.remap;
 
+import org.springframework.beans.factory.SmartInitializingSingleton;
+
 import static com.remondis.remap.ReflectionUtil.getCollector;
+import static com.remondis.remap.ValidationAggregator.throwIfAnyAndClear;
 import static java.util.Objects.isNull;
 
 import java.util.Collection;
@@ -17,7 +20,7 @@ import java.util.stream.StreamSupport;
  * @param <D> The destination type
  * @author schuettec
  */
-public class Mapper<S, D> {
+public class Mapper<S, D> implements SmartInitializingSingleton {
 
   private MappingConfiguration<S, D> mapping;
 
@@ -148,4 +151,8 @@ public class Mapper<S, D> {
     return new MappingModel<>(getMapping());
   }
 
+  @Override
+  public void afterSingletonsInstantiated() {
+    throwIfAnyAndClear();
+  }
 }
