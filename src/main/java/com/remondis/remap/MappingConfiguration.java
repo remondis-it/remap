@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -111,7 +112,7 @@ public class MappingConfiguration<S, D> {
   MappingConfiguration(Class<S> source, Class<D> destination) {
     this.source = source;
     this.destination = destination;
-    this.mappings = new HashSet<>();
+    this.mappings = new LinkedHashSet<>();
     this.mappedSourceProperties = new HashSet<>();
     this.mappedDestinationProperties = new HashSet<>();
     this.mappers = new Hashtable<>();
@@ -802,7 +803,7 @@ public class MappingConfiguration<S, D> {
   }
 
   Set<Transformation> getMappings() {
-    return new HashSet<>(mappings);
+    return new LinkedHashSet<>(mappings);
   }
 
   @Override
