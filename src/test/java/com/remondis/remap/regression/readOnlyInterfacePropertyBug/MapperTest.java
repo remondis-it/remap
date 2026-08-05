@@ -12,10 +12,10 @@ import com.remondis.remap.Mapping;
  * implements an interface that declares a getter without a corresponding setter, the mapper reported this
  * read-only property as a missing mapping although read-only properties are no mapping targets.
  */
-public class MapperTest {
+class MapperTest {
 
   @Test
-  public void shouldCreateMapperIfTargetImplementsInterfaceWithReadOnlyProperty() {
+  void shouldCreateMapperIfTargetImplementsInterfaceWithReadOnlyProperty() {
     Mapper<C, A> mapper = Mapping.from(C.class)
         .to(A.class)
         .mapper();

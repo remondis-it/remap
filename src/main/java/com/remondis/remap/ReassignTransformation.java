@@ -8,11 +8,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.util.AbstractMap;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 /**
  * The reassign operation maps a field to another field while the field names may differ. A reassign operation is only
@@ -114,6 +113,17 @@ public class ReassignTransformation extends Transformation {
     }
   }
 
+  /**
+   * Converts a single element/key/value with the specified strategy, passing a <code>null</code> input through as
+   * <code>null</code> instead of invoking the strategy. This keeps every nesting level (collection elements, map
+   * keys/values) as null-tolerant as the top-level value handled by {@link #performTransformation}: a
+   * <code>null</code> entry is normal, valid data - for example a registered nested {@link Mapper} would otherwise
+   * reject a <code>null</code> element with {@link MappingException#denyMappingOfNull()}.
+   */
+  private static Object convertNullSafe(ConversionStrategy strategy, Object value) {
+    return value == null ? null : strategy.convert(value, null);
+  }
+
   @SuppressWarnings({
       "unchecked", "rawtypes"
   })
@@ -121,27 +131,23 @@ public class ReassignTransformation extends Transformation {
     return (sourceValue, destination) -> {
       Collection collection = (Collection) sourceValue;
       return collection.stream()
-          .map(element -> {
-            if (element == null) {
-              throw MappingException.nullElementInCollection(sourceProperty, destinationProperty);
-            }
-            return elementStrategy.convert(element, null);
-          })
+          .map(element -> convertNullSafe(elementStrategy, element))
           .collect(collector);
     };
   }
 
-  @SuppressWarnings({
-      "unchecked", "rawtypes"
-  })
   private static ConversionStrategy mapStrategy(ConversionStrategy keyStrategy, ConversionStrategy valueStrategy) {
     return (sourceValue, destination) -> {
       Map<?, ?> map = Map.class.cast(sourceValue);
-      return map.entrySet()
-          .stream()
-          .map(entry -> new AbstractMap.SimpleEntry(keyStrategy.convert(entry.getKey(), null),
-              valueStrategy.convert(entry.getValue(), null)))
-          .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+      // Built imperatively instead of via Collectors.toMap(): Map.merge - used internally by toMap - rejects null
+      // values (and null keys), but a Map with a null key or value is normal, valid data.
+      Map<Object, Object> result = new LinkedHashMap<>();
+      for (Map.Entry<?, ?> entry : map.entrySet()) {
+        Object key = convertNullSafe(keyStrategy, entry.getKey());
+        Object value = convertNullSafe(valueStrategy, entry.getValue());
+        result.put(key, value);
+      }
+      return result;
     };
   }
 

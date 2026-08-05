@@ -27,6 +27,15 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
   private Function<RS, RD> transformation;
   private boolean skipWhenNull;
 
+  /**
+   * The collector for the destination collection type, resolved once at validation time instead of on every mapped
+   * value: the destination property's type is static configuration knowledge, so whether it is a supported
+   * collection type (see {@link ReflectionUtil#getCollector(Class)}) can and must be validated at build time rather
+   * than surfacing as a {@link MappingException} on the first mapped value.
+   */
+  @SuppressWarnings("rawtypes")
+  private Collector collector;
+
   ReplaceCollectionTransformation(MappingConfiguration<?, ?> mapping, PropertyDescriptor sourceProperty,
       PropertyDescriptor destProperty, Function<RS, RD> transformation, boolean skipWhenNull) {
     super(mapping, sourceProperty, destProperty);
@@ -57,8 +66,6 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
     } else {
       Collection collection = (Collection) source;
 
-      Class<?> destinationCollectionType = destinationProperty.getPropertyType();
-      Collector collector = getCollector(destinationCollectionType);
       Collection<RD> destinationValue = null;
 
       // Skip when null on collection means to skip null items.
@@ -82,6 +89,7 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
 
   @Override
   protected void validateTransformation() throws MappingException {
+    this.collector = getCollector(destinationProperty.getPropertyType());
   }
 
   @Override

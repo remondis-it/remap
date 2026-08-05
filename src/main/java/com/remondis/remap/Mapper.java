@@ -98,7 +98,7 @@ public class Mapper<S, D> {
    */
   public List<D> map(Iterable<? extends S> iterable) {
     Stream<? extends S> stream = StreamSupport.stream(iterable.spliterator(), false);
-    return stream.map(this::map)
+    return stream.map(this::mapElement)
         .collect(Collectors.toList());
   }
 
@@ -132,8 +132,17 @@ public class Mapper<S, D> {
   @SuppressWarnings("unchecked")
   private Collection<D> _mapCollection(Collection<? extends S> source) {
     return (Collection<D>) source.stream()
-        .map(this::map)
+        .map(this::mapElement)
         .collect(getCollector(source));
+  }
+
+  /**
+   * Maps a single element of a collection/iterable, passing a <code>null</code> element through as <code>null</code>
+   * instead of rejecting it: a collection containing <code>null</code> elements is normal, valid data, and
+   * {@link #map(Object)} does not accept <code>null</code> (see {@link #mapOptional(Object)}).
+   */
+  private D mapElement(S element) {
+    return isNull(element) ? null : map(element);
   }
 
   @Override

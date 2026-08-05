@@ -67,12 +67,18 @@ public class BiRecursivePropertyWalker<R, T> {
     return this;
   }
 
+  /*
+   * Visitors are executed sequentially on the calling thread. Property extractor/writer functions are user-supplied
+   * and operate on a single source/target pair - for example on attached JPA entities, as documented on MapOver.
+   * Running them concurrently on the common ForkJoinPool would silently violate thread-confinement assumptions of
+   * such beans (e.g. a JPA persistence context bound to the calling thread) for no benefit, since a single
+   * mapOver()/execute() call maps one object pair.
+   */
   @SuppressWarnings("unchecked")
   public void execute(T source, T target) {
-    visitors.parallelStream()
-        .forEach(visitor -> {
-          ((BiPropertyVisitor<T, T>) visitor).execute(source, target);
-        });
+    for (BiPropertyVisitor<T, ?> visitor : visitors) {
+      ((BiPropertyVisitor<T, T>) visitor).execute(source, target);
+    }
   }
 
   public static <T> BiRecursivePropertyWalker<T, T> create(Class<T> beanType) {

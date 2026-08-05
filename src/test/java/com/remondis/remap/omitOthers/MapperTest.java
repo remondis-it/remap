@@ -2,16 +2,16 @@ package com.remondis.remap.omitOthers;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 
-public class MapperTest {
+class MapperTest {
 
   @Test
-  public void shouldOmitOtherSourceProperties() {
+  void shouldOmitOtherSourceProperties() {
     assertThatThrownBy(() -> Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
@@ -25,7 +25,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldOmitOtherDestinationProperties() {
+  void shouldOmitOtherDestinationProperties() {
     assertThatThrownBy(() -> Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
@@ -38,7 +38,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldOmitOtherSourceAndDestFields_withExpectOtherSourceAndDestFieldsToBeOmitted() {
+  void shouldOmitOtherSourceAndDestFields_withExpectOtherSourceAndDestFieldsToBeOmitted() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
@@ -60,7 +60,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldOmitOtherSourceAndDestFields_withExpectOthersToBeOmitted() {
+  void shouldOmitOtherSourceAndDestFields_withExpectOthersToBeOmitted() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
@@ -81,7 +81,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldOmitOthers_withExpectOthersToBeOmitted() {
+  void shouldOmitOthers_withExpectOthersToBeOmitted() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
@@ -101,7 +101,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldOmitOthers() {
+  void shouldOmitOthers() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)
@@ -125,7 +125,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldDenyOmitOthersIfNotExpected() {
+  void shouldDenyOmitOthersIfNotExpected() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getId, AResource::getId)

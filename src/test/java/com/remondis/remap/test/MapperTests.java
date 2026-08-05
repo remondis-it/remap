@@ -1,8 +1,9 @@
 package com.remondis.remap.test;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
@@ -12,7 +13,7 @@ import com.remondis.remap.test.MapperTests.PersonWithAddress.Address;
 public class MapperTests {
 
   @Test
-  public void mapsBeansWithSameFields() {
+  void mapsBeansWithSameFields() {
     Mapper<BeanWithConstructors, BeanWithEmptyConstructor> mapper = Mapping.from(BeanWithConstructors.class)
         .to(BeanWithEmptyConstructor.class)
         .mapper();
@@ -22,7 +23,7 @@ public class MapperTests {
   }
 
   @Test
-  public void mapsWithDefaultConstructor() {
+  void mapsWithDefaultConstructor() {
     // when a bean does not have a constructor, it should work with using the
     // default constructor
     Mapper<BeanWithConstructors, BeanWithoutConstructor> mapper = Mapping.from(BeanWithConstructors.class)
@@ -33,23 +34,23 @@ public class MapperTests {
     assertThat(result.getStringField()).isEqualTo("42");
   }
 
-  @Test(expected = MappingException.class)
-  public void failsWithoutEmptyConstructor() {
+  @Test
+  void failsWithoutEmptyConstructor() {
     // when a bean does not have an empty constructor, mapping should fail
-    Mapping.from(BeanWithConstructors.class)
+    assertThrows(MappingException.class, () -> Mapping.from(BeanWithConstructors.class)
         .to(BeanWithoutEmptyConstructor.class)
-        .mapper();
-  }
-
-  @Test(expected = MappingException.class)
-  public void failsOnUnspecifiedFields() {
-    Mapping.from(BeanWithConstructors.class)
-        .to(Person.class)
-        .mapper();
+        .mapper());
   }
 
   @Test
-  public void reassignsFields() {
+  void failsOnUnspecifiedFields() {
+    assertThrows(MappingException.class, () -> Mapping.from(BeanWithConstructors.class)
+        .to(Person.class)
+        .mapper());
+  }
+
+  @Test
+  void reassignsFields() {
     Mapper<BeanWithConstructors, Person> mapper = Mapping.from(BeanWithConstructors.class)
         .to(Person.class)
         .reassign(BeanWithConstructors::getIntField)
@@ -64,7 +65,7 @@ public class MapperTests {
   }
 
   @Test
-  public void omitsSourceField() {
+  void omitsSourceField() {
     Mapper<Person, Name> mapper = Mapping.from(Person.class)
         .to(Name.class)
         .omitInSource(Person::getAge)
@@ -75,7 +76,7 @@ public class MapperTests {
   }
 
   @Test
-  public void omitsDestinationField() {
+  void omitsDestinationField() {
     Mapper<Name, Person> mapper = Mapping.from(Name.class)
         .to(Person.class)
         .omitInDestination(Person::getAge)
@@ -85,15 +86,15 @@ public class MapperTests {
     assertThat(person.getName()).isEqualTo("Bob");
   }
 
-  @Test(expected = MappingException.class)
-  public void failsOnMissingNestedMapper() {
-    Mapping.from(PersonWithAddress.class)
+  @Test
+  void failsOnMissingNestedMapper() {
+    assertThrows(MappingException.class, () -> Mapping.from(PersonWithAddress.class)
         .to(HumanWithAddress.class)
-        .mapper();
+        .mapper());
   }
 
   @Test
-  public void mapsNested() {
+  void mapsNested() {
     Mapper<PersonWithAddress, HumanWithAddress> mapper = Mapping.from(PersonWithAddress.class)
         .to(HumanWithAddress.class)
         .useMapper(Mapping.from(PersonWithAddress.Address.class)
@@ -112,7 +113,7 @@ public class MapperTests {
   }
 
   @Test
-  public void replaces() {
+  void replaces() {
     Mapper<PersonWithAddress, PersonWithFoo> mapper = Mapping.from(PersonWithAddress.class)
         .to(PersonWithFoo.class)
         .replace(PersonWithAddress::getAddress, PersonWithFoo::getFoo)

@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -105,25 +106,34 @@ class ReflectionUtil {
   }
 
   /**
-   * This method selects a {@link Collector} according to the specified {@link Collection} instance. This method
-   * currently supports {@link Set} and {@link List}.
+   * This method selects a {@link Collector} according to the specified {@link Collection} instance. The instance's
+   * concrete runtime type is only known at call time (it is whatever the caller passes to {@code Mapper.map
+   * (Collection)}), so unlike {@link #getCollector(Class)} - which validates a statically declared destination field
+   * type once at mapper build time - this can not be validated ahead of time. Any {@link Collection} that is not a
+   * {@link Set} is therefore treated as a {@link List} rather than rejected, so that mapping never fails at call time
+   * for a caller-chosen collection type ReMap does not specifically special-case.
    *
    * @param collection The actual collection instance.
-   * @return Returns the {@link Collector} that creates a new {@link Collection} of the same type.
+   * @return Returns the {@link Collector} that creates a new {@link Collection} of the same kind.
    */
   @SuppressWarnings("rawtypes")
   static Collector getCollector(Collection collection) {
     if (collection instanceof Set) {
       return Collectors.toSet();
-    } else if (collection instanceof List) {
-      return Collectors.toList();
     } else {
-      throw MappingException.unsupportedCollection(collection);
+      return Collectors.toList();
     }
   }
 
   /**
-   * Returns a {@link Collector} that supports the specified collection type.
+   * Returns a {@link Collector} that supports the specified collection type. The check is deliberately the other way
+   * round from checking whether {@code collectionType} is a {@link Set}/{@link List}: it asks whether the concrete
+   * instance the collector would actually create ({@link ArrayList}/{@link HashSet}) can be assigned to a field of
+   * type {@code collectionType}. A destination field declared with a concrete collection subtype (e.g. {@link
+   * java.util.LinkedList} or {@link java.util.TreeSet}) is a {@link List}/{@link Set}, but an {@link ArrayList}/
+   * {@link HashSet} cannot be assigned to it - checking assignability of {@code collectionType} alone would wrongly
+   * accept such a field here, only to fail with a confusing reflection error when the produced collection is
+   * actually written to it.
    *
    * @param collectionType The collection type
    * @return Returns a {@link Collector} that supports the specified collection type. If no supported collection type
@@ -131,10 +141,10 @@ class ReflectionUtil {
    */
   @SuppressWarnings("rawtypes")
   static Collector getCollector(Class<?> collectionType) {
-    if (Set.class.isAssignableFrom(collectionType)) {
-      return Collectors.toSet();
-    } else if (List.class.isAssignableFrom(collectionType)) {
+    if (collectionType.isAssignableFrom(ArrayList.class)) {
       return Collectors.toList();
+    } else if (collectionType.isAssignableFrom(HashSet.class)) {
+      return Collectors.toSet();
     } else {
       throw MappingException.unsupportedCollection(collectionType);
     }

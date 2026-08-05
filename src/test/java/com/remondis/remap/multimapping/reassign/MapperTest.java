@@ -1,17 +1,17 @@
 package com.remondis.remap.multimapping.reassign;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 
-public class MapperTest {
+class MapperTest {
 
   @Test
-  public void shouldAllowMultipleReassigns() {
+  void shouldAllowMultipleReassigns() {
 
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)

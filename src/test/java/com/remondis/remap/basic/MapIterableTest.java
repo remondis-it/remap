@@ -8,23 +8,23 @@ import static com.remondis.remap.basic.MapperTest.MORE_IN_A;
 import static com.remondis.remap.basic.MapperTest.NUMBER;
 import static com.remondis.remap.basic.MapperTest.STRING;
 import static com.remondis.remap.basic.MapperTest.ZAHL_IN_A;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 
-public class MapIterableTest {
+class MapIterableTest {
 
   @SuppressWarnings("rawtypes")
   @Test
-  public void mapFromIterable() {
+  void mapFromIterable() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .omitInSource(A::getMoreInA)

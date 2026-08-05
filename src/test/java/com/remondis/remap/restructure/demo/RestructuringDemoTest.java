@@ -4,12 +4,12 @@ import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.resample.Samples;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class RestructuringDemoTest {
+class RestructuringDemoTest {
 
   @Test
-  public void shouldRestructurePerson() {
+  void shouldRestructurePerson() {
     Mapper<PersonFlat, Family> mapper = Mapping.from(PersonFlat.class)
         .to(Family.class)
         .omitOtherSourceProperties()

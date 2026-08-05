@@ -1,8 +1,8 @@
 package com.remondis.remap.inheritance;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
@@ -10,7 +10,7 @@ import com.remondis.remap.MappingConfiguration;
 import com.remondis.remap.basic.B;
 import com.remondis.remap.basic.BResource;
 
-public class MapperTest {
+class MapperTest {
 
   public static final String MORE_IN_A = "moreInA";
   public static final Long ZAHL_IN_A = -88L;
@@ -25,7 +25,7 @@ public class MapperTest {
    * Ensures that the mapper maps inherited field correctly.
    */
   @Test
-  public void shouldMapInheritedFields() {
+  void shouldMapInheritedFields() {
     Mapper<Child, ChildResource> map = Mapping.from(Child.class)
         .to(ChildResource.class)
         .omitInSource(Child::getMoreInParent)
@@ -65,7 +65,7 @@ public class MapperTest {
    * Ensures that the mapper maps interface defined fields correctly.
    */
   @Test
-  public void shouldMapWithInterfaceDefinedMethods() {
+  void shouldMapWithInterfaceDefinedMethods() {
     Mapper<Child, ChildResource> map = Mapping.from(Child.class)
         .to(ChildResource.class)
         .reassign(ChildInterface::getString)
@@ -104,7 +104,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldReuseParentMapperConfig() {
+  void shouldReuseParentMapperConfig() {
     MappingConfiguration<? extends Parent, ? extends ParentResource> parentMapping = Mapping.from(Parent.class)
         .to(ParentResource.class);
     parentMappingConfig(parentMapping);

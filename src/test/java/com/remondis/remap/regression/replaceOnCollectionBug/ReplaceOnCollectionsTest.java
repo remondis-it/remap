@@ -1,25 +1,25 @@
 
 package com.remondis.remap.regression.replaceOnCollectionBug;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 
-public class ReplaceOnCollectionsTest {
+class ReplaceOnCollectionsTest {
 
   private static final String FLAT_MODIFIER = "_";
   private static final String MODIFIER = "_modified";
 
   @Test
-  public void test() {
+  void test() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .replace(A::getStrings, AResource::getStrings)
@@ -51,7 +51,7 @@ public class ReplaceOnCollectionsTest {
   }
 
   @Test
-  public void test_map_list_to_strings() {
+  void test_map_list_to_strings() {
     Mapper<A, AFlat> mapper = Mapping.from(A.class)
         .to(AFlat.class)
         .replace(A::getStrings, AFlat::getString)

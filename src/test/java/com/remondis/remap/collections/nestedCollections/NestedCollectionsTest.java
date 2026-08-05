@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
@@ -16,10 +16,10 @@ import com.remondis.remap.MappingException;
 import com.remondis.remap.basic.B;
 import com.remondis.remap.basic.BResource;
 
-public class NestedCollectionsTest {
+class NestedCollectionsTest {
 
   @Test
-  public void shouldDoMapperValidation() {
+  void shouldDoMapperValidation() {
     assertThatThrownBy(() -> Mapping.from(A.class)
         .to(AResource.class)
         .mapper()).isInstanceOf(MappingException.class)
@@ -30,7 +30,7 @@ public class NestedCollectionsTest {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void shouldMapNestedCollections() {
+  void shouldMapNestedCollections() {
 
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)

@@ -13,8 +13,10 @@ import static java.util.Objects.nonNull;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -63,6 +65,15 @@ public class MappingConfiguration<S, D> {
    * Holds the list of mappers registered for hierarchical mapping.
    */
   private Map<Projection<?, ?>, InternalMapper<?, ?>> mappers;
+
+  /**
+   * The mapping configuration this configuration was derived from (e.g. the enclosing configuration of a
+   * {@link #restructure(TypedSelector)} operation), or <code>null</code> if this is a top-level configuration. Mapper
+   * lookups fall back to this configuration so that a mapper registered on the enclosing configuration is visible to
+   * the nested configuration regardless of the order {@link #useMapper(Mapper)} and {@link #restructure(TypedSelector)}
+   * were called in.
+   */
+  private MappingConfiguration<?, ?> parentMapperRegistry;
 
   /**
    * Holds the list of mapping operations.
@@ -396,26 +407,49 @@ public class MappingConfiguration<S, D> {
   }
 
   /**
+   * Tracks the (source, destination) projections whose {@link #mapper()} build is currently in progress on the
+   * current thread. A {@link #restructure(TypedSelector)} configuration that (directly or transitively) restructures
+   * back into the very projection that is still being built - for example a self-referential tree/linked structure
+   * that recursively restructures a field of its own type - would otherwise recurse until a {@link StackOverflowError}
+   * crashes the current thread instead of failing with a clear diagnostic.
+   */
+  private static final ThreadLocal<Deque<Projection<?, ?>>> MAPPER_BUILD_STACK = ThreadLocal
+      .withInitial(ArrayDeque::new);
+
+  /**
    * Returns the mapper configured with this builder.
    *
    * @return The mapper instance.
    */
   public Mapper<S, D> mapper() {
-    if (!noImplicitMappings) {
-      addStrictMapping();
+    Projection<S, D> projection = new Projection<>(source, destination);
+    Deque<Projection<?, ?>> buildStack = MAPPER_BUILD_STACK.get();
+    if (buildStack.contains(projection)) {
+      throw MappingException.cyclicMapperConfiguration(projection, buildStack);
     }
+    buildStack.push(projection);
+    try {
+      if (!noImplicitMappings) {
+        addStrictMapping();
+      }
 
-    if (omitOtherSourceProperties) {
-      addOmitForSource();
-    }
-    if (omitOtherDestinationProperties) {
-      addOmitForDestination();
-    }
+      if (omitOtherSourceProperties) {
+        addOmitForSource();
+      }
+      if (omitOtherDestinationProperties) {
+        addOmitForDestination();
+      }
 
-    validateMapping();
-    sourceInvocationSensor = null;
-    destinationInvocationSensor = null;
-    return new Mapper<>(this);
+      validateMapping();
+      sourceInvocationSensor = null;
+      destinationInvocationSensor = null;
+      return new Mapper<>(this);
+    } finally {
+      buildStack.pop();
+      if (buildStack.isEmpty()) {
+        MAPPER_BUILD_STACK.remove();
+      }
+    }
   }
 
   private void addOmitForDestination() {
@@ -762,6 +796,16 @@ public class MappingConfiguration<S, D> {
   }
 
   /**
+   * Registers the enclosing mapping configuration to fall back to for mapper lookups. Used to link a nested
+   * configuration created by {@link #restructure(TypedSelector)} to the configuration it was derived from.
+   *
+   * @param parentMapperRegistry The enclosing {@link MappingConfiguration}.
+   */
+  void setParentMapperRegistry(MappingConfiguration<?, ?> parentMapperRegistry) {
+    this.parentMapperRegistry = parentMapperRegistry;
+  }
+
+  /**
    * Returns a registered mapper for hierarchical mapping. If the desired mapper was not found a
    * {@link MappingException} is thrown.
    *
@@ -789,7 +833,11 @@ public class MappingConfiguration<S, D> {
    */
   @SuppressWarnings("unchecked")
   <S1, D1> InternalMapper<S1, D1> getMapperOrNull(Class<S1> sourceType, Class<D1> destinationType) {
-    return (InternalMapper<S1, D1>) mappers.get(new Projection<>(sourceType, destinationType));
+    InternalMapper<S1, D1> mapper = (InternalMapper<S1, D1>) mappers.get(new Projection<>(sourceType, destinationType));
+    if (mapper == null && parentMapperRegistry != null) {
+      return parentMapperRegistry.getMapperOrNull(sourceType, destinationType);
+    }
+    return mapper;
   }
 
   /**
@@ -803,7 +851,8 @@ public class MappingConfiguration<S, D> {
    */
   public <S1, D1> boolean hasMapperFor(Class<S1> sourceType, Class<D1> destinationType) {
     Projection<?, ?> projection = new Projection<>(sourceType, destinationType);
-    return mappers.containsKey(projection);
+    return mappers.containsKey(projection)
+        || (parentMapperRegistry != null && parentMapperRegistry.hasMapperFor(sourceType, destinationType));
   }
 
   /**

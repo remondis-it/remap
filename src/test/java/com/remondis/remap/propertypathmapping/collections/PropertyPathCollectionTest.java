@@ -2,13 +2,13 @@ package com.remondis.remap.propertypathmapping.collections;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
@@ -16,12 +16,12 @@ import com.remondis.remap.Mapping;
 import com.remondis.remap.propertypathmapping.Address;
 import com.remondis.remap.propertypathmapping.Person;
 
-public class PropertyPathCollectionTest {
+class PropertyPathCollectionTest {
 
   private Mapper<CollectionSource, CollectionDestination> mapper;
 
-  @Before
-  public void setup() {
+  @BeforeEach
+  void setup() {
     this.mapper = Mapping.from(CollectionSource.class)
         .to(CollectionDestination.class)
         .replaceCollection(CollectionSource::getPersons, CollectionDestination::getCities)
@@ -31,7 +31,7 @@ public class PropertyPathCollectionTest {
   }
 
   @Test
-  public void shouldAssertCorrectly() {
+  void shouldAssertCorrectly() {
     AssertMapping.of(mapper)
         .expectReplaceCollection(CollectionSource::getPersons, CollectionDestination::getCities)
         .withPropertyPath(p -> p.getAddress()
@@ -40,7 +40,7 @@ public class PropertyPathCollectionTest {
   }
 
   @Test
-  public void shouldNotComplainAboutNullValue() {
+  void shouldNotComplainAboutNullValue() {
     String expected1 = "city1";
     String expected2 = "city3";
     Person p1 = new Person("forename1", "name1", new Address("street1", "houseNumber1", "zipCode1", expected1));
@@ -59,7 +59,7 @@ public class PropertyPathCollectionTest {
   }
 
   @Test
-  public void shouldNotComplainAboutNullItems() {
+  void shouldNotComplainAboutNullItems() {
     String expected1 = "city1";
     String expected2 = "city3";
     Person p1 = new Person("forename1", "name1", new Address("street1", "houseNumber1", "zipCode1", expected1));
@@ -77,7 +77,7 @@ public class PropertyPathCollectionTest {
   }
 
   @Test
-  public void shouldDistinctBetweenOtherReplaceOperations_andSkipWhenNull() {
+  void shouldDistinctBetweenOtherReplaceOperations_andSkipWhenNull() {
     assertThatThrownBy(() -> {
       AssertMapping.of(mapper)
           .expectReplaceCollection(CollectionSource::getPersons, CollectionDestination::getCities)
@@ -87,7 +87,7 @@ public class PropertyPathCollectionTest {
   }
 
   @Test
-  public void shouldDistinctBetweenOtherReplaceOperations_andTest() {
+  void shouldDistinctBetweenOtherReplaceOperations_andTest() {
     assertThatThrownBy(() -> {
       AssertMapping.of(mapper)
           .expectReplaceCollection(CollectionSource::getPersons, CollectionDestination::getCities)
