@@ -11,7 +11,7 @@ package com.remondis.remap;
  * @author schuettec
  */
 @FunctionalInterface
-public interface FieldSelector<T> {
+public interface FieldSelector<T> extends java.io.Serializable {
 
   /**
    * This method is used to perform a get-method invocation of the specified destination object. This invocation tells

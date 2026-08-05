@@ -12,11 +12,16 @@ import static com.remondis.remap.Target.SOURCE;
 import static java.util.Objects.nonNull;
 
 import java.beans.PropertyDescriptor;
+import java.io.Serializable;
+import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.RecordComponent;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -118,6 +123,13 @@ public class MappingConfiguration<S, D> {
    */
   private volatile Constructor<D> destinationConstructor;
 
+  /**
+   * Caches the canonical constructor of a record destination type. Resolved on the first mapping to avoid the
+   * reflective lookup for every mapped object. Volatile for safe publication when the mapper is shared between
+   * threads.
+   */
+  private volatile Constructor<D> recordConstructor;
+
   MappingConfiguration(Class<S> source, Class<D> destination) {
     this.source = source;
     this.destination = destination;
@@ -133,14 +145,14 @@ public class MappingConfiguration<S, D> {
   }
 
   private InvocationSensor<?> getSourceInvocationSensor() {
-    if (sourceInvocationSensor == null) {
+    if (sourceInvocationSensor == null && !source.isRecord()) {
       this.sourceInvocationSensor = new InvocationSensor<>(source);
     }
     return sourceInvocationSensor;
   }
 
   private InvocationSensor<?> getDestinationeInvocationSensor() {
-    if (destinationInvocationSensor == null) {
+    if (destinationInvocationSensor == null && !destination.isRecord()) {
       this.destinationInvocationSensor = new InvocationSensor<>(destination);
     }
     return destinationInvocationSensor;
@@ -545,6 +557,9 @@ public class MappingConfiguration<S, D> {
    */
   static <R, T> TypedPropertyDescriptor<R> getTypedPropertyFromFieldSelector(Target target, String configurationMethod,
       Class<T> sensorType, TypedSelector<R, T> selector, boolean fluentSetters) {
+    if (sensorType.isRecord()) {
+      return getTypedPropertyFromFieldSelector(null, target, configurationMethod, sensorType, selector, fluentSetters);
+    }
     InvocationSensor<T> invocationSensor = new InvocationSensor<T>(sensorType);
     return getTypedPropertyFromFieldSelector(invocationSensor, target, configurationMethod, sensorType, selector,
         fluentSetters);
@@ -553,6 +568,15 @@ public class MappingConfiguration<S, D> {
   static <R, T> TypedPropertyDescriptor<R> getTypedPropertyFromFieldSelector(InvocationSensor<?> invocationSensor,
       Target target, String configurationMethod, Class<T> sensorType, TypedSelector<R, T> selector,
       boolean fluentSetters) {
+    // For records, use SerializedLambda to extract the method name
+    if (sensorType.isRecord()) {
+      String propertyName = extractPropertyNameFromLambda(selector, sensorType);
+      PropertyDescriptor property = getPropertyDescriptorOrFail(target, sensorType, propertyName, fluentSetters);
+      TypedPropertyDescriptor<R> tpd = new TypedPropertyDescriptor<R>();
+      tpd.returnValue = null;
+      tpd.property = property;
+      return tpd;
+    }
     T sensor = (T) invocationSensor.getSensor();
     // Defensively reset the tracking state: a previously failed selector invocation may have left tracked
     // properties on this thread which would corrupt the evaluation of this selector.
@@ -595,6 +619,9 @@ public class MappingConfiguration<S, D> {
    */
   static <T> PropertyDescriptor getPropertyFromFieldSelector(Target target, String configurationMethod,
       Class<T> sensorType, FieldSelector<T> selector, boolean fluentSetters) {
+    if (sensorType.isRecord()) {
+      return getPropertyFromFieldSelector(null, target, configurationMethod, sensorType, selector, fluentSetters);
+    }
     InvocationSensor<T> invocationSensor = new InvocationSensor<T>(sensorType);
     return getPropertyFromFieldSelector(invocationSensor, target, configurationMethod, sensorType, selector,
         fluentSetters);
@@ -602,6 +629,11 @@ public class MappingConfiguration<S, D> {
 
   static <T> PropertyDescriptor getPropertyFromFieldSelector(InvocationSensor<?> invocationSensor, Target target,
       String configurationMethod, Class<T> sensorType, FieldSelector<T> selector, boolean fluentSetters) {
+    // For records, use SerializedLambda to extract the method name
+    if (sensorType.isRecord()) {
+      String propertyName = extractPropertyNameFromLambda(selector, sensorType);
+      return getPropertyDescriptorOrFail(target, sensorType, propertyName, fluentSetters);
+    }
     T sensor = (T) invocationSensor.getSensor();
     // Defensively reset the tracking state: a previously failed selector invocation may have left tracked
     // properties on this thread which would corrupt the evaluation of this selector.
@@ -663,6 +695,55 @@ public class MappingConfiguration<S, D> {
     if (trackedPropertyNames.size() > 1) {
       throw multipleInteractions(configurationMethod, trackedPropertyNames);
     }
+  }
+
+  /**
+   * Extracts the property name from a serializable lambda (method reference) using {@link SerializedLambda}.
+   * This is used for record types where ByteBuddy proxying is not possible.
+   *
+   * @param lambda The serializable lambda (method reference like {@code MyRecord::name}).
+   * @param type The record type for error messages.
+   * @return The property name referenced by the lambda.
+   */
+  static <T> String extractPropertyNameFromLambda(Serializable lambda, Class<T> type) {
+    String methodName;
+    try {
+      Method writeReplace = lambda.getClass()
+          .getDeclaredMethod("writeReplace");
+      writeReplace.setAccessible(true);
+      SerializedLambda sl = (SerializedLambda) writeReplace.invoke(lambda);
+      methodName = sl.getImplMethodName();
+    } catch (Exception e) {
+      throw new MappingException(String.format(
+          "Cannot extract property name from method reference for record type %s. "
+              + "Only method references (e.g., MyRecord::name) are supported for record types, not inline lambdas.",
+          type.getName()), e);
+    }
+
+    /*
+     * An inline lambda (e.g. r -> r.name()) compiles to a synthetic method, so the referenced property cannot be
+     * identified. Detect this here to fail with a clear message instead of reporting the synthetic method name as an
+     * unknown property.
+     */
+    if (methodName.startsWith("lambda$")) {
+      throw new MappingException(String.format(
+          "Cannot extract property name from an inline lambda for record type %s. "
+              + "Only method references (e.g. %s::componentName) are supported for record types.",
+          type.getName(), type.getSimpleName()));
+    }
+
+    // For record accessors, the method name IS the property name (e.g., "isActive" for isActive())
+    if (type.isRecord()) {
+      return methodName;
+    }
+
+    // For JavaBeans-style getters, strip get/is prefix
+    if (methodName.startsWith("get") && methodName.length() > 3) {
+      return Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
+    } else if (methodName.startsWith("is") && methodName.length() > 2) {
+      return Character.toLowerCase(methodName.charAt(2)) + methodName.substring(3);
+    }
+    return methodName;
   }
 
   static void denyAlreadyMappedProperty(Set<PropertyDescriptor> mappedProperties,
@@ -825,10 +906,13 @@ public class MappingConfiguration<S, D> {
    * @return Returns a newly created destination object.
    */
   D map(S source, D destination) {
-    D destinationObject = destination;
     if (source == null) {
       throw MappingException.denyMappingOfNull();
     }
+    if (this.destination.isRecord()) {
+      return mapToRecord(source, destination);
+    }
+    D destinationObject = destination;
     if (destination == null) {
       destinationObject = createDestination();
     }
@@ -836,6 +920,91 @@ public class MappingConfiguration<S, D> {
       t.performTransformation(source, destinationObject);
     }
     return destinationObject;
+  }
+
+  /**
+   * Maps the source object to a new record instance by collecting all transformation values and invoking
+   * the canonical constructor. If an existing record is provided, its component values are used as defaults
+   * so that unmapped/omitted fields retain their original values.
+   *
+   * @param source The source object.
+   * @param existingRecord An optional existing record whose values serve as defaults. May be {@code null}.
+   */
+  @SuppressWarnings("unchecked")
+  private D mapToRecord(S source, D existingRecord) {
+    RecordComponent[] components = destination.getRecordComponents();
+    Map<String, Object> values = new LinkedHashMap<>();
+
+    // Initialize values: from existing record if provided, otherwise defaults
+    for (RecordComponent component : components) {
+      if (existingRecord != null) {
+        try {
+          values.put(component.getName(), component.getAccessor()
+              .invoke(existingRecord));
+        } catch (Exception e) {
+          throw new MappingException(String.format("Could not read record component '%s' from %s.", component.getName(),
+              destination.getSimpleName()), e);
+        }
+      } else if (component.getType()
+          .isPrimitive()) {
+        values.put(component.getName(), ReflectionUtil.defaultValue(component.getType()));
+      } else {
+        values.put(component.getName(), null);
+      }
+    }
+
+    // Collect values from all transformations
+    for (Transformation t : mappings) {
+      if (t instanceof OmitTransformation) {
+        continue;
+      }
+
+      String destPropName = t.getDestinationPropertyName();
+      if (destPropName == null) {
+        continue;
+      }
+
+      MappedResult result = t.computeValue(source);
+
+      if (result.hasValue()) {
+        values.put(destPropName, result.getValue());
+      }
+    }
+
+    // Invoke the canonical constructor
+    Constructor<D> constructor = canonicalRecordConstructor(components);
+    try {
+      Object[] args = new Object[components.length];
+      for (int i = 0; i < components.length; i++) {
+        args[i] = values.get(components[i].getName());
+      }
+      return constructor.newInstance(args);
+    } catch (Exception e) {
+      throw MappingException.newInstanceFailed(destination, e);
+    }
+  }
+
+  /**
+   * Returns the canonical constructor of the record destination type. The constructor is resolved once on the first
+   * mapping, analogous to {@link #createDestination()}.
+   */
+  private Constructor<D> canonicalRecordConstructor(RecordComponent[] components) {
+    Constructor<D> constructor = recordConstructor;
+    if (constructor == null) {
+      // Benign race: concurrent first mappings may resolve the constructor multiple times with the same result.
+      Class<?>[] paramTypes = new Class<?>[components.length];
+      for (int i = 0; i < components.length; i++) {
+        paramTypes[i] = components[i].getType();
+      }
+      try {
+        constructor = destination.getDeclaredConstructor(paramTypes);
+        constructor.setAccessible(true);
+      } catch (Exception e) {
+        throw MappingException.newInstanceFailed(destination, e);
+      }
+      recordConstructor = constructor;
+    }
+    return constructor;
   }
 
   private D createDestination() {

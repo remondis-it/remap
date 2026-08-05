@@ -19,6 +19,9 @@ public final class Types<S> {
   }
 
   private void denyNoDefaultConstructor(Class<?> type) {
+    if (type.isRecord()) {
+      return;
+    }
     try {
       Constructor<?> constructor = type.getConstructor();
       if (constructor == null) {
