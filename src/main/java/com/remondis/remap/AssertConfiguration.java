@@ -141,6 +141,57 @@ public class AssertConfiguration<S, D> {
   }
 
   /**
+   * Specifies an assertion for a {@link MappingConfiguration#useMapper(Mapper, Function, Function)} operation that
+   * registers a nested mapper together with collection key extractor functions for
+   * {@link Mapper#map(Object, Object)} (mapInto) operations.
+   *
+   * <p>
+   * This assertion verifies that a mapper for the type combination CM → CD was registered and that collection key
+   * extractors are present. The actual key extractor functions are not compared — only their presence is verified.
+   * </p>
+   *
+   * @param <CM>
+   *        The source type of the nested mapper.
+   * @param <CD>
+   *        The destination type of the nested mapper.
+   * @param <K>
+   *        The key type used for matching collection elements.
+   * @param mapper
+   *        The expected mapper registered for collection key matching.
+   * @param sourceKeyExtractor
+   *        The source key extractor (its presence is verified, not its identity).
+   * @param destinationKeyExtractor
+   *        The destination key extractor (its presence is verified, not its identity).
+   * @return Returns this {@link AssertConfiguration} for further configuration.
+   */
+  public <CM, CD, K> AssertConfiguration<S, D> expectUseMapper(Mapper<CM, CD> mapper,
+      Function<CM, K> sourceKeyExtractor, Function<CD, K> destinationKeyExtractor) {
+    denyNull("mapper", mapper);
+    denyNull("sourceKeyExtractor", sourceKeyExtractor);
+    denyNull("destinationKeyExtractor", destinationKeyExtractor);
+    Class<CM> sourceType = mapper.getMapping()
+        .getSource();
+    Class<CD> destinationType = mapper.getMapping()
+        .getDestination();
+    addVerification(() -> {
+      if (!getMapping().hasMapperFor(sourceType, destinationType)) {
+        throw new AssertionError(String.format(
+            "Expected a mapper registered for %s -> %s with collection key extractors, but no mapper was found.",
+            sourceType.getSimpleName(), destinationType.getSimpleName()));
+      }
+      @SuppressWarnings("unchecked")
+      Optional<CollectionMappingKey<CM, CD, K>> keyMapping = (Optional<CollectionMappingKey<CM, CD, K>>) (Optional<?>) getMapping()
+          .getCollectionKeyMapping(sourceType, destinationType);
+      if (!keyMapping.isPresent()) {
+        throw new AssertionError(
+            String.format("Expected collection key extractors registered for %s -> %s, but none were found.",
+                sourceType.getSimpleName(), destinationType.getSimpleName()));
+      }
+    });
+    return this;
+  }
+
+  /**
    * Specifies an assertion for a restructure operation.
    *
    * @param destinationSelector

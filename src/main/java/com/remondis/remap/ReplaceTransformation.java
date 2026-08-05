@@ -58,6 +58,12 @@ class ReplaceTransformation<RS, RD> extends SkipWhenNullTransformation<RS, RD> {
   }
 
   @Override
+  MappedResult computeValue(Object sourceObject) {
+    Object sourceValue = readOrFail(sourceProperty, sourceObject);
+    return performValueTransformation(sourceValue, null);
+  }
+
+  @Override
   public String toString(boolean detailed) {
     if (skipWhenNull) {
       return String.format(REPLACE_SKIPPED_MSG, asString(sourceProperty, detailed),

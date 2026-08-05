@@ -6,6 +6,7 @@ import static java.util.Objects.isNull;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 /**
  * This is the base class for a transformation that performs a single step when mapping from an object to another
@@ -143,6 +144,26 @@ abstract class Transformation {
   }
 
   /**
+   * Computes the value that this transformation would write to the destination, without actually writing it.
+   * Used for record destination construction where values must be collected before invoking the canonical constructor.
+   *
+   * @param sourceObject The source object to read from.
+   * @return The computed result, or {@link MappedResult#skip()} if no value should be written.
+   */
+  MappedResult computeValue(Object sourceObject) {
+    if (sourceProperty != null) {
+      Object sourceValue = readOrFail(sourceProperty, sourceObject);
+      if (sourceValue == null) {
+        return mapping.isWriteNull() ? MappedResult.value(null) : MappedResult.skip();
+      }
+      return performValueTransformation(sourceValue, null);
+    } else {
+      // Transformations without source property (e.g., SetTransformation) use the whole source object
+      return performValueTransformation(sourceObject, null);
+    }
+  }
+
+  /**
    * Performs a single transformation step while mapping.
    *
    * @param sourceProperty The source property
@@ -211,6 +232,18 @@ abstract class Transformation {
    */
   public <S, T> boolean hasMapperFor(Class<S> sourceType, Class<T> destinationType) {
     return this.mapping.hasMapperFor(sourceType, destinationType);
+  }
+
+  /**
+   * Returns the {@link CollectionMappingKey} for the specified source and destination types if one was registered.
+   *
+   * @param sourceType The source element type
+   * @param destinationType The destination element type
+   * @return Returns an {@link Optional} containing the {@link CollectionMappingKey} if one was registered.
+   */
+  <S, T> Optional<CollectionMappingKey<S, T, ?>> getCollectionKeyMapping(Class<S> sourceType,
+      Class<T> destinationType) {
+    return this.mapping.getCollectionKeyMapping(sourceType, destinationType);
   }
 
   PropertyDescriptor getSourceProperty() {

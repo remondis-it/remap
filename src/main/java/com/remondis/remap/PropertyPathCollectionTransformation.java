@@ -121,6 +121,12 @@ public class PropertyPathCollectionTransformation<RS, X, RD> extends Transformat
   }
 
   @Override
+  MappedResult computeValue(Object sourceObject) {
+    Object sourceValue = readOrFail(sourceProperty, sourceObject);
+    return performValueTransformation(sourceValue, null);
+  }
+
+  @Override
   public int hashCode() {
     final int prime = 31;
     int result = super.hashCode();

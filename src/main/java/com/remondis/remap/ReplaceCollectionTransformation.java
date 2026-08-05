@@ -85,6 +85,12 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
   }
 
   @Override
+  MappedResult computeValue(Object sourceObject) {
+    Object sourceValue = readOrFail(sourceProperty, sourceObject);
+    return performValueTransformation(sourceValue, null);
+  }
+
+  @Override
   Function<RS, RD> getTransformation() {
     return transformation;
   }

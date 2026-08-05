@@ -11,9 +11,11 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.RecordComponent;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -119,12 +121,36 @@ class Properties {
    */
   static Set<PropertyDescriptor> getProperties(Class<?> inspectType, Target targetType, boolean fluentSetters) {
     try {
+      if (inspectType.isRecord()) {
+        return extractRecordProperties(inspectType, targetType);
+      }
       Set<PropertyDescriptor> result = extractBaseProperties(inspectType, targetType, fluentSetters);
       mergeInterfaceProperties(inspectType, targetType, result);
       return result;
     } catch (IntrospectionException e) {
       throw new MappingException(String.format("Cannot introspect the type %s.", inspectType.getName()));
     }
+  }
+
+  /**
+   * Extracts properties from a Java Record using its record components.
+   * Record accessors (e.g., {@code name()}) are used as read methods.
+   * Records have no write methods (immutable).
+   * For destination records, properties are returned without requiring a setter.
+   */
+  private static Set<PropertyDescriptor> extractRecordProperties(Class<?> recordType, Target targetType) {
+    RecordComponent[] components = recordType.getRecordComponents();
+    Set<PropertyDescriptor> result = new HashSet<>();
+    for (RecordComponent component : components) {
+      try {
+        PropertyDescriptor pd = new PropertyDescriptor(component.getName(), component.getAccessor(), null);
+        result.add(pd);
+      } catch (IntrospectionException e) {
+        throw new MappingException(String.format("Cannot create property descriptor for record component '%s' in %s.",
+            component.getName(), recordType.getName()));
+      }
+    }
+    return result;
   }
 
   /**

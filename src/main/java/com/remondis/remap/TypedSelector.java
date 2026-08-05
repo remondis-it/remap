@@ -12,7 +12,7 @@ package com.remondis.remap;
  * @author schuettec
  */
 @FunctionalInterface
-public interface TypedSelector<R, T> {
+public interface TypedSelector<R, T> extends java.io.Serializable {
 
   /**
    * This method is used to perform a get-method invocation of the specified destination object and returning its value.

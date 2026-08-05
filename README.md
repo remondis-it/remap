@@ -24,7 +24,9 @@
    10. [Mapping other values to a field](#mapping-other-values-to-a-field)
    11. [Restructure a complex object in the destination](#restructure-a-complex-object-in-the-destination)
    12. [Mapping maps](#mapping-maps)
-   13. [Tests](#tests)
+   13. [Mapping Java Records](#mapping-java-records)
+   14. [Mapping into an existing object (mapInto)](#mapping-into-an-existing-object-mapinto)
+   15. [Tests](#tests)
 9. [Mapping meta model](#mapping-meta-model)
 10. [Spring integration](#spring-integration)
    1. [Spring Boot Issue](#spring-boot-issue)
@@ -72,16 +74,23 @@ ReMap maps a objects of a source to a destination type. As per default ReMap tri
 
 ## News
 
-### Map into feature deprecated!
-The map-into feature of ReMap is now deprecated. This function was never correctly implemented and does not work recursively.
+### Java Record mapping support
 
-Due to complexity we will remove the following features from the API in a future release:
+ReMap now supports Java Records as both source and destination types. Records can be mapped to/from regular POJOs as well as to/from other records — using the same familiar API. See [Mapping Java Records](#mapping-java-records) in the cookbook for details and examples.
 
-- com.remondis.remap.Mapper.map(S source, D dest)
-- com.remondis.remap.MappingConfiguration.writeNullIfSourceIsNull()
-- any dependencies of the assert API to this methods 
+### mapInto now supports collection key matching
 
-Please make sure, that your mappings do not rely on this features.
+The `map(S source, D destination)` (mapInto) operation now fully supports collections in the object tree.
+When calling `useMapper` you can additionally specify key extractor functions for source and destination elements.
+ReMap uses these keys to match elements between the source and destination collections:
+
+- **Matched elements** are mapped into each other, preserving destination-only fields (e.g. database-generated IDs).
+- **Unmatched source elements** are mapped to newly created destination objects.
+- **Unmatched destination elements** are discarded from the result.
+
+Without key extractors, the existing behaviour is preserved (the collection is replaced entirely).
+
+See [Mapping into an existing object (mapInto)](#mapping-into-an-existing-object-mapinto) for details.
 
 ### Now mapping of fluent-style setters is supported
 
@@ -189,9 +198,10 @@ ReMap supports
 * mapping from interface to Java Bean type
 * mapping of nested collections
 * mapping of nested maps
+* mapping of Java Records as source and/or destination type (POJO↔Record, Record↔Record)
 * unit testing of mapping specifications
 * mapping without invasively changing code of involved objects
-* overwrite fields in an instance by specifying the target instance for the mapping
+* overwrite fields in an instance by specifying the target instance for the mapping, with support for collection element matching via user-defined key extractors
 * mapping of fluent-style setters (setters having a return type)
 
 ## Limitations
@@ -209,6 +219,7 @@ ReMap supports
 * mapping equal types does not copy object instances!
 * multi-classloader environments are currently not supported. All types must be loaded by the same classloader.
 * Generics cannot be used without limitations: It is possible to build a mapper for generic types, but due to the class literals used when declaring the mapping, the generic type informations gets lost.
+* when a Java Record is the **destination** type, the `map(S source, D dest)` overwrite-in-place method returns a **new record instance** because records are immutable. The component values of the specified destination record are used as defaults for all fields not covered by the mapping.
 
 ## The mapping cookbook
 
@@ -631,6 +642,204 @@ if the following mappers were registered on the mapping:
 - `A2` to `A2Mapped`
 - `A3` to `A3Mapped`
 
+
+### Mapping Java Records
+
+ReMap supports Java Records (introduced in Java 14) as both source and destination types. All the usual mapping operations (`reassign`, `replace`, `omitInSource`, `omitInDestination`, `useMapper`, …) work transparently for records. Because records are immutable, ReMap automatically constructs the destination record via its canonical constructor instead of using setter methods.
+
+> **Note:** Since records are immutable, the `map(S source, D destination)` overwrite-in-place variant cannot modify the specified destination record. Instead it returns a **new record instance**: the component values of the given destination record serve as defaults for all fields that are not covered by the mapping (for example omitted fields), while all mapped fields are taken from the source. Make sure to use the returned instance instead of the passed destination object.
+>
+> **Note:** Property selectors for record types must be **method references** (e.g. `PersonRecord::name`). Inline lambdas (e.g. `r -> r.name()`) cannot be analyzed for records and are rejected with a `MappingException` when the mapping is configured.
+
+#### POJO → Record (implicit)
+
+When field names match, no additional configuration is needed:
+
+```java
+public class PersonPojo {
+  private String name;
+  private int age;
+  // default constructor, getters, setters …
+}
+
+public record PersonRecord(String name, int age) {}
+
+Mapper<PersonPojo, PersonRecord> mapper = Mapping
+    .from(PersonPojo.class)
+    .to(PersonRecord.class)
+    .mapper();
+
+PersonRecord result = mapper.map(new PersonPojo("Alice", 30));
+// result.name() == "Alice", result.age() == 30
+```
+
+#### POJO → Record (with reassign)
+
+Use `reassign` when source and destination field names differ:
+
+```java
+public record PersonResourceRecord(String fullName, int yearsOld, String emailAddress) {}
+
+Mapper<PersonPojo, PersonResourceRecord> mapper = Mapping
+    .from(PersonPojo.class)
+    .to(PersonResourceRecord.class)
+    .reassign(PersonPojo::getName).to(PersonResourceRecord::fullName)
+    .reassign(PersonPojo::getAge).to(PersonResourceRecord::yearsOld)
+    .reassign(PersonPojo::getEmail).to(PersonResourceRecord::emailAddress)
+    .mapper();
+```
+
+#### POJO → Record (with replace)
+
+Use `replace` to transform a value while mapping it:
+
+```java
+Mapper<PersonPojo, PersonResourceRecord> mapper = Mapping
+    .from(PersonPojo.class)
+    .to(PersonResourceRecord.class)
+    .replace(PersonPojo::getName, PersonResourceRecord::fullName)
+        .with(name -> name.toUpperCase())
+    .reassign(PersonPojo::getAge).to(PersonResourceRecord::yearsOld)
+    .reassign(PersonPojo::getEmail).to(PersonResourceRecord::emailAddress)
+    .mapper();
+```
+
+#### Record → POJO (implicit)
+
+Records can also be used as the **source** type:
+
+```java
+Mapper<PersonRecord, PersonPojo> mapper = Mapping
+    .from(PersonRecord.class)
+    .to(PersonPojo.class)
+    .mapper();
+
+PersonPojo result = mapper.map(new PersonRecord("Diana", 28, "diana@example.com", false));
+```
+
+#### Record → Record
+
+Mapping between two record types works exactly the same way:
+
+```java
+Mapper<PersonRecord, PersonResourceRecord> mapper = Mapping
+    .from(PersonRecord.class)
+    .to(PersonResourceRecord.class)
+    .reassign(PersonRecord::name).to(PersonResourceRecord::fullName)
+    .reassign(PersonRecord::age).to(PersonResourceRecord::yearsOld)
+    .reassign(PersonRecord::email).to(PersonResourceRecord::emailAddress)
+    .mapper();
+```
+
+#### Nested records with useMapper
+
+Use `useMapper` to map nested record fields, just as you would for POJOs:
+
+```java
+public record AddressRecord(String street, String city) {}
+public record PersonWithAddressRecord(String name, AddressRecord address) {}
+
+Mapper<AddressPojo, AddressRecord> addressMapper = Mapping
+    .from(AddressPojo.class)
+    .to(AddressRecord.class)
+    .mapper();
+
+Mapper<PersonWithAddressPojo, PersonWithAddressRecord> mapper = Mapping
+    .from(PersonWithAddressPojo.class)
+    .to(PersonWithAddressRecord.class)
+    .useMapper(addressMapper)
+    .mapper();
+```
+
+#### Omitting fields
+
+`omitInSource` and `omitInDestination` work normally. When a record component is omitted as destination, its value in the constructed record will be `null` (for reference types) or the zero-value for primitive types:
+
+```java
+Mapper<PersonPojo, PersonRecord> mapper = Mapping
+    .from(PersonPojo.class)
+    .to(PersonRecord.class)
+    .omitInSource(PersonPojo::getEmail)
+    .omitInDestination(PersonRecord::email)
+    .mapper();
+// result.email() == null
+```
+
+#### Collection mapping
+
+Mapping collections of records works out of the box:
+
+```java
+List<PersonRecord> results = mapper.map(listOfPersonPojos);
+```
+
+#### Testing record mappings
+
+Use `AssertMapping` exactly as for POJO-based mappers:
+
+```java
+AssertMapping.of(mapper)
+    .expectReassign(PersonRecord::name).to(PersonResourceRecord::fullName)
+    .expectReassign(PersonRecord::age).to(PersonResourceRecord::yearsOld)
+    .expectReassign(PersonRecord::email).to(PersonResourceRecord::emailAddress)
+    .ensure();
+```
+
+You can find all record mapping test cases [here](src/test/java/com/remondis/remap/records/RecordMappingTest.java).
+
+### Mapping into an existing object (mapInto)
+
+ReMap supports mapping from a source object into an **existing** destination object using `mapper.map(source, destination)`. This is useful when the destination object contains fields that should not be touched by the mapping (e.g. database-generated IDs or audit timestamps).
+
+```java
+// age is omitted in destination mapping – its value is preserved from the existing person object
+Mapper<PersonLite, Person> mapper = Mapping.from(PersonLite.class)
+    .to(Person.class)
+    .omitInDestination(Person::getAge)
+    .mapper();
+
+Person existing = personRepository.findById(id); // has age = 42
+PersonLite dto = new PersonLite("Peter", "Griffin");
+
+Person result = mapper.map(dto, existing);
+// result.getAge() == 42 – preserved from existing object
+```
+
+#### mapInto with collections
+
+When the object tree contains collections, ReMap needs to know how to match source elements to existing destination elements. You can provide key extractor functions via an overloaded `useMapper`:
+
+```java
+Mapper<AddressDto, Address> addressMapper = Mapping.from(AddressDto.class)
+    .to(Address.class)
+    .omitInDestination(Address::getId) // preserve DB-assigned ID
+    .mapper();
+
+Mapper<PersonDto, Person> mapper = Mapping.from(PersonDto.class)
+    .to(Person.class)
+    .useMapper(addressMapper, AddressDto::getStreet, Address::getStreet) // match by street
+    .omitInDestination(Person::getAge)
+    .mapper();
+
+Person existing = personRepository.findById(id);
+PersonDto dto = fetchFromApi();
+
+Person result = mapper.map(dto, existing);
+```
+
+The matching behaviour for collection elements:
+
+| Situation | Result |
+|---|---|
+| Source element key matches a destination element | Mapped **into** the existing destination element (preserving its untouched fields) |
+| Source element has no matching destination element | Mapped into a **new** destination object |
+| Destination element has no matching source element | **Discarded** from the result collection |
+
+**Without key extractors** (plain `useMapper`), the old behaviour is preserved: the destination collection is replaced entirely.
+
+Key matching also works when the collection elements are **Java Records**: since records are immutable, a matched element is replaced by a new record instance whose unmapped components are preserved from the matched destination element.
+
+You can find examples in [`MapIntoCollectionKeyMatchingTest`](src/test/java/com/remondis/remap/mapInto/MapIntoCollectionKeyMatchingTest.java).
 
 ### Tests
 

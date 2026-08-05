@@ -44,17 +44,29 @@ public class Mapper<S, D> {
    * Performs the mapping from the source into a specified destination object while overwriting fields in the
    * destination object if affected by the mapping configuration.
    *
+   * <p>
+   * For collection properties, elements are matched between source and destination collections using key extractor
+   * functions registered via
+   * {@link MappingConfiguration#useMapper(Mapper, java.util.function.Function, java.util.function.Function)}.
+   * Matched elements are mapped into each other (preserving destination-only fields), unmatched source elements
+   * are mapped to new destination objects, and unmatched destination elements are discarded.
+   * </p>
+   *
+   * <p>
+   * If no key extractors are registered for a collection's element types, the collection is replaced entirely
+   * (existing behavior).
+   * </p>
+   *
+   * <p>
+   * <b>Note on records:</b> If the destination type is a Java Record, a <b>new record instance</b> is returned
+   * because records are immutable. The component values of the specified destination record serve as defaults for
+   * all fields not covered by the mapping. Make sure to use the returned instance.
+   * </p>
+   *
    * @param source The source object to map to a new destination object.
-   * @param destination The destination object to map into. Field affected by the mapping will be overwritten.
-   * @return Returns the specified destination object.
-   * @deprecated This method is deprecated, because the map-into feature of ReMap is not correctly implemented and will
-   *             be removed in future release. The complexity of mapping collections in a object tree is beyond of what
-   *             ReMap is currently able to deliver. For example: The problem with mapping sets into lists is
-   *             that the result becomes unstable as soon as both collections do not contain the same number of
-   *             elements. Furthermore, not every element of one collection can be uniquely assigned to an element of
-   *             the other collection without having to make serious API changes.
+   * @param destination The destination object to map into. Fields affected by the mapping will be overwritten.
+   * @return Returns the specified destination object, or a new instance if the destination type is a record.
    */
-  @Deprecated
   public D map(S source, D destination) {
     return mapping.map(source, destination);
   }

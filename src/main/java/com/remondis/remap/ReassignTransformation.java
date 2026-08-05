@@ -10,7 +10,9 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.AbstractMap;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -100,15 +102,24 @@ public class ReassignTransformation extends Transformation {
     Class<?> destinationType = destCtx.getCurrentType();
     InternalMapper mapper = getMapperForOrNull(sourceType, destinationType);
     if (mapper != null) {
-      return (sourceValue, destination) -> mapper.map(sourceValue, null);
+      return (sourceValue, destination) -> {
+        if (destination != null) {
+          Object destPropertyValue = readOrFail(destinationProperty, destination);
+          return mapper.map(sourceValue, destPropertyValue);
+        }
+        return mapper.map(sourceValue, null);
+      };
     } else if (isMap(sourceType)) {
       ConversionStrategy keyStrategy = buildConversionStrategy(sourceCtx.goInto(0), destCtx.goInto(0));
       ConversionStrategy valueStrategy = buildConversionStrategy(sourceCtx.goInto(1), destCtx.goInto(1));
       return mapStrategy(keyStrategy, valueStrategy);
     } else if (isCollection(sourceType)) {
-      ConversionStrategy elementStrategy = buildConversionStrategy(sourceCtx.goInto(0), destCtx.goInto(0));
+      GenericParameterContext sourceElementCtx = sourceCtx.goInto(0);
+      GenericParameterContext destinationElementCtx = destCtx.goInto(0);
+      ConversionStrategy elementStrategy = buildConversionStrategy(sourceElementCtx, destinationElementCtx);
       Collector collector = getCollector(destinationType);
-      return collectionStrategy(elementStrategy, collector);
+      return collectionStrategy(sourceElementCtx.getCurrentType(), destinationElementCtx.getCurrentType(),
+          elementStrategy, collector);
     } else {
       return (sourceValue, destination) -> sourceValue;
     }
@@ -117,18 +128,59 @@ public class ReassignTransformation extends Transformation {
   @SuppressWarnings({
       "unchecked", "rawtypes"
   })
-  private ConversionStrategy collectionStrategy(ConversionStrategy elementStrategy, Collector collector) {
+  private ConversionStrategy collectionStrategy(Class<?> sourceElementType, Class<?> destinationElementType,
+      ConversionStrategy elementStrategy, Collector collector) {
+    /*
+     * Key-based matching for mapInto operations: the key extractors and the element mapper are static configuration
+     * knowledge and are therefore resolved once at strategy build time. The destination element lookup depends on the
+     * content of the current destination collection and has to be built per mapping operation.
+     */
+    CollectionMappingKey<Object, Object, ?> keyMapping = (CollectionMappingKey) getCollectionKeyMapping(
+        sourceElementType, destinationElementType).orElse(null);
+    InternalMapper elementMapper = keyMapping == null ? null
+        : getMapperForOrNull(sourceElementType, destinationElementType);
+
     return (sourceValue, destination) -> {
       Collection collection = (Collection) sourceValue;
+
+      Map<Object, Object> destLookup = null;
+      if (destination != null && keyMapping != null && elementMapper != null) {
+        Object destCollectionValue = readOrFail(destinationProperty, destination);
+        if (destCollectionValue instanceof Collection) {
+          destLookup = buildLookup((Collection<?>) destCollectionValue, keyMapping.getDestinationKeyExtractor());
+        }
+      }
+      final Map<Object, Object> finalDestLookup = destLookup;
+
       return collection.stream()
           .map(element -> {
             if (element == null) {
               throw MappingException.nullElementInCollection(sourceProperty, destinationProperty);
             }
+            // Try to find a matched destination element via key
+            if (finalDestLookup != null) {
+              Object key = keyMapping.getSourceKeyExtractor()
+                  .apply(element);
+              Object matchedDest = finalDestLookup.get(key);
+              return elementMapper.map(element, matchedDest);
+            }
             return elementStrategy.convert(element, null);
           })
           .collect(collector);
     };
+  }
+
+  private Map<Object, Object> buildLookup(Collection<?> collection, Function<Object, ?> keyExtractor) {
+    Map<Object, Object> lookup = new LinkedHashMap<>();
+    for (Object element : collection) {
+      if (element != null) {
+        Object key = keyExtractor.apply(element);
+        if (key != null) {
+          lookup.putIfAbsent(key, element);
+        }
+      }
+    }
+    return lookup;
   }
 
   @SuppressWarnings({
