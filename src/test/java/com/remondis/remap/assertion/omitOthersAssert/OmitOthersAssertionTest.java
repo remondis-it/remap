@@ -2,16 +2,16 @@ package com.remondis.remap.assertion.omitOthersAssert;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 
-public class OmitOthersAssertionTest {
+class OmitOthersAssertionTest {
 
   @Test
-  public void shouldComplainAboutUnexpectedOmitsForDestination() {
+  void shouldComplainAboutUnexpectedOmitsForDestination() {
     Mapper<BeanEmpty, BeanWithFields> mapper = Mapping.from(BeanEmpty.class)
         .to(BeanWithFields.class)
         .omitOtherDestinationProperties()
@@ -24,7 +24,7 @@ public class OmitOthersAssertionTest {
   }
 
   @Test
-  public void shouldComplainAboutUnexpectedOmitsForSource() {
+  void shouldComplainAboutUnexpectedOmitsForSource() {
     Mapper<BeanWithFields, BeanEmpty> mapper = Mapping.from(BeanWithFields.class)
         .to(BeanEmpty.class)
         .omitOtherSourceProperties()

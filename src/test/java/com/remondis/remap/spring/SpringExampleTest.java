@@ -17,7 +17,7 @@ import com.remondis.remap.Mapping;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration
-public class SpringExampleTest {
+class SpringExampleTest {
 
   @Autowired
   Mapper<Person, Human> mapper1;
@@ -26,14 +26,14 @@ public class SpringExampleTest {
   Mapper<Human, Person> mapper2;
 
   @Test
-  public void testPersonHumanMapper() throws IOException {
+  void testPersonHumanMapper() throws IOException {
     Person person = new Person("Bob");
     Human human = mapper1.map(person);
     assertThat(human.getName()).isEqualTo("Bob");
   }
 
   @Test
-  public void testHumanPersonMapper() {
+  void testHumanPersonMapper() {
     Human human = new Human("ET");
     Person person = mapper2.map(human);
     assertThat(person.getName()).isEqualTo("ET");

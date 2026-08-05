@@ -1,14 +1,14 @@
 package com.remondis.remap.maps;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
@@ -16,10 +16,10 @@ import com.remondis.remap.TypeMapping;
 import com.remondis.remap.basic.B;
 import com.remondis.remap.basic.BResource;
 
-public class MapsTest {
+class MapsTest {
 
   @Test
-  public void shouldMapMapsUsingMappers() {
+  void shouldMapMapsUsingMappers() {
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
         .mapper();
@@ -55,7 +55,7 @@ public class MapsTest {
   }
 
   @Test
-  public void shouldWorkaroundMappingOfMaps() {
+  void shouldWorkaroundMappingOfMaps() {
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
         .mapper();

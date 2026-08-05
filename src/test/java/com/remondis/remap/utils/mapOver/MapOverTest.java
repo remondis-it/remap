@@ -1,16 +1,16 @@
 package com.remondis.remap.utils.mapOver;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.basic.A;
 import com.remondis.remap.basic.B;
 
-public class MapOverTest {
+class MapOverTest {
   @Test
-  public void shouldMapFromSourceToTarget() {
+  void shouldMapFromSourceToTarget() {
     A a1 = new A("moreInA1", "stringA1", 1, 2, 1L, new B("stringB1", 1, 1));
     A a2 = new A("moreInA2", "stringA2", 1, 2, 1L, new B("stringB2", 1, 1));
 

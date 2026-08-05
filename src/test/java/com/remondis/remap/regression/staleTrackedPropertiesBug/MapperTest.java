@@ -14,10 +14,10 @@ import com.remondis.remap.Mapping;
  * evaluation on the same thread then saw the stale property in addition to its own and failed with a "multiple
  * interactions" error.
  */
-public class MapperTest {
+class MapperTest {
 
   @Test
-  public void shouldNotTrackPropertiesOfFailedSelectorInvocation() {
+  void shouldNotTrackPropertiesOfFailedSelectorInvocation() {
     assertThatThrownBy(() -> Mapping.from(A.class)
         .to(B.class)
         .omitInSource(a -> {

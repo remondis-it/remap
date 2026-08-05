@@ -14,12 +14,12 @@ import org.junit.jupiter.api.Test;
  * cache held strong references to every sensed type and its generated proxy, so the class loader of a mapped type
  * (e.g. a web application class loader) could never be garbage collected.
  */
-public class InvocationSensorClassLoaderLeakTest {
+class InvocationSensorClassLoaderLeakTest {
 
   private static final String BEAN_CLASS_NAME = "com.remondis.remap.LeakTestBean";
 
   @Test
-  public void shouldNotPreventClassLoaderGarbageCollection() throws Exception {
+  void shouldNotPreventClassLoaderGarbageCollection() throws Exception {
     URL testClasses = Paths.get("target", "test-classes")
         .toUri()
         .toURL();

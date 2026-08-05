@@ -1,11 +1,11 @@
 package com.remondis.remap;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.basic.A;
 import com.remondis.remap.basic.B;
@@ -13,10 +13,10 @@ import com.remondis.remap.utils.propertywalker.BiRecursivePropertyWalker;
 import com.remondis.remap.utils.propertywalker.PropertyAccess;
 import com.remondis.remap.utils.propertywalker.VisitorFunction;
 
-public class BiRecursivePropertyWalkerTest {
+class BiRecursivePropertyWalkerTest {
 
   @Test
-  public void shouldTraverseProperties() {
+  void shouldTraverseProperties() {
     Function<A, String> getter = A::getString;
     BiConsumer<A, String> setter = A::setString;
 

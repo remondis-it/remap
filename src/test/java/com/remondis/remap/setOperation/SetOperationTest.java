@@ -1,17 +1,17 @@
 package com.remondis.remap.setOperation;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.function.Function;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 
-public class SetOperationTest {
+class SetOperationTest {
 
   private static final String STATIC_STRING_VALUE = "static-string-value";
   private static final RuntimeException RUNTIME_EXCEPTION = new RuntimeException("Thrown for test purposes.");
@@ -19,7 +19,7 @@ public class SetOperationTest {
   private static final String ANOTHER_STRING = "anotherString";
 
   @Test
-  public void shouldHandleFunctionExceptionInAsserts() {
+  void shouldHandleFunctionExceptionInAsserts() {
     A a = a();
     Mapper<A, B> aToBmapper = Mapping.from(A.class)
         .to(B.class)
@@ -46,7 +46,7 @@ public class SetOperationTest {
   }
 
   @Test
-  public void shouldDetectMissingSetValueAssert() {
+  void shouldDetectMissingSetValueAssert() {
     A a = a();
     Mapper<A, B> aToBmapper = aToBmapper();
     B b = aToBmapper.map(a);
@@ -65,7 +65,7 @@ public class SetOperationTest {
   }
 
   @Test
-  public void shouldDetectMissingSetWithSupplierAssert() {
+  void shouldDetectMissingSetWithSupplierAssert() {
     A a = a();
     Mapper<A, B> aToBmapper = aToBmapper();
     B b = aToBmapper.map(a);
@@ -84,7 +84,7 @@ public class SetOperationTest {
   }
 
   @Test
-  public void shouldDetectMissingSetWithFunctionAssert() {
+  void shouldDetectMissingSetWithFunctionAssert() {
     A a = a();
     Mapper<A, B> aToBmapper = aToBmapper();
     B b = aToBmapper.map(a);
@@ -103,7 +103,7 @@ public class SetOperationTest {
   }
 
   @Test
-  public void shouldMapAndSetCorrectly() {
+  void shouldMapAndSetCorrectly() {
     A a = a();
     Mapper<A, B> aToBmapper = aToBmapper();
     B b = aToBmapper.map(a);

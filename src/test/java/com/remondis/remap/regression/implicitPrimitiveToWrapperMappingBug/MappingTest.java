@@ -1,17 +1,17 @@
 package com.remondis.remap.regression.implicitPrimitiveToWrapperMappingBug;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 
-public class MappingTest {
+class MappingTest {
 
   @Test
-  public void integer_implicitMappingFromPrimitiveToWrapper() {
+  void integer_implicitMappingFromPrimitiveToWrapper() {
     Mapper<IntPrimitive, IntWrapper> mapper = Mapping.from(IntPrimitive.class)
         .to(IntWrapper.class)
         .mapper();
@@ -26,7 +26,7 @@ public class MappingTest {
   }
 
   @Test
-  public void integer_MappingWrapperToPrimitive() {
+  void integer_MappingWrapperToPrimitive() {
     Mapper<IntWrapper, IntPrimitive> mapper = Mapping.from(IntWrapper.class)
         .to(IntPrimitive.class)
         .mapper();
@@ -41,7 +41,7 @@ public class MappingTest {
   }
 
   @Test
-  public void boolean_implicitMappingFromPrimitiveToWrapper() {
+  void boolean_implicitMappingFromPrimitiveToWrapper() {
     Mapper<BoolPrimitive, BoolWrapper> mapper = Mapping.from(BoolPrimitive.class)
         .to(BoolWrapper.class)
         .mapper();
@@ -56,7 +56,7 @@ public class MappingTest {
   }
 
   @Test
-  public void boolean_implicitMappingWrapperToPrimitive() {
+  void boolean_implicitMappingWrapperToPrimitive() {
     Mapper<BoolWrapper, BoolPrimitive> mapper = Mapping.from(BoolWrapper.class)
         .to(BoolPrimitive.class)
         .mapper();

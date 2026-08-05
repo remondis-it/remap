@@ -3,15 +3,15 @@ package com.remondis.remap.collections;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.remap.MappingException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class NullInCollectionMappingTest {
+class NullInCollectionMappingTest {
 
   static class Source {
     private List<String> stringList;
@@ -41,7 +41,7 @@ public class NullInCollectionMappingTest {
   }
 
   @Test
-  public void testMappingWithNullInCollection() {
+  void testMappingWithNullInCollection() {
     Mapper<Source, Destination> mapper = Mapping.from(Source.class)
         .to(Destination.class)
         .mapper();
@@ -51,6 +51,6 @@ public class NullInCollectionMappingTest {
     MappingException exception = assertThrows(MappingException.class, () -> mapper.map(source));
 
     String expectedMessage = "Cannot map null element in collection field 'stringList' from source type 'Source' to destination type 'Destination'.";
-    assertEquals("Unerwartete Exception-Nachricht", expectedMessage, exception.getMessage());
+    assertEquals(expectedMessage, exception.getMessage(), "Unerwartete Exception-Nachricht");
   }
 }

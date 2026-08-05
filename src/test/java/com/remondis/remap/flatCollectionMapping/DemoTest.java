@@ -2,16 +2,16 @@ package com.remondis.remap.flatCollectionMapping;
 
 import java.util.function.Function;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertMapping;
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 
-public class DemoTest {
+class DemoTest {
 
   @Test
-  public void replaceCollection() {
+  void replaceCollection() {
     Mapper<Source, Destination> mapper = Mapping.from(Source.class)
         .to(Destination.class)
         .replaceCollection(Source::getIds, Destination::getIds)

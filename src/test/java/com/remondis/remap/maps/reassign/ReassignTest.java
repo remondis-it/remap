@@ -1,18 +1,18 @@
 package com.remondis.remap.maps.reassign;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 
-public class ReassignTest {
+class ReassignTest {
 
   @Test
-  public void shouldReassignMaps() {
+  void shouldReassignMaps() {
     Mapper<A, AMapped> mapper = Mapping.from(A.class)
         .to(AMapped.class)
         .reassign(A::getBmap)

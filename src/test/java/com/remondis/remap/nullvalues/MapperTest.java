@@ -1,17 +1,17 @@
 package com.remondis.remap.nullvalues;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 
-public class MapperTest {
+class MapperTest {
 
   private static final Long ZAHL_IN_A = -88L;
   private static final Integer B_INTEGER = -999;
@@ -22,7 +22,7 @@ public class MapperTest {
   private static final String STRING = "a string";
 
   @Test
-  public void shouldSkipReplaceNullValues() {
+  void shouldSkipReplaceNullValues() {
     AtomicBoolean called = new AtomicBoolean(false);
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
@@ -73,7 +73,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldNotSkipReplaceNullValues() {
+  void shouldNotSkipReplaceNullValues() {
     AtomicBoolean called = new AtomicBoolean(false);
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
@@ -124,7 +124,7 @@ public class MapperTest {
   }
 
   @Test
-  public void shouldReassignNullValue() {
+  void shouldReassignNullValue() {
     Mapper<A, AResource> mapper = Mapping.from(A.class)
         .to(AResource.class)
         .reassign(A::getMoreInA)

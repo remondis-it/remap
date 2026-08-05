@@ -1,8 +1,8 @@
 package com.remondis.remap.restructure;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
@@ -28,10 +28,10 @@ import com.remondis.resample.Samples;
  * </ul>
  * </p>
  */
-public class RestructureTest {
+class RestructureTest {
 
   @Test
-  public void shouldRestructure_implicit_mapping_operations() {
+  void shouldRestructure_implicit_mapping_operations() {
     Mapper<Bean, RestructuredBean> mapper = Mapping.from(Bean.class)
         .to(RestructuredBean.class)
         .omitOtherSourceProperties()
@@ -52,7 +52,7 @@ public class RestructureTest {
   }
 
   @Test
-  public void shouldRestructure_explicit_mapping_operations() {
+  void shouldRestructure_explicit_mapping_operations() {
 
     Mapper<Bean, RestructuredBean> mapper = Mapping.from(Bean.class)
         .to(RestructuredBean.class)

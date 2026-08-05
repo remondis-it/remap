@@ -2,16 +2,16 @@ package com.remondis.remap.regression.useMapperTwice;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.Mapper;
 import com.remondis.remap.Mapping;
 import com.remondis.remap.MappingException;
 
-public class UseMapperTwiceTest {
+class UseMapperTwiceTest {
 
   @Test
-  public void should_complain_with_types_of_mapper_when_useMapperTwice() {
+  void should_complain_with_types_of_mapper_when_useMapperTwice() {
     Mapper<B, BMapped> bMapper = Mapping.from(B.class)
         .to(BMapped.class)
         .replace(B::getString, BMapped::getStringLength)

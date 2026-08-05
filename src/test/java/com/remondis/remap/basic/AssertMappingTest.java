@@ -2,7 +2,7 @@ package com.remondis.remap.basic;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.remondis.remap.AssertConfiguration;
 import com.remondis.remap.AssertMapping;
@@ -13,10 +13,10 @@ import com.remondis.remap.assertion.AResource;
 import com.remondis.remap.assertion.B;
 import com.remondis.remap.assertion.BResource;
 
-public class AssertMappingTest {
+class AssertMappingTest {
 
   @Test
-  public void shouldDenyIllegalArguments() {
+  void shouldDenyIllegalArguments() {
 
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
@@ -99,7 +99,7 @@ public class AssertMappingTest {
   }
 
   @Test
-  public void shouldThrowExceptionOfFunctionAsCause() {
+  void shouldThrowExceptionOfFunctionAsCause() {
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
         .mapper();
@@ -131,7 +131,7 @@ public class AssertMappingTest {
   }
 
   @Test
-  public void regression_checkTransformationAgainstNullCausesWrongExceptionMessage() {
+  void regression_checkTransformationAgainstNullCausesWrongExceptionMessage() {
     // There was a bug that causes an AssertionException with a wrong operation name
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
@@ -165,7 +165,7 @@ public class AssertMappingTest {
   }
 
   @Test
-  public void shouldThrowAssertionError_multipleAssertsOperationsInvolvingSameDestinationFields() {
+  void shouldThrowAssertionError_multipleAssertsOperationsInvolvingSameDestinationFields() {
 
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
@@ -214,7 +214,7 @@ public class AssertMappingTest {
   }
 
   @Test
-  public void shouldThrowAssertionError_multipleAssertsOfOneOperation() {
+  void shouldThrowAssertionError_multipleAssertsOfOneOperation() {
 
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
@@ -341,8 +341,8 @@ public class AssertMappingTest {
 
   }
 
-  @Test(expected = AssertionError.class)
-  public void shouldDetectExpectedNoSkipWhenNull() {
+  @Test
+  void shouldDetectExpectedNoSkipWhenNull() {
 
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
@@ -365,11 +365,11 @@ public class AssertMappingTest {
         .andTest(String::valueOf)
         .expectOmitInSource(A::getOmitted)
         .expectOmitInDestination(AResource::getOmitted);
-    asserts.ensure();
+    assertThatThrownBy(asserts::ensure).isInstanceOf(AssertionError.class);
   }
 
-  @Test(expected = AssertionError.class)
-  public void shouldDetectExpectedSkipWhenNull() {
+  @Test
+  void shouldDetectExpectedSkipWhenNull() {
 
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
@@ -392,11 +392,11 @@ public class AssertMappingTest {
         .andSkipWhenNull()
         .expectOmitInSource(A::getOmitted)
         .expectOmitInDestination(AResource::getOmitted);
-    asserts.ensure();
+    assertThatThrownBy(asserts::ensure).isInstanceOf(AssertionError.class);
   }
 
   @Test
-  public void shouldThrowAssertionError_missingAsserts() {
+  void shouldThrowAssertionError_missingAsserts() {
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
         .mapper();
@@ -453,7 +453,7 @@ public class AssertMappingTest {
   }
 
   @Test
-  public void shouldNotThrowAssertionError() {
+  void shouldNotThrowAssertionError() {
 
     Mapper<B, BResource> bMapper = Mapping.from(B.class)
         .to(BResource.class)
