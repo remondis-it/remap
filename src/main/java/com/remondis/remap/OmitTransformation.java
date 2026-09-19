@@ -6,6 +6,8 @@ import static java.util.Objects.nonNull;
 
 import java.beans.PropertyDescriptor;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * The omit transformation marks a property as omitted.
  *
@@ -62,12 +64,13 @@ class OmitTransformation extends Transformation {
   }
 
   @Override
-  protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+  protected void performTransformation(@Nullable PropertyDescriptor sourceProperty, Object source,
+      @Nullable PropertyDescriptor destinationProperty, Object destination) throws MappingException {
   }
 
   @Override
-  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
+  protected MappedResult performValueTransformation(@Nullable Object source, @Nullable Object destination)
+      throws MappingException {
     return MappedResult.skip();
   }
 

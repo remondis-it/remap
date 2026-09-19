@@ -6,6 +6,8 @@ import java.beans.PropertyDescriptor;
 import java.util.Optional;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 import com.remondis.propertypath.api.Get;
 import com.remondis.propertypath.api.Getter;
 import com.remondis.propertypath.api.PropertyPath;
@@ -59,8 +61,8 @@ public class PropertyPathTransformation<RS, X, RD> extends Transformation {
   }
 
   @Override
-  protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+  protected void performTransformation(@Nullable PropertyDescriptor sourceProperty, Object source,
+      @Nullable PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
 
     MappedResult result = performValueTransformation(sourceValue, destination);
@@ -71,7 +73,8 @@ public class PropertyPathTransformation<RS, X, RD> extends Transformation {
   }
 
   @Override
-  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
+  protected MappedResult performValueTransformation(@Nullable Object source, @Nullable Object destination)
+      throws MappingException {
     if (source == null) {
       // Skip if source value is null. Property paths are null-friendly.
       return MappedResult.skip();
@@ -108,7 +111,7 @@ public class PropertyPathTransformation<RS, X, RD> extends Transformation {
 
   @SuppressWarnings("rawtypes")
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (this == obj) {
       return true;
     }

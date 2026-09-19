@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A type mapping wraps a function that maps one type into another. This mapping can be used to define a global type
  * mapping on a {@link MappingConfiguration}. Apart from Java Bean mappers, that support a field by field mapping a
@@ -95,7 +97,7 @@ public final class TypeMapping<S, D> implements InternalMapper<S, D> {
   }
 
   @Override
-  public D map(S source, D destination) {
+  public D map(S source, @Nullable D destination) {
     return conversionFunction.apply(source, ofNullable(destination));
   }
 

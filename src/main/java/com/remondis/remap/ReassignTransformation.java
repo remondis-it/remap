@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * The reassign operation maps a field to another field while the field names may differ. A reassign operation is only
  * allowed on fields of the same type.
@@ -66,8 +68,8 @@ public class ReassignTransformation extends Transformation {
   }
 
   @Override
-  protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+  protected void performTransformation(@Nullable PropertyDescriptor sourceProperty, Object source,
+      @Nullable PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
     MappedResult result = MappedResult.skip();
 
@@ -81,7 +83,8 @@ public class ReassignTransformation extends Transformation {
   }
 
   @Override
-  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
+  protected MappedResult performValueTransformation(@Nullable Object source, @Nullable Object destination)
+      throws MappingException {
     return MappedResult.value(conversionStrategy.convert(source, destination));
   }
 

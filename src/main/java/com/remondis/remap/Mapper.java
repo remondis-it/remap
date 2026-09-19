@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * This class defines a reusable mapper object to perform multiple mappings for the configured object types.
  *
@@ -45,7 +47,8 @@ public class Mapper<S, D> {
    * destination object if affected by the mapping configuration.
    *
    * @param source The source object to map to a new destination object.
-   * @param destination The destination object to map into. Field affected by the mapping will be overwritten.
+   * @param destination The destination object to map into. Field affected by the mapping will be overwritten. If
+   *        <code>null</code> is specified, a new destination object is created.
    * @return Returns the specified destination object.
    * @deprecated This method is deprecated, because the map-into feature of ReMap is not correctly implemented and will
    *             be removed in future release. The complexity of mapping collections in a object tree is beyond of what
@@ -55,7 +58,7 @@ public class Mapper<S, D> {
    *             the other collection without having to make serious API changes.
    */
   @Deprecated
-  public D map(S source, D destination) {
+  public D map(S source, @Nullable D destination) {
     return mapping.map(source, destination);
   }
 
@@ -109,7 +112,7 @@ public class Mapper<S, D> {
    * @param source The source object to map to a new destination object. May be <code>null</code>.
    * @return Returns a newly created destination object or <code>null</code> if the input value is <code>null</code>.
    */
-  public D mapOptional(S source) {
+  public @Nullable D mapOptional(@Nullable S source) {
     return mapOrDefault(source, null);
   }
 
@@ -121,7 +124,7 @@ public class Mapper<S, D> {
    * @param defaultValue The default value to return if the input is <code>null</code>.
    * @return Returns a newly created destination object or the default value if the input value is <code>null</code>.
    */
-  public D mapOrDefault(S source, D defaultValue) {
+  public @Nullable D mapOrDefault(@Nullable S source, @Nullable D defaultValue) {
     if (isNull(source)) {
       return defaultValue;
     } else {

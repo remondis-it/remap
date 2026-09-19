@@ -1,5 +1,7 @@
 package com.remondis.remap;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * An implementation to generalize a {@link Mapper} using {@link InternalMapper}.
  *
@@ -16,7 +18,7 @@ class MapperAdapter<S, D> implements InternalMapper<S, D> {
   }
 
   @Override
-  public D map(S source, D destination) {
+  public D map(S source, @Nullable D destination) {
     return mapper.map(source, destination);
   }
 

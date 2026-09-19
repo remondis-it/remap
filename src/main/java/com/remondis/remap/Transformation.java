@@ -7,6 +7,8 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * This is the base class for a transformation that performs a single step when mapping from an object to another
  * object. There will be different implementations for mapping operations.
@@ -15,8 +17,16 @@ import java.lang.reflect.Method;
  */
 abstract class Transformation {
 
-  protected PropertyDescriptor sourceProperty;
-  protected PropertyDescriptor destinationProperty;
+  /**
+   * The source property of this transformation. This is <code>null</code> for transformations that do not read a
+   * source property, like the <code>set</code> operation.
+   */
+  protected @Nullable PropertyDescriptor sourceProperty;
+  /**
+   * The destination property of this transformation. This is <code>null</code> for transformations that do not write a
+   * destination property, like the <code>omitInSource</code> operation.
+   */
+  protected @Nullable PropertyDescriptor destinationProperty;
   protected MappingConfiguration<?, ?> mapping;
 
   /*
@@ -24,12 +34,12 @@ abstract class Transformation {
    * must not be called for every mapping operation. The Method instances are cached here since PropertyDescriptor
    * holds them softly-referenced and may return fresh instances without the accessible flag set.
    */
-  private final Method sourceReadMethod;
-  private final Method destinationReadMethod;
-  private final Method destinationWriteMethod;
+  private final @Nullable Method sourceReadMethod;
+  private final @Nullable Method destinationReadMethod;
+  private final @Nullable Method destinationWriteMethod;
 
-  Transformation(MappingConfiguration<?, ?> mapping, PropertyDescriptor sourceProperty,
-      PropertyDescriptor destinationProperty) {
+  Transformation(MappingConfiguration<?, ?> mapping, @Nullable PropertyDescriptor sourceProperty,
+      @Nullable PropertyDescriptor destinationProperty) {
     super();
     denyNull("mapping", mapping);
     this.mapping = mapping;
@@ -46,7 +56,7 @@ abstract class Transformation {
    * Makes the specified method accessible on a best-effort basis. If the method cannot be made accessible, the
    * original method is returned and the access error surfaces on invocation like before.
    */
-  private static Method accessibleOrNull(Method method) {
+  private static @Nullable Method accessibleOrNull(@Nullable Method method) {
     if (method == null) {
       return null;
     }
@@ -91,7 +101,7 @@ abstract class Transformation {
   /**
    * @return Returns the destination property name.
    */
-  public String getDestinationPropertyName() {
+  public @Nullable String getDestinationPropertyName() {
     return isNull(destinationProperty) ? null : destinationProperty.getName();
   }
 
@@ -99,7 +109,7 @@ abstract class Transformation {
    * @return Returns the source property name. This might be a property path, if the transformation operates on
    *         property paths like PropertyPathTransformation.
    */
-  public String getSourcePropertyName() {
+  public @Nullable String getSourcePropertyName() {
     return isNull(sourceProperty) ? null : sourceProperty.getName();
   }
 
@@ -111,7 +121,7 @@ abstract class Transformation {
     return sourceProperty.getPropertyType();
   }
 
-  protected Object readOrFail(PropertyDescriptor property, Object source) {
+  protected @Nullable Object readOrFail(PropertyDescriptor property, Object source) {
     try {
       return readMethodOf(property).invoke(source);
     } catch (InvocationTargetException e) {
@@ -121,7 +131,7 @@ abstract class Transformation {
     }
   }
 
-  protected void writeOrFail(PropertyDescriptor property, Object source, Object value) {
+  protected void writeOrFail(PropertyDescriptor property, Object source, @Nullable Object value) {
     try {
       writeMethodOf(property).invoke(source, value);
     } catch (InvocationTargetException e) {
@@ -151,8 +161,8 @@ abstract class Transformation {
    * @param destination The destination object to map to.
    * @throws MappingException Thrown on any mapping exception.
    */
-  protected abstract void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException;
+  protected abstract void performTransformation(@Nullable PropertyDescriptor sourceProperty, Object source,
+      @Nullable PropertyDescriptor destinationProperty, Object destination) throws MappingException;
 
   /**
    * Performs a single value transformation. This method is used to provide single field mappings via
@@ -165,7 +175,8 @@ abstract class Transformation {
    *         transformation does not produce a destination value.
    * @throws MappingException Thrown on any mapping exception.
    */
-  protected abstract MappedResult performValueTransformation(Object source, Object destination) throws MappingException;
+  protected abstract MappedResult performValueTransformation(@Nullable Object source, @Nullable Object destination)
+      throws MappingException;
 
   /**
    * Lets this transformation validate its configuration. If the state of this transformation is invalid,
@@ -213,10 +224,12 @@ abstract class Transformation {
     return this.mapping.hasMapperFor(sourceType, destinationType);
   }
 
+  @Nullable
   PropertyDescriptor getSourceProperty() {
     return sourceProperty;
   }
 
+  @Nullable
   PropertyDescriptor getDestinationProperty() {
     return destinationProperty;
   }
@@ -231,7 +244,7 @@ abstract class Transformation {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (this == obj) {
       return true;
     }

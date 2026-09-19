@@ -10,6 +10,8 @@ import java.util.stream.Collector;
 
 import javax.xml.crypto.dsig.Transform;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A replace transformation converts a source object into a destination object by applying the specified {@link
  * Transform} function on the source.
@@ -35,8 +37,8 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
   }
 
   @Override
-  protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+  protected void performTransformation(@Nullable PropertyDescriptor sourceProperty, Object source,
+      @Nullable PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
 
     MappedResult result = performValueTransformation(sourceValue, destination);
@@ -50,7 +52,8 @@ class ReplaceCollectionTransformation<RS, RD> extends SkipWhenNullTransformation
       "rawtypes", "unchecked"
   })
   @Override
-  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
+  protected MappedResult performValueTransformation(@Nullable Object source, @Nullable Object destination)
+      throws MappingException {
     if (source == null) {
       // Skip if source value is null and the transformation was declared to skip on null input.
       return MappedResult.skip();

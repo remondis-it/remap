@@ -1,5 +1,7 @@
 package com.remondis.remap;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * This is an internal abstraction of the essential mapping function that is used internally by
  * {@link MappingConfiguration}. This
@@ -15,10 +17,11 @@ interface InternalMapper<S, D> {
    * the mapping function defines the behaviour.
    *
    * @param source The source object.
-   * @param destination The destination object to map into.
+   * @param destination The destination object to map into. May be <code>null</code> to let the mapper create a new
+   *        destination object.
    * @return Returns the specified destination object.
    */
-  public D map(S source, D destination);
+  public D map(S source, @Nullable D destination);
 
   /**
    * Performs the mapping from the source into a new destination object. This method is expected to return a new

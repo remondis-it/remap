@@ -74,6 +74,12 @@ public class AssertConfiguration<S, D> {
 
   private boolean expectFluentSettersAllowed = false;
 
+  /**
+   * The expected nullness policy. This defaults to the policy a mapper gets if it does not configure one, so that
+   * mappers not using the nullness validation do not have to assert it.
+   */
+  private NullnessPolicy expectedNullnessPolicy = NullnessPolicy.defaultPolicy();
+
   AssertConfiguration(Mapper<S, D> mapper) {
     denyNull("mapper", mapper);
     this.mapper = mapper;
@@ -232,6 +238,25 @@ public class AssertConfiguration<S, D> {
   }
 
   /**
+   * Expects the mapper to apply the specified {@link NullnessPolicy} on nullness violations detected while the mapper
+   * was built. Note that the policy does not change how objects are mapped, it only defines how violations of the
+   * nullness declared by the JSpecify annotations are reported.
+   *
+   * <p>
+   * Mappers that do not configure a policy with {@link MappingConfiguration#validateNullness(NullnessPolicy)} use the
+   * default policy, which is what this assertion expects if it is not specified.
+   * </p>
+   *
+   * @param policy The expected policy.
+   * @return Returns this instance for further configuration.
+   */
+  public AssertConfiguration<S, D> expectNullnessPolicy(NullnessPolicy policy) {
+    denyNull("policy", policy);
+    this.expectedNullnessPolicy = policy;
+    return this;
+  }
+
+  /**
    * Expects the mapper to suppress creation of implicit mappings. Note: This requires the user to define the mappings
    * explicitly using {@link MappingConfiguration#reassign(FieldSelector)} or any other mapping operation. Therefore all
    * this
@@ -304,6 +329,7 @@ public class AssertConfiguration<S, D> {
   public void ensure() throws AssertionError {
     checkImplicitMappingStrategy();
     checkNullHandling();
+    checkNullnessPolicy();
     checkFluentSetters();
     checkReplaceTransformations();
 
@@ -336,6 +362,15 @@ public class AssertConfiguration<S, D> {
         .isWriteNull() && !expectWriteNullIfSourceIsNull) {
       throw new AssertionError("The mapper was expected to skip mapping if the source value is null, "
           + "but the current mapper is configured to write null if source value is null.");
+    }
+  }
+
+  private void checkNullnessPolicy() {
+    NullnessPolicy actualPolicy = mapper.getMapping()
+        .getNullnessPolicy();
+    if (actualPolicy != expectedNullnessPolicy) {
+      throw new AssertionError(String.format("The mapper was expected to report nullness violations with policy %s, "
+          + "but the current mapper is configured with policy %s.", expectedNullnessPolicy, actualPolicy));
     }
   }
 

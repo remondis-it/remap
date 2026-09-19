@@ -16,6 +16,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * The mapping model provides access to field mappings. The field mappings can be used to transform single values.
  *
@@ -35,7 +37,7 @@ public class MappingModel<S, D> {
    *        intended by the destination field.
    * @return Returns the search result.
    */
-  public TransformationSearchResult findMappingBySource(Predicate<String> sourcePropertySelector) {
+  public TransformationSearchResult findMappingBySource(@Nullable Predicate<String> sourcePropertySelector) {
     return findMapping(sourcePropertySelector, null);
   }
 
@@ -72,8 +74,11 @@ public class MappingModel<S, D> {
    * @param destinationSelector The destination field selector.
    * @return Returns the search result.
    */
-  public TransformationSearchResult findMapping(FieldSelector<S> sourceSelector, FieldSelector<D> destinationSelector) {
+  public TransformationSearchResult findMapping(@Nullable FieldSelector<S> sourceSelector,
+      @Nullable FieldSelector<D> destinationSelector) {
+    @Nullable
     PropertyDescriptor sourceProperty = null;
+    @Nullable
     PropertyDescriptor destinationProperty = null;
 
     if (nonNull(sourceSelector)) {
@@ -86,7 +91,9 @@ public class MappingModel<S, D> {
           destinationSelector, mapping.isFluentSettersAllowed());
     }
 
+    @Nullable
     Predicate<String> sourcePredicate = isNull(sourceProperty) ? null : nameEqualsPredicate(sourceProperty.getName());
+    @Nullable
     Predicate<String> destinationPredicate = isNull(destinationProperty) ? null
         : nameEqualsPredicate(destinationProperty.getName());
 
@@ -99,8 +106,8 @@ public class MappingModel<S, D> {
    * @param destinationPropertySelector The destination selector predicate.
    * @return Returns the search result.
    */
-  public TransformationSearchResult findMapping(Predicate<String> sourcePropertySelector,
-      Predicate<String> destinationPropertySelector) {
+  public TransformationSearchResult findMapping(@Nullable Predicate<String> sourcePropertySelector,
+      @Nullable Predicate<String> destinationPropertySelector) {
     List<Transformation> transformations = mapping.getMappings()
         .stream()
         .filter(andOnDemand(sourcePropertySelector, destinationPropertySelector))
@@ -130,10 +137,12 @@ public class MappingModel<S, D> {
     }
   }
 
-  private Predicate<Transformation> andOnDemand(Predicate<String> sourcePropertySelector,
-      Predicate<String> destinationPropertySelector) {
+  private Predicate<Transformation> andOnDemand(@Nullable Predicate<String> sourcePropertySelector,
+      @Nullable Predicate<String> destinationPropertySelector) {
+    @Nullable
     Predicate<Transformation> sourcePredicate = isNull(sourcePropertySelector) ? null
         : toSourcePredicate(sourcePropertySelector);
+    @Nullable
     Predicate<Transformation> destPredicate = isNull(destinationPropertySelector) ? null
         : toDestPredicate(destinationPropertySelector);
 
@@ -328,7 +337,7 @@ public class MappingModel<S, D> {
      *        used.
      * @return Returns the {@link MappedResult}.
      */
-    public MappedResult performValueTransformation(Object value) {
+    public MappedResult performValueTransformation(@Nullable Object value) {
       Transformation singleMatch = getSingleMatch();
       return singleMatch.performValueTransformation(value, null);
     }
@@ -345,28 +354,28 @@ public class MappingModel<S, D> {
     /**
      * @return Returns the source property name.
      */
-    public String getSourcePropertyName() {
+    public @Nullable String getSourcePropertyName() {
       return getSingleMatch().getSourcePropertyName();
     }
 
     /**
      * @return Returns the destination property name.
      */
-    public String getDestinationPropertyName() {
+    public @Nullable String getDestinationPropertyName() {
       return getSingleMatch().getDestinationPropertyName();
     }
 
     /**
      * @return Returns the source property descriptor.
      */
-    public PropertyDescriptor getSource() {
+    public @Nullable PropertyDescriptor getSource() {
       return getSingleMatch().getSourceProperty();
     }
 
     /**
      * @return Returns the destination property descriptor.
      */
-    public PropertyDescriptor getDestination() {
+    public @Nullable PropertyDescriptor getDestination() {
       return getSingleMatch().getDestinationProperty();
     }
 

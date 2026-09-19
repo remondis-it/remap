@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.jspecify.annotations.NonNull;
+
 import com.remondis.propertypath.api.PropertyPath;
 
 /**
@@ -110,7 +112,7 @@ public class ReplaceCollectionBuilder<S, D, RD, RS> {
    * @param transformation The transform function.
    * @return Returns the {@link MappingConfiguration} for further mapping configuration.
    */
-  public MappingConfiguration<S, D> withSkipWhenNull(Function<RS, RD> transformation) {
+  public MappingConfiguration<S, D> withSkipWhenNull(Function<@NonNull RS, RD> transformation) {
     denyNull("tranformation", transformation);
     ReplaceCollectionTransformation<RS, RD> replace = new ReplaceCollectionTransformation<>(mapping,
         sourceProperty.property, destProperty.property, transformation, true);

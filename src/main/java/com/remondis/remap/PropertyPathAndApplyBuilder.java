@@ -4,6 +4,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Function;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 import com.remondis.propertypath.api.PropertyPath;
 
 /**
@@ -40,7 +43,7 @@ public class PropertyPathAndApplyBuilder<S, D, RD, X, RS, E extends Exception> {
    * @param transformation The function to transform the property path result value.
    * @return Returns the {@link MappingConfiguration} instance.
    */
-  public MappingConfiguration<S, D> apply(Function<X, RD> transformation) {
+  public MappingConfiguration<S, D> apply(Function<@NonNull X, @Nullable RD> transformation) {
     requireNonNull(transformation, "Transformation must not be null");
     PropertyPathTransformation<RS, X, RD> replace = new PropertyPathTransformation<RS, X, RD>(mapping,
         sourceProperty.property, destProperty.property, propertyPath, transformation);

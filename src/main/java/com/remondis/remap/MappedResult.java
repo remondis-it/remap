@@ -1,16 +1,18 @@
 package com.remondis.remap;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Represents a field value mapping result. This result carries the actual value to write to the destination object and
  * an operation flag indicating situations where a value, <code>null</code> or nothing should be written to destination.
  */
 public class MappedResult {
 
-  private Object value;
+  private @Nullable Object value;
 
   private MappingOperation operation;
 
-  private MappedResult(Object value, MappingOperation operation) {
+  private MappedResult(@Nullable Object value, MappingOperation operation) {
     super();
     this.value = value;
     this.operation = operation;
@@ -28,11 +30,11 @@ public class MappedResult {
    * @return Returns a {@link MappedResult} that signals that the mapping should be used even if <code>null</code> is
    *         returned.
    */
-  public static MappedResult value(Object value) {
+  public static MappedResult value(@Nullable Object value) {
     return new MappedResult(value, MappingOperation.VALUE);
   }
 
-  public Object getValue() {
+  public @Nullable Object getValue() {
     return value;
   }
 

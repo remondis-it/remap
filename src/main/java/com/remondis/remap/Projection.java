@@ -1,5 +1,7 @@
 package com.remondis.remap;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * This class defines a projection from a type to another type.
  *
@@ -36,7 +38,7 @@ class Projection<S, D> {
   }
 
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (this == obj) {
       return true;
     }

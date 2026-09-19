@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.jspecify.annotations.NonNull;
+
 import com.remondis.propertypath.api.PropertyPath;
 
 /**
@@ -106,10 +108,16 @@ public class ReplaceBuilder<S, D, RD, RS> {
    * Transforms the selected fields with applying the specified transform function on the source value. <b>This method
    * skips the execution of the transform function if the source value is null.</b>
    *
+   * <p>
+   * Since the transformation function is never called with a <code>null</code> argument, it is declared to accept the
+   * non-null projection of the source field type. In contrast, {@link #with(Function)} passes <code>null</code> to the
+   * transformation function and therefore requires a function that accepts the source field type as declared.
+   * </p>
+   *
    * @param transformation The transform function.
    * @return Returns the {@link MappingConfiguration} for further mapping configuration.
    */
-  public MappingConfiguration<S, D> withSkipWhenNull(Function<RS, RD> transformation) {
+  public MappingConfiguration<S, D> withSkipWhenNull(Function<@NonNull RS, RD> transformation) {
     denyNull("tranformation", transformation);
     ReplaceTransformation<RS, RD> replace = new ReplaceTransformation<>(mapping, sourceProperty.property,
         destProperty.property, transformation, true);

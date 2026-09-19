@@ -7,6 +7,8 @@ import java.util.function.Function;
 
 import javax.xml.crypto.dsig.Transform;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * A replace transformation converts a source object into a destination object by applying the specified {@link
  * Transform} function on the source.
@@ -28,8 +30,8 @@ class SetTransformation<S, D, RD> extends Transformation {
   }
 
   @Override
-  protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+  protected void performTransformation(@Nullable PropertyDescriptor sourceProperty, Object source,
+      @Nullable PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     MappedResult result = performValueTransformation(source, destination);
     if (result.hasValue()) {
       writeOrFail(destinationProperty, destination, result.getValue());
@@ -38,7 +40,8 @@ class SetTransformation<S, D, RD> extends Transformation {
 
   @Override
   @SuppressWarnings("unchecked")
-  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
+  protected MappedResult performValueTransformation(@Nullable Object source, @Nullable Object destination)
+      throws MappingException {
     Object destinationValue = transformation.apply((S) source);
     return MappedResult.value(destinationValue);
   }

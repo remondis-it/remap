@@ -9,9 +9,10 @@
 3. [News](#news)
 4. [Mapping operations](#mapping-operations)
 5. [Validation](#validation)
-6. [Features](#features)
-7. [Limitations](#limitations)
-8. [The mapping cookbook](#the-mapping-cookbook)
+6. [Null safety](#null-safety)
+7. [Features](#features)
+8. [Limitations](#limitations)
+9. [The mapping cookbook](#the-mapping-cookbook)
    1. [Implicit Mappings](#implicit-mappings)
    2. [Mapping fields of the same type](#mapping-fields-of-the-same-type)
    3. [Mapping fields using another mapper](#mapping-fields-using-another-mapper)
@@ -25,11 +26,11 @@
    11. [Restructure a complex object in the destination](#restructure-a-complex-object-in-the-destination)
    12. [Mapping maps](#mapping-maps)
    13. [Tests](#tests)
-9. [Mapping meta model](#mapping-meta-model)
-10. [Spring integration](#spring-integration)
+10. [Mapping meta model](#mapping-meta-model)
+11. [Spring integration](#spring-integration)
    1. [Spring Boot Issue](#spring-boot-issue)
-11. [Changelog](#changelog)
-12. [How to contribute](#how-to-contribute)
+12. [Changelog](#changelog)
+13. [How to contribute](#how-to-contribute)
 
 ## Long story short
 
@@ -165,6 +166,120 @@ ReMap validates the mapping configuration of a mapper **at instantiation time** 
 * `omit` is specified for a source field that already has a mapping configuration
 
 These validation rules make sure that all fields are covered by the mapping configuration when a mapper instance is created.
+
+## Null safety
+
+ReMap is annotated with [JSpecify](https://jspecify.dev). All packages are `@NullMarked`, so every type usage in the
+API that is not annotated with `@Nullable` is non-null. Tools that evaluate these annotations — NullAway, the Checker
+Framework, IntelliJ IDEA and the Kotlin compiler — therefore analyse calls into ReMap correctly, without any further
+setup.
+
+Null safety in ReMap has two parts: the contracts of the API are checked by the compiler, the contracts of your
+mapping configuration are checked when the mapper is built.
+
+### Checked by the compiler
+
+The field types of a mapping operation are inferred from the field selectors, so they carry the nullness declared on
+the selected getters. A transformation function must be compatible with them:
+
+```java
+public class Customer {
+  public @Nullable String getGender() { ... }
+}
+
+// Rejected: with(...) also calls the function for null values, but Gender.valueOf(String) does not accept null.
+Mapping.from(Customer.class)
+    .to(Person.class)
+    .replace(Customer::getGender, Person::getGender)
+        .with(Gender::valueOf)
+    .mapper();
+
+// Accepted: withSkipWhenNull(...) never calls the function with null.
+Mapping.from(Customer.class)
+    .to(Person.class)
+    .replace(Customer::getGender, Person::getGender)
+        .withSkipWhenNull(Gender::valueOf)
+    .mapper();
+```
+
+`with(...)` passes the source value to the transformation function even if it is `null`, so the function has to accept
+the source field type as declared. `withSkipWhenNull(...)` skips the mapping for `null` values and therefore declares
+the non-null projection of the source field type.
+
+**Note:** ReMap declares the contract, the detection is up to your nullness checker. Checking a method reference
+against the nullness of a type argument requires a checker that supports JSpecify generics. The Checker Framework
+supports this, NullAway requires its JSpecify mode (`-XepOpt:NullAway:JSpecifyMode=true`). The
+[validation performed when the mapper is built](#checked-when-the-mapper-is-built) does not depend on any checker.
+
+### Checked when the mapper is built
+
+The mapping between two properties cannot be expressed in the type system, because ReMap selects both properties with
+getter references and return types are covariant. These mappings are validated against the JSpecify annotations while
+the mapper is built:
+
+```java
+Mapper<Customer, Person> mapper = Mapping.from(Customer.class)
+    .to(Person.class)
+    .validateNullness(NullnessPolicy.ERROR)
+    .mapper();
+```
+
+A mapping of the nullable `Customer.gender` to a non-null `Person.gender` is denied with the following message:
+
+```
+The mapping from com.remondis.remap.demo.Customer
+                to com.remondis.remap.demo.Person
+ violates the nullness declared by the JSpecify annotations of the mapped properties:
+
+- Map Property 'gender' in com.remondis.remap.demo.Customer
+   to Property 'gender' in com.remondis.remap.demo.Person
+  The mapping is skipped if the source value is null, so the destination property is never written and keeps its
+  default value null.
+  Hint: Declare the destination property as @Nullable, make the source property non-null, or make sure the destination
+  property has a non-null default value.
+```
+
+The following rules are validated:
+
+| Rule | Detected situation |
+| --- | --- |
+| `UNWRITTEN_DESTINATION` | A `@Nullable` source property is mapped to a non-null destination property. The mapping is skipped for `null` values, so the destination property is never written. Applies to `reassign`, implicit mappings, `withSkipWhenNull` and property paths. |
+| `NULL_WRITTEN_TO_NON_NULL` | The mapper is configured with `writeNullIfSourceIsNull()` and writes `null` into a non-null destination property. |
+| `NULL_WRITTEN_TO_PRIMITIVE` | The mapper is configured with `writeNullIfSourceIsNull()` and writes `null` into a destination property of primitive type. This fails with a `MappingException` while mapping. |
+| `NULLABLE_COLLECTION_ELEMENT` | The elements of a mapped collection are declared `@Nullable`. ReMap denies `null` elements while mapping collections. |
+| `NULLABLE_MAP_ENTRY` | The keys or values of a mapped map are declared `@Nullable` and are converted by a registered mapper. A mapper denies `null` input. |
+
+**The validation is disabled by default** to stay backwards compatible. Use `validateNullness(NullnessPolicy)` per
+mapper or set the system property `remap.nullness.policy` to `WARN` or `ERROR` to define the default for all mappers.
+`WARN` reports the violations to `java.util.logging` and is meant for introducing the validation in an existing code
+base.
+
+Like every mapping feature, the policy can be pinned down with the assert API:
+
+```java
+AssertMapping.of(mapper)
+    .expectNullnessPolicy(NullnessPolicy.ERROR)
+    .ensure();
+```
+
+Mappers that do not configure a policy use the default policy, which is what the assertion expects if
+`expectNullnessPolicy(..)` is not specified.
+
+### What is not validated
+
+* **Properties without JSpecify annotations.** Following the JSpecify specification, a type usage that is not covered
+  by a `@NullMarked` scope has *unspecified* nullness and never produces a violation. If your beans are not annotated,
+  the validation reports nothing.
+* **The nullness of the property accessors is authoritative, not the one of the backing field.** ReMap reads the
+  getter and writes the setter, so this is where the annotations have to be. Note that code generators do not
+  necessarily propagate the annotations of a field to its accessors.
+* **Transformation functions.** The functions passed to `with(...)`, `set(...)` and `apply(...)` are lambdas or method
+  references whose nullness is not available reflectively. Their contract is declared by the signatures of the builder
+  methods and is therefore checked by the compiler instead.
+* **The property path itself.** Only the nullness of the source property of a property path operation is evaluated,
+  not the nullness of the getters within the path.
+* **Nested generic types.** Only the first level of a generic type is inspected, so the elements of a
+  `List<List<String>>` are not evaluated.
 
 ## Unit Testing
 

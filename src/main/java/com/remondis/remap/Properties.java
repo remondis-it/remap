@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * Util class to get a list of all properties of a class.
  *
@@ -253,7 +255,8 @@ class Properties {
   /**
    * Finds a PropertyDescriptor object in the existing set list
    */
-  private static PropertyDescriptor findPropertyDescriptor(Set<PropertyDescriptor> properties, String propertyName) {
+  private static @Nullable PropertyDescriptor findPropertyDescriptor(Set<PropertyDescriptor> properties,
+      String propertyName) {
     return properties.stream()
         .filter(pd -> pd.getName()
             .equals(propertyName))

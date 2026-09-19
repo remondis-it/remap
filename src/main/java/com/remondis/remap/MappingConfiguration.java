@@ -107,6 +107,11 @@ public class MappingConfiguration<S, D> {
    */
   private boolean allowFluentSetters;
 
+  /**
+   * Defines how nullness violations detected while building the mapper are reported.
+   */
+  private NullnessPolicy nullnessPolicy = NullnessPolicy.defaultPolicy();
+
   private InvocationSensor<?> sourceInvocationSensor;
 
   private InvocationSensor<?> destinationInvocationSensor;
@@ -496,6 +501,9 @@ public class MappingConfiguration<S, D> {
     for (Transformation t : mappings) {
       t.validateTransformation();
     }
+
+    // check the mapping against the nullness declared by JSpecify annotations
+    NullnessValidator.validate(this, mappings, nullnessPolicy);
   }
 
   private Set<PropertyDescriptor> getUnmappedProperties() {
@@ -730,6 +738,40 @@ public class MappingConfiguration<S, D> {
   }
 
   /**
+   * Defines how this mapper reacts on mappings that violate the nullness declared by the
+   * <a href="https://jspecify.dev">JSpecify</a> annotations of the mapped properties. A typical violation is a
+   * {@link org.jspecify.annotations.Nullable} source property that is mapped to a non-null destination property: ReMap
+   * skips the mapping for <code>null</code> values, so the destination property is never written and keeps its default
+   * value <code>null</code>.
+   *
+   * <p>
+   * The validation is performed while the mapper is built, so violations are reported before the first object is
+   * mapped. Properties whose nullness is unspecified - because they are not covered by a
+   * {@link org.jspecify.annotations.NullMarked} scope - never produce a violation.
+   * </p>
+   *
+   * <p>
+   * The default policy is {@link NullnessPolicy#OFF} unless the system property
+   * {@value NullnessPolicy#SYSTEM_PROPERTY} specifies a different default.
+   * </p>
+   *
+   * @param policy The policy to apply on detected nullness violations.
+   * @return Returns this {@link MappingConfiguration} object for further configuration.
+   */
+  public MappingConfiguration<S, D> validateNullness(NullnessPolicy policy) {
+    denyNull("policy", policy);
+    this.nullnessPolicy = policy;
+    return this;
+  }
+
+  /**
+   * @return Returns the {@link NullnessPolicy} this mapping configuration applies on detected nullness violations.
+   */
+  public NullnessPolicy getNullnessPolicy() {
+    return nullnessPolicy;
+  }
+
+  /**
    * Relaxes the strict java bean requirement that setters should return void, thus allowing for mapped classes to
    * be <em>fluent</em>.
    *
@@ -838,7 +880,7 @@ public class MappingConfiguration<S, D> {
     return destinationObject;
   }
 
-  private D createDestination() {
+  D createDestination() {
     Constructor<D> constructor = destinationConstructor;
     if (constructor == null) {
       // Benign race: concurrent first mappings may resolve the constructor multiple times with the same result.

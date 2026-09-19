@@ -7,6 +7,8 @@ import java.beans.PropertyDescriptor;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.jspecify.annotations.Nullable;
+
 /**
  * The restructure transformation is used to build a destination object using a mapper root->destination.
  *
@@ -32,8 +34,8 @@ class RestructureTransformation<S, D, RD> extends Transformation {
   }
 
   @Override
-  protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+  protected void performTransformation(@Nullable PropertyDescriptor sourceProperty, Object source,
+      @Nullable PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     MappedResult result = performValueTransformation(source, destination);
     if (result.hasValue()) {
       writeOrFail(destinationProperty, destination, result.getValue());
@@ -41,7 +43,8 @@ class RestructureTransformation<S, D, RD> extends Transformation {
   }
 
   @Override
-  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
+  protected MappedResult performValueTransformation(@Nullable Object source, @Nullable Object destination)
+      throws MappingException {
     RD destinationValue = null;
     if (objectCreator.isPresent()) {
       RD newObject = objectCreator.get()

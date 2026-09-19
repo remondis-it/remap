@@ -142,6 +142,26 @@ public class MappingException extends RuntimeException {
     return new MappingException("Mapper cannot map null object.");
   }
 
+  /**
+   * Creates the message reporting the nullness violations of a mapping configuration. The message is also used for the
+   * log output of {@link NullnessPolicy#WARN}, therefore the message is created separately from the exception.
+   *
+   * @param source The source type of the mapping.
+   * @param destination The destination type of the mapping.
+   * @param violations The detected violations.
+   * @return Returns the message.
+   */
+  static String nullnessViolationMessage(Class<?> source, Class<?> destination, List<String> violations) {
+    StringBuilder builder = new StringBuilder(
+        String.format("The mapping from %s%n                to %s%n violates the nullness declared by the JSpecify "
+            + "annotations of the mapped properties:%n%n", source.getName(), destination.getName()));
+    violations.forEach(violation -> builder.append(violation)
+        .append(String.format("%n")));
+    builder.append(String.format("%nUse MappingConfiguration.validateNullness(NullnessPolicy) or the system property "
+        + "'%s' to change how nullness violations are reported.", NullnessPolicy.SYSTEM_PROPERTY));
+    return builder.toString();
+  }
+
   static MappingException unsupportedCollection(Class<?> collectionType) {
     return new MappingException(String.format("The collection type %s is unsupported.", collectionType.getName()));
   }

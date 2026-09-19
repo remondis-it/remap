@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.jspecify.annotations.Nullable;
+
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
@@ -96,7 +98,7 @@ public class InterceptionHandler<T> {
     }
   }
 
-  private static Object nullOrDefaultValue(Class<?> returnType) {
+  private static @Nullable Object nullOrDefaultValue(Class<?> returnType) {
     if (returnType.isPrimitive()) {
       return defaultValue(returnType);
     } else {

@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collector;
 
+import org.jspecify.annotations.Nullable;
+
 import com.remondis.propertypath.api.Get;
 import com.remondis.propertypath.api.Getter;
 import com.remondis.propertypath.api.PropertyPath;
@@ -67,8 +69,8 @@ public class PropertyPathCollectionTransformation<RS, X, RD> extends Transformat
   }
 
   @Override
-  protected void performTransformation(PropertyDescriptor sourceProperty, Object source,
-      PropertyDescriptor destinationProperty, Object destination) throws MappingException {
+  protected void performTransformation(@Nullable PropertyDescriptor sourceProperty, Object source,
+      @Nullable PropertyDescriptor destinationProperty, Object destination) throws MappingException {
     Object sourceValue = readOrFail(sourceProperty, source);
 
     MappedResult result = performValueTransformation(sourceValue, destination);
@@ -82,7 +84,8 @@ public class PropertyPathCollectionTransformation<RS, X, RD> extends Transformat
       "unchecked", "rawtypes"
   })
   @Override
-  protected MappedResult performValueTransformation(Object source, Object destination) throws MappingException {
+  protected MappedResult performValueTransformation(@Nullable Object source, @Nullable Object destination)
+      throws MappingException {
     if (source == null) {
       // Skip if source value is null and the transformation was declared to skip on null input.
       return MappedResult.skip();
@@ -131,7 +134,7 @@ public class PropertyPathCollectionTransformation<RS, X, RD> extends Transformat
 
   @SuppressWarnings("rawtypes")
   @Override
-  public boolean equals(Object obj) {
+  public boolean equals(@Nullable Object obj) {
     if (this == obj) {
       return true;
     }
